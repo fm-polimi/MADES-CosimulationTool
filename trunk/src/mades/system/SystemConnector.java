@@ -5,11 +5,13 @@ package mades.system;
 
 import java.util.HashMap;
 
+import mades.cosimulation.Cosimulator;
+
 /**
  * @author Michele Sama (m.sama@puzzledev.com)
  *
- * Defines the interface to connect the system simulator to the Cosimulator.
- * Implementation of this interface allows the Cosimulator to initialize 
+ * Defines the interface to connect the system simulator to the {@link Cosimulator}.
+ * Implementation of this interface allows the {@link SystemConnector} to initialize 
  * and control the simulated system during the simulation.
  */
 public interface SystemConnector {
