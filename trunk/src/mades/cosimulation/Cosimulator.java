@@ -21,6 +21,11 @@ public class Cosimulator {
 	private boolean simulationStarted;
 	
 	/**
+	 * The current simulation time.
+	 */
+	private double simulationTime;
+	
+	/**
 	 * The environment simulator used in this co-simulation.
 	 */
 	private EnvironmentConnector environment;
@@ -91,6 +96,15 @@ public class Cosimulator {
 	}
 
 	/**
+	 * Gets the current simulation time.
+	 * 
+	 * @return the simulationTime
+	 */
+	public double getSimulationTime() {
+		return simulationTime;
+	}
+
+	/**
 	 * Starts a new co-simulation.
 	 * 
 	 * @param params the parameters for this co-simulation. Parameters will be 
@@ -118,6 +132,8 @@ public class Cosimulator {
 
 	/**
 	 * Stops the current simulation.
+	 * 
+	 * @throws IllegalStateException if the co-simulation is not running.
 	 */
 	public void stopCosimulation() {
 		if (!simulationStarted) {
