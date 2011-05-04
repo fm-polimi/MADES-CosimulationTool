@@ -22,8 +22,9 @@ public interface SystemConnector {
 	 * once and only once.
 	 * 
 	 * @param params: A collection of key,value initialization parameters.
+	 * @param initialTime the initial time of the simulation.
 	 */
-	public void initialize(HashMap<String, String> params);
+	public void initialize(HashMap<String, String> params, double initialTime);
 	
 	/**
 	 * Loads a given initial state to the system. This method is supposed

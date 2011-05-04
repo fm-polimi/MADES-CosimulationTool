@@ -20,11 +20,12 @@ public interface EnvironmentConnector {
 	/**
 	 * Initializes the environment simulator with a set of configuration
 	 * parameters given by the Cosimulator. This initialization has to be done
-	 * once and only once.
+	 * once at the beginning of the simulation.
 	 * 
-	 * @param params: A collection of key,value initialization parameters.
+	 * @param params a collection of key,value initialization parameters.
+	 * @param initialTime the initial time of the simulation.
 	 */
-	public void initialize(HashMap<String, String> params);
+	public void initialize(HashMap<String, String> params, double initialTime);
 	
 	/**
 	 * Loads a given initial state to the environment. This method is supposed
