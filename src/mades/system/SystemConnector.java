@@ -60,4 +60,6 @@ public interface SystemConnector {
 	 */
 	public HashMap<String, String> getCurrentParams();
 	
+	public HashMap<String, String> getCurrentEvents();
+	
 }
