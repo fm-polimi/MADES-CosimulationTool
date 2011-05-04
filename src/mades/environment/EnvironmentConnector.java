@@ -5,12 +5,14 @@ package mades.environment;
 
 import java.util.HashMap;
 
+import mades.cosimulation.Cosimulator;
+
 /**
  * 
  * @author Michele Sama (m.sama@puzzledev.com)
  *
- * Defines the interface between the Cosimulator and the environment.
- * Implementations of this interface allow the Cosimulator to initialize
+ * Defines the interface between the {@link Cosimulator} and the environment.
+ * Implementations of this interface allow the {@link Cosimulator} to initialize
  * the environment simulation tool and to control it during the simulation. 
  */
 public interface EnvironmentConnector {
