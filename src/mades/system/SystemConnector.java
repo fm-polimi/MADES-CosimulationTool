@@ -10,9 +10,10 @@ import mades.cosimulation.Cosimulator;
 /**
  * @author Michele Sama (m.sama@puzzledev.com)
  *
- * Defines the interface to connect the system simulator to the {@link Cosimulator}.
- * Implementation of this interface allows the {@link SystemConnector} to initialize 
- * and control the simulated system during the simulation.
+ * Defines the interface to connect the system simulator to the 
+ * {@link Cosimulator}. Implementation of this interface allows the 
+ * {@link SystemConnector} to initialize and control the simulated
+ * system during the simulation.
  */
 public interface SystemConnector {
 
@@ -60,6 +61,13 @@ public interface SystemConnector {
 	 */
 	public HashMap<String, String> getCurrentParams();
 	
-	public HashMap<String, String> getCurrentEvents();
+	/**
+	 * Returns a collection of all the events which have occurred during
+	 * the current step of the simulation.  
+	 *  
+	 * @return A collection of event name, array of times in which the 
+	 *         event has occurred.
+	 */
+	public HashMap<String, Double[]> getCurrentEvents();
 	
 }
