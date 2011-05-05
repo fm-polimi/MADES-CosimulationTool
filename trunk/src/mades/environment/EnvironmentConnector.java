@@ -37,8 +37,7 @@ public interface EnvironmentConnector {
 	 *         <code>null</code> and if no simulation steps have been 
 	 *         performed.
 	 */
-	public void load(ParamMap system,
-			ParamMap environment);
+	public void load(ParamMap system, ParamMap environment);
 	
 	/**
 	 * Performs the next step of the simulation.
