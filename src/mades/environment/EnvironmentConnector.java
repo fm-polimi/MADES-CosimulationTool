@@ -3,8 +3,7 @@
  */
 package mades.environment;
 
-import java.util.HashMap;
-
+import mades.common.ParamMap;
 import mades.cosimulation.Cosimulator;
 
 /**
@@ -22,10 +21,10 @@ public interface EnvironmentConnector {
 	 * parameters given by the Cosimulator. This initialization has to be done
 	 * once at the beginning of the simulation.
 	 * 
-	 * @param params a collection of key,value initialization parameters.
+	 * @param params a collection of initialization parameters.
 	 * @param initialTime the initial time of the simulation.
 	 */
-	public void initialize(HashMap<String, String> params, double initialTime);
+	public void initialize(ParamMap params, double initialTime);
 	
 	/**
 	 * Loads a given initial state to the environment. This method is supposed
@@ -38,8 +37,8 @@ public interface EnvironmentConnector {
 	 *         <code>null</code> and if no simulation steps have been 
 	 *         performed.
 	 */
-	public void load(HashMap<String, String> system,
-			HashMap<String, String> environment);
+	public void load(ParamMap system,
+			ParamMap environment);
 	
 	/**
 	 * Performs the next step of the simulation.
@@ -49,7 +48,7 @@ public interface EnvironmentConnector {
 	 * @throws IllegalArgumentException: If time is negative or lesser 
 	 *         than the last simulated step.
 	 */
-	public HashMap<String, String> simulateNext(double time);
+	public ParamMap simulateNext(double time);
 	
 	/**
 	 * Returns the value of the current step of the simulation. The returned
@@ -59,5 +58,5 @@ public interface EnvironmentConnector {
 	 *         simulation has been performed it returns an empty collection.
 	 * @throws AssertionError: If no simulation step has been performed.
 	 */
-	public HashMap<String, String> getCurrentParams();
+	public ParamMap getCurrentParams();
 }

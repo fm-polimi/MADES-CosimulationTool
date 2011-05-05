@@ -5,6 +5,7 @@ package mades.system;
 
 import java.util.HashMap;
 
+import mades.common.ParamMap;
 import mades.cosimulation.Cosimulator;
 
 /**
@@ -25,7 +26,7 @@ public interface SystemConnector {
 	 * @param params: A collection of key,value initialization parameters.
 	 * @param initialTime the initial time of the simulation.
 	 */
-	public void initialize(HashMap<String, String> params, double initialTime);
+	public void initialize(ParamMap params, double initialTime);
 	
 	/**
 	 * Loads a given initial state to the system. This method is supposed
@@ -38,8 +39,8 @@ public interface SystemConnector {
 	 *         <code>null</code> and if no simulation steps have been 
 	 *         performed.
 	 */
-	public void load(HashMap<String, String> system,
-			HashMap<String, String> environment);
+	public void load(ParamMap system,
+			ParamMap environment);
 	
 	/**
 	 * Performs the next step of the simulation.
@@ -49,7 +50,7 @@ public interface SystemConnector {
 	 * @throws IllegalArgumentException: If time is negative or lesser 
 	 *         than the last simulated step.
 	 */
-	public HashMap<String, String> simulateNext(double time);
+	public ParamMap simulateNext(double time);
 	
 	/**
 	 * Returns the value of the current step of the system. The returned
@@ -59,7 +60,7 @@ public interface SystemConnector {
 	 *         simulation has been performed it returns an empty collection.
 	 * @throws AssertionError: If no simulation step has been performed.
 	 */
-	public HashMap<String, String> getCurrentParams();
+	public ParamMap getCurrentParams();
 	
 	/**
 	 * Returns a collection of all the events which have occurred during
