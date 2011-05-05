@@ -3,7 +3,6 @@
  */
 package mades.common;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -59,7 +58,7 @@ public class ParamMap {
 	 * @return
 	 * @see java.util.HashMap#containsKey(java.lang.Object)
 	 */
-	public boolean containsKey(Object key) {
+	public boolean containsKey(String key) {
 		return params.containsKey(key);
 	}
 
@@ -94,8 +93,8 @@ public class ParamMap {
 	 * @return
 	 * @see java.util.HashMap#get(java.lang.Object)
 	 */
-	public Object get(Object key) {
-		return params.get(key);
+	public Object get(String paramName) {
+		return params.get(paramName);
 	}
 
 	/**
@@ -120,8 +119,8 @@ public class ParamMap {
 	 * @return
 	 * @see java.util.HashMap#put(java.lang.Object, java.lang.Object)
 	 */
-	public Object put(String key, Object value) {
-		return params.put(key, value);
+	public Object put(String paramName, Object paramValue) {
+		return params.put(paramName, paramValue);
 	}
 
 	/**
@@ -137,8 +136,8 @@ public class ParamMap {
 	 * @return
 	 * @see java.util.HashMap#remove(java.lang.Object)
 	 */
-	public Object remove(Object key) {
-		return params.remove(key);
+	public Object remove(String paramName) {
+		return params.remove(paramName);
 	}
 
 	/**
@@ -157,11 +156,4 @@ public class ParamMap {
 		return params.toString();
 	}
 
-	/**
-	 * @return
-	 * @see java.util.HashMap#values()
-	 */
-	public Collection<Object> values() {
-		return params.values();
-	}
 }
