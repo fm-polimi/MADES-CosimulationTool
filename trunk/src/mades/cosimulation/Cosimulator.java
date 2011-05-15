@@ -3,7 +3,9 @@
  */
 package mades.cosimulation;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Stack;
 
 import mades.common.ParamMap;
 import mades.environment.EnvironmentConnector;
@@ -66,6 +68,9 @@ public class Cosimulator {
 	 * will roll back before aborting.
 	 */
 	private int maxCosimulationBacktraking = 3;
+	private Stack<EnvironmentMemento> environmentMementoStack;
+	private Stack<SystemMemento> systemMementoStack;
+	
 	
 	/**
 	 * Default constructor.
@@ -201,36 +206,48 @@ public class Cosimulator {
 
 	protected void performCosimulationStep() {
 		double nextSimulationTime = lastAcceptedCosimulationTime + timeStep;
-		SystemMemento currentSystemParams = system.getCurrentParams();
-		SystemMemento nextSystemParams = null;
-		EnvironmentMemento currentEnvironmentParams = environment.getCurrentParams();
-		EnvironmentMemento nextEnvironmentParams = currentEnvironmentParams;
-	
+
 		boolean stepApproved = false;
 		int attempts = maxCosimulationAttemptsForStep;
 		
 		while (!stepApproved) {
-			system.load(currentSystemParams, nextEnvironmentParams);
-			nextSystemParams = system.simulateNext(nextSimulationTime);
+			// Simulate the system at the next time.
+			simulateSystem(nextSimulationTime);
 			
-			if (!acceptSystemStep(nextSystemParams)) {
+			if (!isLastSystemSimulationValid()) {
+				systemMementoStack.pop();
 				attempts -= 1;
 				if (attempts == 0) {
 					throw new MaxCosimulationAttemptsReached();
 				}
-				environment.load(currentEnvironmentParams, nextSystemParams);
-				nextEnvironmentParams = environment.simulateNext(lastAcceptedCosimulationTime);
+				if (lastAcceptedCosimulationTime == initialSimulationTime) {
+					throw new RuntimeException("Cannot rollback on the first iteration: aborting...");
+				}
+				// Roll back the environment and try again.
+				environmentMementoStack.pop();
+				simulateEnvironment(lastAcceptedCosimulationTime);
 			} else {
 				stepApproved = true;
 			}
 		}
 		
-		environment.load(currentEnvironmentParams, nextSystemParams);
-		nextEnvironmentParams = environment.simulateNext(nextSimulationTime);
+		// Simulate the environment at the next time
+		simulateEnvironment(nextSimulationTime);
 		lastAcceptedCosimulationTime = nextSimulationTime;
 	}
 	
-	private boolean acceptSystemStep(SystemMemento nextSystemParams) {
+	private void simulateEnvironment(double time) {
+		environment.load(environmentMementoStack.peek(), systemMementoStack.peek());
+		environmentMementoStack.push(environment.simulateNext(time));
+	}
+	
+	private void simulateSystem(double time) {
+		system.load( systemMementoStack.peek(), environmentMementoStack.peek());
+		systemMementoStack.push(system.simulateNext(time));
+	}
+	
+	private boolean isLastSystemSimulationValid() {
+		SystemMemento systemMemento = systemMementoStack.peek();
 		return true;
 	}
 	
