@@ -5,6 +5,7 @@ package mades.environment;
 
 import mades.common.ParamMap;
 import mades.cosimulation.Cosimulator;
+import mades.system.SystemMemento;
 
 /**
  * 
@@ -30,14 +31,24 @@ public interface EnvironmentConnector {
 	 * Loads a given initial state to the environment. This method is supposed
 	 * to be invoked ad each step of the co-simulation.
 	 * 
-	 * @param system: The initial configuration of the system. 
-	 * @param environment: The initial configuration of the environment. 
+	 * @param environmentParams the configuration of the environment to use. 
 	 *         If <code>null</code> the last simulated step is used.
+	 * @param systemParams the system configuration to use.
 	 * @throws IllegalArgumentException: If <code>environment</code> is
 	 *         <code>null</code> and if no simulation steps have been 
 	 *         performed.
 	 */
-	public void load(ParamMap system, ParamMap environment);
+	public void load(EnvironmentMemento environmentParams, SystemMemento systemParams);
+	
+	/**
+	 * Loads a given initial state to the environment. This method is supposed
+	 * to be invoked ad each step of the co-simulation.
+	 * 
+	 * @param systemParams the system configuration to use.
+	 * @throws AssertionError if no simulation steps have been 
+	 *         performed.
+	 */
+	public void load(SystemMemento systemParams);
 	
 	/**
 	 * Performs the next step of the simulation.
@@ -47,7 +58,7 @@ public interface EnvironmentConnector {
 	 * @throws IllegalArgumentException: If time is negative or lesser 
 	 *         than the last simulated step.
 	 */
-	public ParamMap simulateNext(double time);
+	public EnvironmentMemento simulateNext(double time);
 	
 	/**
 	 * Returns the value of the current step of the simulation. The returned
@@ -57,5 +68,5 @@ public interface EnvironmentConnector {
 	 *         simulation has been performed it returns an empty collection.
 	 * @throws AssertionError: If no simulation step has been performed.
 	 */
-	public ParamMap getCurrentParams();
+	public EnvironmentMemento getCurrentParams();
 }
