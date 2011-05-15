@@ -3,7 +3,7 @@
  */
 package mades.environment;
 
-import mades.common.ParamMap;
+import mades.common.Memento;
 
 /**
  * @author Michele Sama (m.sama@puzzledev.com)
@@ -11,13 +11,17 @@ import mades.common.ParamMap;
  * Implements the memento patter for the environment by allowing
  * the {@link EnvironmentConnector} to save and restore its state.
  */
-public class EnvironmentMemento {
-	private double time;
-	private ParamMap params;
+public class EnvironmentMemento extends Memento {
 	
 	/**
 	 * Default constructor.
 	 */
 	EnvironmentMemento () {
 	}
+	
+	@Override
+	public void deleteRelatedFiles() {
+		// TODO Auto-generated method stub
+	}
+		
 }

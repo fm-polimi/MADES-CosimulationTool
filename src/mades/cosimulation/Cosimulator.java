@@ -3,15 +3,13 @@
  */
 package mades.cosimulation;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Stack;
 import java.util.logging.Logger;
 
+import mades.common.Memento;
 import mades.common.ParamMap;
 import mades.environment.EnvironmentConnector;
 import mades.environment.EnvironmentMemento;
-import mades.system.SignalMap;
 import mades.system.SystemConnector;
 import mades.system.SystemMemento;
 
@@ -209,42 +207,107 @@ public class Cosimulator {
 
 	protected void performCosimulationStep() {
 		double nextSimulationTime = lastAcceptedCosimulationTime + timeStep;
-
+		
+		int backtrakingAttemptsLeft = maxCosimulationBacktraking;
 		boolean stepApproved = false;
-		int attempts = maxCosimulationAttemptsForStep;
 		
 		while (!stepApproved) {
-			// Simulate the system at the next time.
-			simulateSystem(nextSimulationTime);
+			int attemptsInStep = maxCosimulationAttemptsForStep;
 			
-			if (!isLastSystemSimulationValid()) {
-				logger.severe("New simulated system state is not valid.");
-				rollbackSystem();
-				attempts -= 1;
-				if (attempts == 0) {
-					throw new MaxCosimulationAttemptsReached();
+			while (!stepApproved) {
+				// Simulate the system at the next time.
+				simulateSystem(nextSimulationTime);
+				
+				if (!isLastSystemSimulationValid()) {
+					logger.severe("New simulated system state is not valid.");
+					rollbackSystem();
+					attemptsInStep -= 1;
+
+					// Roll back the environment and try again.
+					rollbackEnvironment();
+					simulateEnvironment(lastAcceptedCosimulationTime);
+					
+					if (attemptsInStep < 0) {
+						logger.severe(
+							"Max co-simulation attempts at this step reached: backtracking...");
+						break;
+					}
+				} else {
+					stepApproved = true;
 				}
-				// Roll back the environment and try again.
-				rollbackEnvironment();
-				simulateEnvironment(lastAcceptedCosimulationTime);
-			} else {
-				stepApproved = true;
 			}
+			
+			if (stepApproved) {
+				break;
+			} else {
+				// Roll back to previous system state
+				backtrakingAttemptsLeft -= 1;
+				if (backtrakingAttemptsLeft < 0) {
+					logger.severe(
+							"Max co-simulation backtraking attempts reached: aborting...");
+					throw new RuntimeException(
+							"Max co-simulation backtraking attempts reached.");
+				} else {
+					// Roll back the system and the simulation time
+					rollbackSystem();
+					nextSimulationTime = lastAcceptedCosimulationTime;
+					lastAcceptedCosimulationTime -= timeStep;
+					logger.severe("Simulation time decreased to: " +
+							lastAcceptedCosimulationTime);
+					simulateSystem(lastAcceptedCosimulationTime);
+				}
+			}
+			
+
 		}
 		
 		// Simulate the environment at the next time
 		simulateEnvironment(nextSimulationTime);
 		lastAcceptedCosimulationTime = nextSimulationTime;
+		logger.severe("Simulation time increased to: " +
+				lastAcceptedCosimulationTime);
+		//Remove from the two stacks elements earlier than maxCosimulationBacktraking
+		deleteObsoleteData();
 	}
 	
+	/**
+	 * Removes from the stacks all the {@link Memento} which represent an
+	 * iteration which occurred earlier than 
+	 * {@link Cosimulator.maxCosimulationBacktraking}
+	 */
+	private void deleteObsoleteData() {
+		int elementsToremove = environmentMementoStack.size() -
+				maxCosimulationBacktraking;
+		for (int i = elementsToremove; i > 0; i++) {
+			EnvironmentMemento memento = environmentMementoStack.remove(0);
+			assert(memento.getTime() <
+					(lastAcceptedCosimulationTime - 
+							(maxCosimulationBacktraking * timeStep)));
+			memento.deleteRelatedFiles();
+		}
+		logger.severe("Obsolete environment state deleted.");
+		
+		elementsToremove = systemMementoStack.size() -
+				maxCosimulationBacktraking;
+		for (int i = elementsToremove; i > 0; i++) {
+			SystemMemento memento = systemMementoStack.remove(0);
+			assert(memento.getTime() <
+					(lastAcceptedCosimulationTime - 
+							(maxCosimulationBacktraking * timeStep)));
+			memento.deleteRelatedFiles();
+		}
+		logger.severe("Obsolete system state deleted.");
+	}
 	
 	private void rollbackEnvironment() {
 		logger.severe("Rolling back environment state.");
 		if (environmentMementoStack.size() == 0) {
 			logger.severe("End of environment state stack reached.");
-			throw new RuntimeException("Cannot rollback initial environment state: aborting...");
+			throw new RuntimeException(
+					"Cannot rollback initial environment state: aborting...");
 		}
-		environmentMementoStack.pop();
+		EnvironmentMemento memento = environmentMementoStack.pop();
+		assert(memento.getTime() == lastAcceptedCosimulationTime);
 	}
 	
 	private void rollbackSystem() {
@@ -253,7 +316,8 @@ public class Cosimulator {
 			logger.severe("End of system state stack reached.");
 			throw new RuntimeException("Cannot rollback initial system state: aborting...");
 		}
-		systemMementoStack.pop();
+		SystemMemento memento = systemMementoStack.pop();
+		assert(memento.getTime() == lastAcceptedCosimulationTime);
 	}
 	
 	private void simulateEnvironment(double time) {
