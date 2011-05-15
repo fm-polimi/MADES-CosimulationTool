@@ -7,7 +7,10 @@ import java.util.HashMap;
 
 import mades.common.ParamMap;
 import mades.environment.EnvironmentConnector;
+import mades.environment.EnvironmentMemento;
+import mades.system.SignalMap;
 import mades.system.SystemConnector;
+import mades.system.SystemMemento;
 
 /**
  * @author Michele Sama (m.sama@puzzledev.com)
@@ -51,7 +54,18 @@ public class Cosimulator {
 	 */
 	private double timeStep;
 	
+	/**
+	 * The maximum number of attempts at each simulation step.
+	 * If the maximum number of attempts is reached the co-simulation
+	 * will roll back of a step. 
+	 */
 	private int maxCosimulationAttemptsForStep = 3;
+	
+	/**
+	 * The maximum number of steps that the co-simulation
+	 * will roll back before aborting.
+	 */
+	private int maxCosimulationBacktraking = 3;
 	
 	/**
 	 * Default constructor.
@@ -125,14 +139,17 @@ public class Cosimulator {
 	/**
 	 * Starts a new co-simulation.
 	 * 
-	 * @param params the parameters for this co-simulation. Parameters will be 
-	 *         forwarded both to the {@link SystemConnector} and to the 
-	 *         {@link EnvironmentConnector}.
 	 * @param initialSimulationTime the initial time of this simulation.
 	 * @param timeStep the time between two co-simulation steps.
 	 * @param maxCosimulationTime the time at which the co-simulation has to
 	 *         be interrupted.
 	 * @param maxCosimulationAttemptsForStep the maximum number of attempts
+	 *         at each step.
+	 * @param maxCosimulationBacktraking the maximum number of steps back.
+	 * @param environmentParams the initial configuration for the 
+	 *         {@link EnvironmentConnector}.
+	 * @param systemParams the initial configuration for the 
+	 *         {@link SystemConnector}. 
 	 * 
 	 * @throws IllegalStateException if the co-simulation is already running.
 	 * @throws AssertionError if either the {@link EnvironmentConnector} or the
@@ -141,8 +158,15 @@ public class Cosimulator {
 	 * @throws MaxCosimulationAttemptsReached if the co-simulation has reached
 	 *         the maximum number of retry without finding a suitable state.
 	 */
-	public void startCosimulation(ParamMap params, double initialSimulationTime,
-			double timeStep, double maxCosimulationTime, int maxCosimulationAttemptsForStep) {
+	public void startCosimulation(
+			double initialSimulationTime,
+			double timeStep,
+			double maxCosimulationTime,
+			int maxCosimulationAttemptsForStep,
+			int maxCosimulationBacktraking,
+			ParamMap environmentParams,
+			ParamMap systemParams
+			) {
 		if (simulationStarted) {
 			throw new IllegalStateException("Simulation is already running"); 
 		}
@@ -158,60 +182,56 @@ public class Cosimulator {
 		this.maxCosimulationTime = maxCosimulationTime;
 		this.timeStep = timeStep;
 		this.maxCosimulationAttemptsForStep = maxCosimulationAttemptsForStep;
+		this.maxCosimulationBacktraking = maxCosimulationBacktraking;
 		
-		
-		environment.initialize(params, initialSimulationTime);
-		system.initialize(params, initialSimulationTime);
+		environment.initialize(environmentParams, initialSimulationTime);
+		system.initialize(systemParams, initialSimulationTime);
 		
 		simulationStarted = true;
 		
-		
-		// Runs the co-simulation
-		while(lastAcceptedCosimulationTime < this.maxCosimulationTime) {
-			performCosimulationStep();
+		try {
+			// Runs the co-simulation
+			while(lastAcceptedCosimulationTime < this.maxCosimulationTime) {
+				performCosimulationStep();
+			}
+		} finally {
+			simulationStarted = false;
 		}
-		
-		simulationStarted = false;
 	}
 
 	protected void performCosimulationStep() {
 		double nextSimulationTime = lastAcceptedCosimulationTime + timeStep;
-		ParamMap currentSystemParams = system.getCurrentParams();
-		ParamMap nextSystemParams = null;
-		HashMap<String, Double[]> nextSystemEvents = null;
-		ParamMap currentEnvironmentParams = environment.getCurrentParams();
-		ParamMap nextEnvironmentParams = currentEnvironmentParams;
-				
+		SystemMemento currentSystemParams = system.getCurrentParams();
+		SystemMemento nextSystemParams = null;
+		EnvironmentMemento currentEnvironmentParams = environment.getCurrentParams();
+		EnvironmentMemento nextEnvironmentParams = currentEnvironmentParams;
+	
 		boolean stepApproved = false;
 		int attempts = maxCosimulationAttemptsForStep;
+		
 		while (!stepApproved) {
 			system.load(currentSystemParams, nextEnvironmentParams);
 			nextSystemParams = system.simulateNext(nextSimulationTime);
-			nextSystemEvents = system.getCurrentEvents();
 			
-			if (!acceptSystemStep(nextSystemEvents)) {
+			if (!acceptSystemStep(nextSystemParams)) {
 				attempts -= 1;
 				if (attempts == 0) {
 					throw new MaxCosimulationAttemptsReached();
 				}
-				environment.load(nextSystemParams, currentEnvironmentParams);
+				environment.load(currentEnvironmentParams, nextSystemParams);
 				nextEnvironmentParams = environment.simulateNext(lastAcceptedCosimulationTime);
 			} else {
-				storeSystemEvents(nextSystemEvents);
 				stepApproved = true;
 			}
 		}
 		
-		environment.load(nextSystemParams, currentEnvironmentParams);
+		environment.load(currentEnvironmentParams, nextSystemParams);
 		nextEnvironmentParams = environment.simulateNext(nextSimulationTime);
 		lastAcceptedCosimulationTime = nextSimulationTime;
 	}
 	
-	private boolean acceptSystemStep(HashMap<String, Double[]> nextSystemEvents) {
+	private boolean acceptSystemStep(SystemMemento nextSystemParams) {
 		return true;
-	}
-	
-	private void storeSystemEvents(HashMap<String, Double[]> nextSystemEvents) {
 	}
 	
 }

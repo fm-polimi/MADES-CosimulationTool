@@ -3,10 +3,9 @@
  */
 package mades.system;
 
-import java.util.HashMap;
-
 import mades.common.ParamMap;
 import mades.cosimulation.Cosimulator;
+import mades.environment.EnvironmentMemento;
 
 /**
  * @author Michele Sama (m.sama@puzzledev.com)
@@ -32,15 +31,13 @@ public interface SystemConnector {
 	 * Loads a given initial state to the system. This method is supposed
 	 * to be invoked ad each step of the co-simulation.
 	 * 
-	 * @param system: The initial configuration of the system. 
+	 * @param systemParams: The initial configuration of the system. 
 	 *         If <code>null</code> the last simulated step is used.
-	 * @param environment: The initial configuration of the environment. 
 	 * @throws IllegalArgumentException: If <code>system</code> is
 	 *         <code>null</code> and if no simulation steps have been 
 	 *         performed.
 	 */
-	public void load(ParamMap system,
-			ParamMap environment);
+	public void load(SystemMemento systemParams, EnvironmentMemento environmentParams);
 	
 	/**
 	 * Performs the next step of the simulation.
@@ -50,7 +47,7 @@ public interface SystemConnector {
 	 * @throws IllegalArgumentException: If time is negative or lesser 
 	 *         than the last simulated step.
 	 */
-	public ParamMap simulateNext(double time);
+	public SystemMemento simulateNext(double time);
 	
 	/**
 	 * Returns the value of the current step of the system. The returned
@@ -60,7 +57,7 @@ public interface SystemConnector {
 	 *         simulation has been performed it returns an empty collection.
 	 * @throws AssertionError: If no simulation step has been performed.
 	 */
-	public ParamMap getCurrentParams();
+	public SystemMemento getCurrentParams();
 	
 	/**
 	 * Returns a collection of all the events which have occurred during
@@ -69,6 +66,6 @@ public interface SystemConnector {
 	 * @return A collection of event name, array of times in which the 
 	 *         event has occurred.
 	 */
-	public HashMap<String, Double[]> getCurrentEvents();
+	public SignalMap getEventsHistory();
 	
 }
