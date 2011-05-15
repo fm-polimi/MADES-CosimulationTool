@@ -3,7 +3,7 @@
  */
 package mades.system;
 
-import mades.common.ParamMap;
+import mades.common.Memento;
 
 /**
  * @author Michele Sama (m.sama@puzzledev.com)
@@ -11,15 +11,26 @@ import mades.common.ParamMap;
  * Implements the memento patter for the system by allowing
  * the {@link SystemConnector} to save and restore its state.
  */
-public class SystemMemento {
-	private double time;
-	private ParamMap params;
+public class SystemMemento extends Memento {
+
 	private SignalMap signals;
 	
 	/**
 	 * Default constructor.
 	 */
 	SystemMemento() {	
+	}
+
+	/**
+	 * @return the signals
+	 */
+	public SignalMap getSignals() {
+		return signals;
+	}
+
+	@Override
+	public void deleteRelatedFiles() {
+		// TODO Auto-generated method stub
 	}
 		
 }
