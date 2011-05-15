@@ -6,6 +6,7 @@ package mades.cosimulation;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Stack;
+import java.util.logging.Logger;
 
 import mades.common.ParamMap;
 import mades.environment.EnvironmentConnector;
@@ -24,6 +25,8 @@ import mades.system.SystemMemento;
  */
 public class Cosimulator {
 
+	Logger logger = Logger.getLogger(this.getClass().getName());
+	
 	private boolean simulationStarted;
 	
 	/**
@@ -215,16 +218,14 @@ public class Cosimulator {
 			simulateSystem(nextSimulationTime);
 			
 			if (!isLastSystemSimulationValid()) {
-				systemMementoStack.pop();
+				logger.severe("New simulated system state is not valid.");
+				rollbackSystem();
 				attempts -= 1;
 				if (attempts == 0) {
 					throw new MaxCosimulationAttemptsReached();
 				}
-				if (lastAcceptedCosimulationTime == initialSimulationTime) {
-					throw new RuntimeException("Cannot rollback on the first iteration: aborting...");
-				}
 				// Roll back the environment and try again.
-				environmentMementoStack.pop();
+				rollbackEnvironment();
 				simulateEnvironment(lastAcceptedCosimulationTime);
 			} else {
 				stepApproved = true;
@@ -236,12 +237,33 @@ public class Cosimulator {
 		lastAcceptedCosimulationTime = nextSimulationTime;
 	}
 	
+	
+	private void rollbackEnvironment() {
+		logger.severe("Rolling back environment state.");
+		if (environmentMementoStack.size() == 0) {
+			logger.severe("End of environment state stack reached.");
+			throw new RuntimeException("Cannot rollback initial environment state: aborting...");
+		}
+		environmentMementoStack.pop();
+	}
+	
+	private void rollbackSystem() {
+		logger.severe("Rolling back system state.");
+		if (systemMementoStack.size() == 0) {
+			logger.severe("End of system state stack reached.");
+			throw new RuntimeException("Cannot rollback initial system state: aborting...");
+		}
+		systemMementoStack.pop();
+	}
+	
 	private void simulateEnvironment(double time) {
+		logger.severe("Symulating environment at time: " + time);
 		environment.load(environmentMementoStack.peek(), systemMementoStack.peek());
 		environmentMementoStack.push(environment.simulateNext(time));
 	}
 	
 	private void simulateSystem(double time) {
+		logger.severe("Symulating system at time: " + time);
 		system.load( systemMementoStack.peek(), environmentMementoStack.peek());
 		systemMementoStack.push(system.simulateNext(time));
 	}
