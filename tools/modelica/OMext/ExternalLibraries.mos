@@ -1,0 +1,5 @@
+loadFile("TestExt.mo");
+system("gcc -c -o libPrint_ext.o Print_ext.c");
+system("gcc -c -o libInit_ext.o Init_ext.c");
+simulate(testZC,startTime=0.0,stopTime=10,outputFormat="mat");
+

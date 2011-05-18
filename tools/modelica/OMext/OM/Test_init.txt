@@ -1,0 +1,20 @@
+0.0 // start value
+10.0 // stop value
+0.002 // step value
+1e-06 // tolerance
+"dassl" // method
+"mat" // outputFormat
+".*" // variableFilter
+1 // n states
+0 // n alg vars
+2 // n parameters
+0 // n int parameters
+0 // n int variables
+0 // n bool parameters
+0 // n bool variables
+0 // n string-parameters
+0 // n string variables
+0.0 //default //x
+0.0 //default //der(x)
+-1.0 //a
+4.0 //x_start
