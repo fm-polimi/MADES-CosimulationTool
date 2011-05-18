@@ -1,0 +1,10 @@
+In questo esempio il modello di un sistema dinamico lineare
+è già stato compilato e corredato di un file per l'inizializzazione (attraverso l'OpenModelicaCompiler)
+
+lanciando lo script "run.sh" viene avviata la simulazione ed una volta terminata, un altro programma si occupa dell'analisi
+degli output e della creazione di un file analogo a quello per l'inizializzazione del modello, contenente i valori finali
+delle variabili
+
+Alla fine vengono aperti i file di inizializzazione, di output e delle transizioni (viene monitorata la variabile x(t)=cos(t))
+
+
