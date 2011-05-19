@@ -99,9 +99,15 @@ public class Cosimulator {
 	/**
 	 * Sets a new {@link EnvironmentConnector}.
 	 * 
-	 * @param environment the environment to set
+	 * @param environment the environment to set.
+	 * @throws IllegalStateException if the simulation is running.
 	 */
 	public void setEnvironment(EnvironmentConnector environment) {
+		if (simulationStarted) {
+			throw new IllegalStateException(
+					"Cannot set a new environment connector while the " +
+					"simulation is running.");
+		}
 		this.environment = environment;
 	}
 
@@ -117,9 +123,15 @@ public class Cosimulator {
 	/**
 	 * Sets a new {@link SystemConnector}.
 	 * 
-	 * @param system the system to set
+	 * @param system the system to set.
+	 * @throws IllegalStateException if the simulation is running.
 	 */
 	public void setSystem(SystemConnector system) {
+		if (simulationStarted) {
+			throw new IllegalStateException(
+					"Cannot set a new system connector while the " +
+					"simulation is running.");
+		}
 		this.system = system;
 	}
 	
@@ -190,8 +202,9 @@ public class Cosimulator {
 		this.maxCosimulationAttemptsForStep = maxCosimulationAttemptsForStep;
 		this.maxCosimulationBacktraking = maxCosimulationBacktraking;
 		
-		environment.initialize(environmentParams, initialSimulationTime);
-		system.initialize(systemParams, initialSimulationTime);
+		reinitializeSimulation(initialSimulationTime,
+				environmentParams, systemParams);
+		
 		
 		simulationStarted = true;
 		
@@ -205,6 +218,46 @@ public class Cosimulator {
 		}
 	}
 
+	/**
+	 * Cleans the internal stacks and initializes the first state.
+	 * 
+	 * @param initialSimulationTime
+	 * @param environmentParams
+	 * @param systemParams
+	 */
+	private void reinitializeSimulation(
+			double initialSimulationTime, 
+			ParamMap environmentParams,
+			ParamMap systemParams) {
+		
+		if (environmentMementoStack != null) {
+			while (!environmentMementoStack.isEmpty()) {
+				EnvironmentMemento memento = environmentMementoStack.pop();
+				memento.deleteRelatedFiles();
+			}
+			assert(environmentMementoStack.isEmpty());
+		} else {
+			environmentMementoStack = new Stack<EnvironmentMemento>();
+		}
+		
+		if (systemMementoStack != null) {
+			while (!systemMementoStack.isEmpty()) {
+				SystemMemento memento = systemMementoStack.pop();
+				memento.deleteRelatedFiles();
+			}
+			assert(systemMementoStack.isEmpty());
+		} else {
+			systemMementoStack = new Stack<SystemMemento>();
+		}
+		
+		// Add the initial states to the bottom of the stack
+		environmentMementoStack.push(
+				environment.initialize(environmentParams, initialSimulationTime));
+		systemMementoStack.push(
+				system.initialize(systemParams, initialSimulationTime));
+		
+	}
+	
 	protected void performCosimulationStep() {
 		double nextSimulationTime = lastAcceptedCosimulationTime + timeStep;
 		
@@ -278,7 +331,7 @@ public class Cosimulator {
 	protected void deleteObsoleteData() {
 		int elementsToremove = environmentMementoStack.size() -
 				maxCosimulationBacktraking;
-		for (int i = elementsToremove; i > 0; i++) {
+		for (int i = elementsToremove; i > 0; i--) {
 			EnvironmentMemento memento = environmentMementoStack.remove(0);
 			assert(memento.getTime() <
 					(lastAcceptedCosimulationTime - 
@@ -289,7 +342,7 @@ public class Cosimulator {
 		
 		elementsToremove = systemMementoStack.size() -
 				maxCosimulationBacktraking;
-		for (int i = elementsToremove; i > 0; i++) {
+		for (int i = elementsToremove; i > 0; i--) {
 			SystemMemento memento = systemMementoStack.remove(0);
 			assert(memento.getTime() <
 					(lastAcceptedCosimulationTime - 
@@ -300,8 +353,9 @@ public class Cosimulator {
 	}
 	
 	protected void rollbackEnvironment() {
+		assert(simulationStarted);
 		logger.severe("Rolling back environment state.");
-		if (environmentMementoStack.size() == 0) {
+		if (environmentMementoStack.size() == 1) {
 			logger.severe("End of environment state stack reached.");
 			throw new RuntimeException(
 					"Cannot rollback initial environment state: aborting...");
@@ -311,8 +365,9 @@ public class Cosimulator {
 	}
 	
 	protected void rollbackSystem() {
+		assert(simulationStarted);
 		logger.severe("Rolling back system state.");
-		if (systemMementoStack.size() == 0) {
+		if (systemMementoStack.size() == 1) {
 			logger.severe("End of system state stack reached.");
 			throw new RuntimeException("Cannot rollback initial system state: aborting...");
 		}
@@ -321,12 +376,14 @@ public class Cosimulator {
 	}
 	
 	protected void simulateEnvironment(double time) {
+		assert(simulationStarted);
 		logger.severe("Symulating environment at time: " + time);
 		environment.load(environmentMementoStack.peek(), systemMementoStack.peek());
 		environmentMementoStack.push(environment.simulateNext(time));
 	}
 	
 	protected void simulateSystem(double time) {
+		assert(simulationStarted);
 		logger.severe("Symulating system at time: " + time);
 		system.load( systemMementoStack.peek(), environmentMementoStack.peek());
 		systemMementoStack.push(system.simulateNext(time));

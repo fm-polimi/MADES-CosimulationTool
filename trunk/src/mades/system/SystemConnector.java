@@ -24,8 +24,10 @@ public interface SystemConnector {
 	 * 
 	 * @param params: A collection of key,value initialization parameters.
 	 * @param initialTime the initial time of the simulation.
+	 * @return an instance representing the configuration of
+	 *         this connector at the initial state.
 	 */
-	public void initialize(ParamMap params, double initialTime);
+	public SystemMemento initialize(ParamMap params, double initialTime);
 	
 	/**
 	 * Loads a given initial state to the system. This method is supposed
