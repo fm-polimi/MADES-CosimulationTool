@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import mades.common.Variable;
 import mades.environment.EnvironmentConnector;
 import mades.environment.EnvironmentMemento;
+import mades.system.SignalMap;
 import mades.system.SystemMemento;
 
 /**
@@ -21,6 +22,7 @@ public class EchoEnvironmentConnectorMock implements EnvironmentConnector {
 
 	protected double currentSimulationTime;
 	protected ArrayList<Variable> params;
+	protected SignalMap signals;
 	
 	/**
 	 * 
@@ -37,7 +39,7 @@ public class EchoEnvironmentConnectorMock implements EnvironmentConnector {
 		assert(initialTime > 0);
 		currentSimulationTime = initialTime;
 		this.params = params;
-		return new EnvironmentMemento(currentSimulationTime, params);
+		return new EnvironmentMemento(currentSimulationTime, params, signals);
 	}
 
 	/* (non-Javadoc)
@@ -49,6 +51,7 @@ public class EchoEnvironmentConnectorMock implements EnvironmentConnector {
 		assert(environmentParams.getTime() != systemParams.getTime());
 		currentSimulationTime = environmentParams.getTime();
 		params = environmentParams.getParams();
+		signals = environmentParams.getSignals();
 	}
 
 	/* (non-Javadoc)
@@ -67,7 +70,7 @@ public class EchoEnvironmentConnectorMock implements EnvironmentConnector {
 	public EnvironmentMemento simulateNext(double time) {
 		assert(currentSimulationTime < time);
 		currentSimulationTime = time;
-		return new EnvironmentMemento(currentSimulationTime, params);
+		return new EnvironmentMemento(currentSimulationTime, params, signals);
 	}
 
 	/* (non-Javadoc)
@@ -75,7 +78,14 @@ public class EchoEnvironmentConnectorMock implements EnvironmentConnector {
 	 */
 	@Override
 	public EnvironmentMemento getCurrentParams() {
-		return new EnvironmentMemento(currentSimulationTime, params);
+		return new EnvironmentMemento(currentSimulationTime, params, signals);
 	}
 
+	/* (non-Javadoc)
+	 * @see mades.system.SystemConnector#getEventsHistory()
+	 */
+	@Override
+	public SignalMap getEventsHistory() {
+		return signals;
+	}
 }

@@ -38,7 +38,7 @@ public class EchoSystemConnectorMock implements SystemConnector {
 		assert(initialTime > 0);
 		currentSimulationTime = initialTime;
 		this.params = params;
-		return new SystemMemento(currentSimulationTime, params, signals);
+		return new SystemMemento(currentSimulationTime, params);
 	}
 
 	/* (non-Javadoc)
@@ -50,7 +50,6 @@ public class EchoSystemConnectorMock implements SystemConnector {
 		assert(environmentParams.getTime() != systemParams.getTime());
 		currentSimulationTime = systemParams.getTime();
 		params = systemParams.getParams();
-		signals = systemParams.getSignals();
 	}
 
 	/* (non-Javadoc)
@@ -60,7 +59,7 @@ public class EchoSystemConnectorMock implements SystemConnector {
 	public SystemMemento simulateNext(double time) {
 		assert(currentSimulationTime < time);
 		currentSimulationTime = time;
-		return new SystemMemento(currentSimulationTime, params, signals);
+		return new SystemMemento(currentSimulationTime, params);
 	}
 
 	/* (non-Javadoc)
@@ -68,15 +67,8 @@ public class EchoSystemConnectorMock implements SystemConnector {
 	 */
 	@Override
 	public SystemMemento getCurrentParams() {
-		return new SystemMemento(currentSimulationTime, params, signals);
+		return new SystemMemento(currentSimulationTime, params);
 	}
 
-	/* (non-Javadoc)
-	 * @see mades.system.SystemConnector#getEventsHistory()
-	 */
-	@Override
-	public SignalMap getEventsHistory() {
-		return signals;
-	}
 
 }

@@ -283,17 +283,19 @@ public class Cosimulator {
 			int attemptsInStep = maxCosimulationAttemptsForStep;
 			
 			while (!stepApproved) {
+				assert(environmentMementoStack.size() == 
+					    systemMementoStack.size());
 				// Simulate the system at the next time.
-				simulateSystem(nextSimulationTime);
+				simulateEnvironment(nextSimulationTime);
 				
-				if (!isLastSystemSimulationValid()) {
+				if (!isLastEnvironmentSimulationValid()) {
 					logger.severe("New simulated system state is not valid.");
-					rollbackSystem();
+					rollbackEnvironment();
 					attemptsInStep -= 1;
 
 					// Roll back the environment and try again.
-					rollbackEnvironment();
-					simulateEnvironment(lastAcceptedCosimulationTime);
+					rollbackSystem();
+					simulateSystem(lastAcceptedCosimulationTime);
 					
 					if (attemptsInStep < 0) {
 						logger.severe(
@@ -317,7 +319,7 @@ public class Cosimulator {
 							"Max co-simulation backtraking attempts reached.");
 				} else {
 					// Roll back the system and the simulation time
-					rollbackSystem();
+					rollbackEnvironment();
 					nextSimulationTime = lastAcceptedCosimulationTime;
 					lastAcceptedCosimulationTime -= timeStep;
 					logger.fine("Simulation time decreased to: " +
@@ -441,8 +443,8 @@ public class Cosimulator {
 		systemMementoStack.push(system.simulateNext(time));
 	}
 	
-	boolean isLastSystemSimulationValid() {
-		SystemMemento systemMemento = systemMementoStack.peek();
+	boolean isLastEnvironmentSimulationValid() {
+		EnvironmentMemento environmentMemento = environmentMementoStack.peek();
 		return true;
 	}
 

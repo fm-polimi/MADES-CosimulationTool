@@ -16,23 +16,12 @@ import mades.common.Variable;
  */
 public class SystemMemento extends Memento {
 
-
-	private SignalMap signals;
-
 	/**
 	 * @param time
 	 * @param params
 	 */
-	public SystemMemento(double time, ArrayList<Variable> params, SignalMap signals) {
+	public SystemMemento(double time, ArrayList<Variable> params) {
 		super(time, params);
-		this.signals = signals;
-	}
-	
-	/**
-	 * @return the signals
-	 */
-	public SignalMap getSignals() {
-		return signals;
 	}
 
 	@Override

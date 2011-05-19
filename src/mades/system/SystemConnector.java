@@ -63,13 +63,4 @@ public interface SystemConnector {
 	 */
 	public SystemMemento getCurrentParams();
 	
-	/**
-	 * Returns a collection of all the events which have occurred during
-	 * the current step of the simulation.  
-	 *  
-	 * @return A collection of event name, array of times in which the 
-	 *         event has occurred.
-	 */
-	public SignalMap getEventsHistory();
-	
 }
