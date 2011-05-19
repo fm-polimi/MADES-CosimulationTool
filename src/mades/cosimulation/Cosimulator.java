@@ -339,11 +339,7 @@ public class Cosimulator {
 		//Remove from the two stacks elements earlier than maxCosimulationBacktraking
 		deleteObsoleteData();
 	}
-	
-	
-	protected void increaseSimulationTime(double nextTime) {
-		
-	}
+
 	
 	/**
 	 * Add all the shared variables on top of the memento staks 
@@ -448,6 +444,13 @@ public class Cosimulator {
 	boolean isLastSystemSimulationValid() {
 		SystemMemento systemMemento = systemMementoStack.peek();
 		return true;
+	}
+
+	/**
+	 * @return the sharedVariablesMultimap
+	 */
+	public HashMultimap<Double, Variable> getSharedVariablesMultimap() {
+		return sharedVariablesMultimap;
 	}
 	
 }
