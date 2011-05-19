@@ -3,8 +3,10 @@
  */
 package mades.environment;
 
+import java.util.ArrayList;
+
 import mades.common.Memento;
-import mades.common.ParamMap;
+import mades.common.Variable;
 
 /**
  * @author Michele Sama (m.sama@puzzledev.com)
@@ -19,7 +21,7 @@ public class EnvironmentMemento extends Memento {
 	 * @param time
 	 * @param params
 	 */
-	public EnvironmentMemento(double time, ParamMap params) {
+	public EnvironmentMemento(double time, ArrayList<Variable> params) {
 		super(time, params);
 	}
 

@@ -3,7 +3,9 @@
  */
 package mades.cosimulation;
 
-import mades.common.ParamMap;
+import java.util.ArrayList;
+
+import mades.common.Variable;
 import mades.environment.EnvironmentMemento;
 import mades.system.SignalMap;
 import mades.system.SystemConnector;
@@ -18,7 +20,7 @@ import mades.system.SystemMemento;
 public class EchoSystemConnectorMock implements SystemConnector {
 
 	protected double currentSimulationTime;
-	protected ParamMap params;
+	protected ArrayList<Variable> params;
 	protected SignalMap signals;
 	
 	/**
@@ -32,7 +34,7 @@ public class EchoSystemConnectorMock implements SystemConnector {
 	 * @see mades.system.SystemConnector#initialize(mades.common.ParamMap, double)
 	 */
 	@Override
-	public SystemMemento initialize(ParamMap params, double initialTime) {
+	public SystemMemento initialize(ArrayList<Variable> params, double initialTime) {
 		assert(initialTime > 0);
 		currentSimulationTime = initialTime;
 		this.params = params;
