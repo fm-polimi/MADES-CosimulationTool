@@ -3,7 +3,10 @@
  */
 package mades.cosimulation;
 
-import mades.common.ParamMap;
+
+import java.util.ArrayList;
+
+import mades.common.Variable;
 import mades.environment.EnvironmentConnector;
 import mades.environment.EnvironmentMemento;
 import mades.system.SystemMemento;
@@ -17,7 +20,7 @@ import mades.system.SystemMemento;
 public class EchoEnvironmentConnectorMock implements EnvironmentConnector {
 
 	protected double currentSimulationTime;
-	protected ParamMap params;
+	protected ArrayList<Variable> params;
 	
 	/**
 	 * 
@@ -30,7 +33,7 @@ public class EchoEnvironmentConnectorMock implements EnvironmentConnector {
 	 * @see mades.environment.EnvironmentConnector#initialize(mades.common.ParamMap, double)
 	 */
 	@Override
-	public EnvironmentMemento initialize(ParamMap params, double initialTime) {
+	public EnvironmentMemento initialize(ArrayList<Variable> params, double initialTime) {
 		assert(initialTime > 0);
 		currentSimulationTime = initialTime;
 		this.params = params;

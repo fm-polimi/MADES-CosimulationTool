@@ -3,7 +3,9 @@
  */
 package mades.environment;
 
-import mades.common.ParamMap;
+import java.util.ArrayList;
+
+import mades.common.Variable;
 import mades.cosimulation.Cosimulator;
 import mades.system.SystemMemento;
 
@@ -27,7 +29,7 @@ public interface EnvironmentConnector {
 	 * @return an instance representing the configuration of
 	 *         this connector at the initial state.
 	 */
-	public EnvironmentMemento initialize(ParamMap params, double initialTime);
+	public EnvironmentMemento initialize(ArrayList<Variable> params, double initialTime);
 	
 	/**
 	 * Loads a given initial state to the environment. This method is supposed

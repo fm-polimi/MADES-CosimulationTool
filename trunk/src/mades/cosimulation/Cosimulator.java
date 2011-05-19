@@ -3,11 +3,14 @@
  */
 package mades.cosimulation;
 
+import java.util.ArrayList;
 import java.util.Stack;
 import java.util.logging.Logger;
 
+import com.google.common.collect.HashMultimap;
+
 import mades.common.Memento;
-import mades.common.ParamMap;
+import mades.common.Variable;
 import mades.environment.EnvironmentConnector;
 import mades.environment.EnvironmentMemento;
 import mades.system.SystemConnector;
@@ -72,6 +75,11 @@ public class Cosimulator {
 	private Stack<EnvironmentMemento> environmentMementoStack;
 	private Stack<SystemMemento> systemMementoStack;
 	
+	/**
+	 * Stores all the simulation variables that have to be returned
+	 * at the end of the co-simulation. It only contains shared variables.
+	 */
+	private HashMultimap<Double, Variable> sharedVariablesMultimap;
 	
 	
 	/**
@@ -185,8 +193,8 @@ public class Cosimulator {
 			double maxCosimulationTime,
 			int maxCosimulationAttemptsForStep,
 			int maxCosimulationBacktraking,
-			ParamMap environmentParams,
-			ParamMap systemParams
+			ArrayList<Variable> environmentParams,
+			ArrayList<Variable> systemParams
 			) {
 		if (simulationStarted) {
 			throw new IllegalStateException("Simulation is already running"); 
@@ -232,8 +240,8 @@ public class Cosimulator {
 	 */
 	private void reinitializeSimulation(
 			double initialSimulationTime, 
-			ParamMap environmentParams,
-			ParamMap systemParams) {
+			ArrayList<Variable> environmentParams,
+			ArrayList<Variable> systemParams) {
 		
 		if (environmentMementoStack != null) {
 			while (!environmentMementoStack.isEmpty()) {
@@ -254,6 +262,8 @@ public class Cosimulator {
 		} else {
 			systemMementoStack = new Stack<SystemMemento>();
 		}
+		
+		sharedVariablesMultimap = HashMultimap.create();
 		
 		// Add the initial states to the bottom of the stack
 		environmentMementoStack.push(
@@ -312,6 +322,7 @@ public class Cosimulator {
 					lastAcceptedCosimulationTime -= timeStep;
 					logger.fine("Simulation time decreased to: " +
 							lastAcceptedCosimulationTime);
+					rollBackSharedVariablesMap(nextSimulationTime);
 					simulateSystem(lastAcceptedCosimulationTime);
 				}
 			}
@@ -324,14 +335,54 @@ public class Cosimulator {
 		lastAcceptedCosimulationTime = nextSimulationTime;
 		logger.fine("Simulation time increased to: " +
 				lastAcceptedCosimulationTime);
+		addApprovedStateToSharedVariablesMap();
 		//Remove from the two stacks elements earlier than maxCosimulationBacktraking
 		deleteObsoleteData();
+	}
+	
+	
+	protected void increaseSimulationTime(double nextTime) {
+		
+	}
+	
+	/**
+	 * Add all the shared variables on top of the memento staks 
+	 * to the shared variables map.
+	 */
+	protected void addApprovedStateToSharedVariablesMap() {
+		logger.fine("Storing shared variables at simulation time: " +
+				lastAcceptedCosimulationTime);
+		EnvironmentMemento environmentMemento = environmentMementoStack.peek();
+		for (Variable var: environmentMemento.getParams()) 
+		{
+			if (var.isVisible()) {
+				sharedVariablesMultimap.put(lastAcceptedCosimulationTime, var);
+			}
+		}
+		SystemMemento systemMemento = systemMementoStack.peek();
+		for (Variable var: systemMemento.getParams()) 
+		{
+			if (var.isVisible()) {
+				sharedVariablesMultimap.put(lastAcceptedCosimulationTime, var);
+			}
+		}
+	}
+	
+	/**
+	 * Removes all the shared variables at the given time
+	 * 
+	 * @param time the simulation step to roll back.
+	 */
+	protected void rollBackSharedVariablesMap(double time) {
+		logger.fine("Rolling back shared variables at simulation time: " +
+				time);
+		sharedVariablesMultimap.removeAll(time);
 	}
 	
 	/**
 	 * Removes from the stacks all the {@link Memento} which represent an
 	 * iteration which occurred earlier than 
-	 * {@link Cosimulator.maxCosimulationBacktraking}
+	 * {@link Cosimulator.maxCosimulationBacktraking}.
 	 */
 	protected void deleteObsoleteData() {
 		int elementsToremove = environmentMementoStack.size() -

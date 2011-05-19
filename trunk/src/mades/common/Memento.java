@@ -3,6 +3,8 @@
  */
 package mades.common;
 
+import java.util.ArrayList;
+
 /**
  * @author Michele Sama (m.sama@puzzledev.com)
  *
@@ -11,13 +13,13 @@ public abstract class Memento {
 
 
 	private double time;
-	private ParamMap params;
+	private ArrayList<Variable> params;
 	
 	/**
 	 * @param time
 	 * @param params
 	 */
-	public Memento(double time, ParamMap params) {
+	public Memento(double time, ArrayList<Variable> params) {
 		super();
 		this.time = time;
 		this.params = params;
@@ -33,7 +35,7 @@ public abstract class Memento {
 	/**
 	 * @return the params
 	 */
-	public ParamMap getParams() {
+	public ArrayList<Variable> getParams() {
 		return params;
 	}
 	

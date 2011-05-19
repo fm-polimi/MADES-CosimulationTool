@@ -5,9 +5,10 @@ package mades.cosimulation;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
-import mades.common.ParamMap;
+import mades.common.Variable;
 
 import org.junit.After;
 import org.junit.Before;
@@ -43,8 +44,8 @@ public class CosimulatorTestCase {
 	 */
 	@Test
 	public void testStartCosimulation() {
-		ParamMap environmentParams = new ParamMap(new HashMap<String, Object>());
-		ParamMap systemParams = new ParamMap(new HashMap<String, Object>());
+		ArrayList<Variable> environmentParams = new ArrayList<Variable>();
+		ArrayList<Variable> systemParams = new ArrayList<Variable>();
 		
 		double startTime = 0;
 		double timeStep = 1;

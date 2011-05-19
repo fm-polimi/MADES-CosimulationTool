@@ -3,8 +3,10 @@
  */
 package mades.system;
 
+import java.util.ArrayList;
+
 import mades.common.Memento;
-import mades.common.ParamMap;
+import mades.common.Variable;
 
 /**
  * @author Michele Sama (m.sama@puzzledev.com)
@@ -21,7 +23,7 @@ public class SystemMemento extends Memento {
 	 * @param time
 	 * @param params
 	 */
-	public SystemMemento(double time, ParamMap params, SignalMap signals) {
+	public SystemMemento(double time, ArrayList<Variable> params, SignalMap signals) {
 		super(time, params);
 		this.signals = signals;
 	}
