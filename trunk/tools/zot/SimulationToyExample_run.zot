@@ -3,11 +3,6 @@
 (asdf:operate 'asdf:load-op 'eezot)
 (use-package :trio-utils)
 (defvar TSPACE 70)
-(defvar C1 5)
-(defvar C2 8)
-(defvar C3 3)
-(defvar C4 5)
-
 
 (load "SimulationToyExample_system.zot")
 (load "SimulationToyExample_constraints.zot")
