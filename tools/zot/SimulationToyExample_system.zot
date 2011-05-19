@@ -1,0 +1,15 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; THE SYSTEM
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; cond1 is some condition that, when it holds for C1 instants, triggers some action act1 within C2 instants.
+(defvar monitor  
+  (-> (lasted (-P- cond1) C1)
+      (futr (withinf (-P- act1) C2) 1)))
+
+;; action act1, in turn, triggers a reaction react1 in an interval [C3,C4]
+(defvar reaction
+  (-> (-P- act1)
+      (futr (lasts (-P- react1) (- C4 C3)) C3)))
+
+(defvar the-system (Alw (&& monitor reaction)))
