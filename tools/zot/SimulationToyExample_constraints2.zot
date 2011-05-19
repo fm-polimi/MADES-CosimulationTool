@@ -1,0 +1,17 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; CONSTRAINTS FOR TESTING
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; These are constraints just for testing, to produce meaningful sequences
+(defvar history
+  (&&
+    (&& (!! (-P- cond1)) (-P- react1) (!! (-P- act1)))
+    (futr (&& (!! (-P- cond1)) (!! (-P- react1)) (!! (-P- act1))) 1)
+    (futr (&& (-P- cond1) (!! (-P- react1)) (!! (-P- act1))) 2)
+  ))
+
+(defvar constraints
+  (&&
+    history
+  ))
+
