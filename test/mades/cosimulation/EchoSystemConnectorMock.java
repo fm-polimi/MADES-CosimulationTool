@@ -12,6 +12,8 @@ import mades.system.SystemMemento;
 /**
  * @author Michele Sama (m.sama@puzzledev.com)
  *
+ * Implements an {@link SystemConnector} which returns in output
+ * the same parameters it had in input.
  */
 public class EchoSystemConnectorMock implements SystemConnector {
 
