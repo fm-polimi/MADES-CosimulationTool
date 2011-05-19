@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import mades.common.Variable;
 import mades.cosimulation.Cosimulator;
+import mades.system.SignalMap;
 import mades.system.SystemMemento;
 
 /**
@@ -73,4 +74,13 @@ public interface EnvironmentConnector {
 	 * @throws AssertionError: If no simulation step has been performed.
 	 */
 	public EnvironmentMemento getCurrentParams();
+	
+	/**
+	 * Returns a collection of all the events which have occurred during
+	 * the current step of the simulation.  
+	 *  
+	 * @return A collection of event name, array of times in which the 
+	 *         event has occurred.
+	 */
+	public SignalMap getEventsHistory();
 }
