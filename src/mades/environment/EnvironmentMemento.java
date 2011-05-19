@@ -4,6 +4,7 @@
 package mades.environment;
 
 import mades.common.Memento;
+import mades.common.ParamMap;
 
 /**
  * @author Michele Sama (m.sama@puzzledev.com)
@@ -13,12 +14,18 @@ import mades.common.Memento;
  */
 public class EnvironmentMemento extends Memento {
 	
-	/**
-	 * Default constructor.
-	 */
-	EnvironmentMemento () {
-	}
 	
+	/**
+	 * @param time
+	 * @param params
+	 */
+	public EnvironmentMemento(double time, ParamMap params) {
+		super(time, params);
+	}
+
+	/* (non-Javadoc)
+	 * @see mades.common.Memento#deleteRelatedFiles()
+	 */
 	@Override
 	public void deleteRelatedFiles() {
 		// TODO Auto-generated method stub

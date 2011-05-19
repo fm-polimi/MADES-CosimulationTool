@@ -4,6 +4,7 @@
 package mades.system;
 
 import mades.common.Memento;
+import mades.common.ParamMap;
 
 /**
  * @author Michele Sama (m.sama@puzzledev.com)
@@ -13,14 +14,18 @@ import mades.common.Memento;
  */
 public class SystemMemento extends Memento {
 
-	private SignalMap signals;
-	
-	/**
-	 * Default constructor.
-	 */
-	SystemMemento() {	
-	}
 
+	private SignalMap signals;
+
+	/**
+	 * @param time
+	 * @param params
+	 */
+	public SystemMemento(double time, ParamMap params, SignalMap signals) {
+		super(time, params);
+		this.signals = signals;
+	}
+	
 	/**
 	 * @return the signals
 	 */

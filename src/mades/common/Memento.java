@@ -8,13 +8,20 @@ package mades.common;
  *
  */
 public abstract class Memento {
+
+
 	private double time;
 	private ParamMap params;
 	
 	/**
-	 * Default constructor. 
+	 * @param time
+	 * @param params
 	 */
-	public Memento() {}
+	public Memento(double time, ParamMap params) {
+		super();
+		this.time = time;
+		this.params = params;
+	}
 	
 	/**
 	 * @return the time
