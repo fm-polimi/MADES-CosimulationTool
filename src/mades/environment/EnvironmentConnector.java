@@ -24,8 +24,10 @@ public interface EnvironmentConnector {
 	 * 
 	 * @param params a collection of initialization parameters.
 	 * @param initialTime the initial time of the simulation.
+	 * @return an instance representing the configuration of
+	 *         this connector at the initial state.
 	 */
-	public void initialize(ParamMap params, double initialTime);
+	public EnvironmentMemento initialize(ParamMap params, double initialTime);
 	
 	/**
 	 * Loads a given initial state to the environment. This method is supposed
