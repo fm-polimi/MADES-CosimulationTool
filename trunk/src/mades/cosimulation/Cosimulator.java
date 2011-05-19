@@ -275,7 +275,7 @@ public class Cosimulator {
 	 * iteration which occurred earlier than 
 	 * {@link Cosimulator.maxCosimulationBacktraking}
 	 */
-	private void deleteObsoleteData() {
+	protected void deleteObsoleteData() {
 		int elementsToremove = environmentMementoStack.size() -
 				maxCosimulationBacktraking;
 		for (int i = elementsToremove; i > 0; i++) {
@@ -299,7 +299,7 @@ public class Cosimulator {
 		logger.severe("Obsolete system state deleted.");
 	}
 	
-	private void rollbackEnvironment() {
+	protected void rollbackEnvironment() {
 		logger.severe("Rolling back environment state.");
 		if (environmentMementoStack.size() == 0) {
 			logger.severe("End of environment state stack reached.");
@@ -310,7 +310,7 @@ public class Cosimulator {
 		assert(memento.getTime() == lastAcceptedCosimulationTime);
 	}
 	
-	private void rollbackSystem() {
+	protected void rollbackSystem() {
 		logger.severe("Rolling back system state.");
 		if (systemMementoStack.size() == 0) {
 			logger.severe("End of system state stack reached.");
@@ -320,19 +320,19 @@ public class Cosimulator {
 		assert(memento.getTime() == lastAcceptedCosimulationTime);
 	}
 	
-	private void simulateEnvironment(double time) {
+	protected void simulateEnvironment(double time) {
 		logger.severe("Symulating environment at time: " + time);
 		environment.load(environmentMementoStack.peek(), systemMementoStack.peek());
 		environmentMementoStack.push(environment.simulateNext(time));
 	}
 	
-	private void simulateSystem(double time) {
+	protected void simulateSystem(double time) {
 		logger.severe("Symulating system at time: " + time);
 		system.load( systemMementoStack.peek(), environmentMementoStack.peek());
 		systemMementoStack.push(system.simulateNext(time));
 	}
 	
-	private boolean isLastSystemSimulationValid() {
+	boolean isLastSystemSimulationValid() {
 		SystemMemento systemMemento = systemMementoStack.peek();
 		return true;
 	}
