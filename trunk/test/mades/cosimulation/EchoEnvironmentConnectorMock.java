@@ -30,10 +30,11 @@ public class EchoEnvironmentConnectorMock implements EnvironmentConnector {
 	 * @see mades.environment.EnvironmentConnector#initialize(mades.common.ParamMap, double)
 	 */
 	@Override
-	public void initialize(ParamMap params, double initialTime) {
+	public EnvironmentMemento initialize(ParamMap params, double initialTime) {
 		assert(initialTime > 0);
 		currentSimulationTime = initialTime;
 		this.params = params;
+		return new EnvironmentMemento(currentSimulationTime, params);
 	}
 
 	/* (non-Javadoc)

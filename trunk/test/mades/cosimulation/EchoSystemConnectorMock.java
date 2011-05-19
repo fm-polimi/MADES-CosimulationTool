@@ -32,10 +32,11 @@ public class EchoSystemConnectorMock implements SystemConnector {
 	 * @see mades.system.SystemConnector#initialize(mades.common.ParamMap, double)
 	 */
 	@Override
-	public void initialize(ParamMap params, double initialTime) {
+	public SystemMemento initialize(ParamMap params, double initialTime) {
 		assert(initialTime > 0);
 		currentSimulationTime = initialTime;
 		this.params = params;
+		return new SystemMemento(currentSimulationTime, params, signals);
 	}
 
 	/* (non-Javadoc)
