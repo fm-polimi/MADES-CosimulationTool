@@ -1,6 +1,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; THE SYSTEM
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defvar C1 5)
+(defvar C2 8)
+(defvar C3 3)
+(defvar C4 5)
 
 ;; cond1 is some condition that, when it holds for C1 instants, triggers some action act1 within C2 instants.
 (defvar monitor  
