@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 import mades.common.Variable;
 import mades.environment.EnvironmentMemento;
-import mades.system.SignalMap;
+import mades.environment.SignalMap;
 import mades.system.SystemConnector;
 import mades.system.SystemMemento;
 

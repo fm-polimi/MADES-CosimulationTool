@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import mades.common.Variable;
 import mades.environment.EnvironmentConnector;
 import mades.environment.EnvironmentMemento;
-import mades.system.SignalMap;
+import mades.environment.SignalMap;
 import mades.system.SystemMemento;
 
 /**
@@ -39,6 +39,7 @@ public class EchoEnvironmentConnectorMock implements EnvironmentConnector {
 		assert(initialTime > 0);
 		currentSimulationTime = initialTime;
 		this.params = params;
+		signals = new SignalMap();
 		return new EnvironmentMemento(currentSimulationTime, params, signals);
 	}
 

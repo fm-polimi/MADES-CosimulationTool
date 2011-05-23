@@ -14,6 +14,7 @@ import mades.common.Memento;
 import mades.common.Variable;
 import mades.environment.EnvironmentConnector;
 import mades.environment.EnvironmentMemento;
+import mades.environment.SignalMap;
 import mades.system.SystemConnector;
 import mades.system.SystemMemento;
 
@@ -288,9 +289,9 @@ public class Cosimulator {
 	}
 	
 	protected void performCosimulationStep() {
-		double nextSimulationTime = lastAcceptedCosimulationTime + timeStep;
-		int nextSimulationStep = lastAccceptedCosimulationStep + 1;
-		
+		//double nextSimulationTime = lastAcceptedCosimulationTime + timeStep;
+		//int nextSimulationStep = lastAccceptedCosimulationStep + 1;
+
 		int backtrakingAttemptsLeft = maxCosimulationBacktraking;
 		boolean stepApproved = false;
 		
@@ -300,8 +301,9 @@ public class Cosimulator {
 			while (!stepApproved) {
 				assert(environmentMementoStack.size() == 
 					    systemMementoStack.size());
+				increaseTime();
 				// Simulate the environment at the next time.
-				simulateEnvironment(nextSimulationTime, nextSimulationStep);
+				simulateEnvironment();
 				
 				// If the environment is not valid then we need to
 				// re-simulate the system at the previous time, then the
@@ -312,8 +314,9 @@ public class Cosimulator {
 					attemptsInStep -= 1;
 
 					// Roll back the environment and try again.
+					decreaseTime();
 					rollbackSystem();
-					simulateSystem(lastAcceptedCosimulationTime, lastAccceptedCosimulationStep);
+					simulateSystem();
 					
 					if (attemptsInStep < 0) {
 						logger.severe(
@@ -325,9 +328,7 @@ public class Cosimulator {
 				}
 			}
 			
-			if (stepApproved) {
-				break;
-			} else {
+			if (!stepApproved) {
 				// Roll back to previous system state
 				backtrakingAttemptsLeft -= 1;
 				if (backtrakingAttemptsLeft < 0) {
@@ -338,18 +339,14 @@ public class Cosimulator {
 				} else {
 					// Roll back the system and the simulation time
 					rollbackEnvironment();
-					nextSimulationTime = lastAcceptedCosimulationTime;
 					decreaseTime();
-					simulateSystem(lastAcceptedCosimulationTime, lastAccceptedCosimulationStep);
+					simulateSystem();
 				}
 			}
-			
-
 		}
 		
 		// Simulate the environment at the next time
-		simulateSystem(nextSimulationTime, nextSimulationStep);
-		increaseTime();
+		simulateSystem();
 		//Remove from the two stacks elements earlier than maxCosimulationBacktraking
 		deleteObsoleteData();
 	}
@@ -430,12 +427,13 @@ public class Cosimulator {
 		sharedVariablesMultimap.replaceValues(memento.getTime(), memento.getParams());
 	}
 	
-	protected void simulateEnvironment(double time, int step) {
+	protected void simulateEnvironment() {
 		assert(simulationStarted);
-		logger.fine("Symulating environment at time: " + time);
+		logger.fine("Symulating environment at time: " + lastAcceptedCosimulationTime);
 		environment.load(environmentMementoStack.peek(), systemMementoStack.peek());
 		
-		EnvironmentMemento environmentMemento = environment.simulateNext(time);
+		EnvironmentMemento environmentMemento =
+			    environment.simulateNext(lastAcceptedCosimulationTime);
 		
 		// Add memento on top of the stack
 		environmentMementoStack.push(environmentMemento);
@@ -449,12 +447,12 @@ public class Cosimulator {
 		}
 	}
 	
-	protected void simulateSystem(double time, int step) {
+	protected void simulateSystem() {
 		assert(simulationStarted);
-		logger.fine("Symulating system at time: " + time);
+		logger.fine("Symulating system at time: " + lastAcceptedCosimulationTime);
 		system.load( systemMementoStack.peek(), environmentMementoStack.peek());
 		
-		SystemMemento systemMemento = system.simulateNext(time);
+		SystemMemento systemMemento = system.simulateNext(lastAcceptedCosimulationTime);
 		
 		// Add memento to the top of the stack
 		systemMementoStack.push(systemMemento);
@@ -470,7 +468,9 @@ public class Cosimulator {
 	
 	boolean isLastEnvironmentSimulationValid() {
 		EnvironmentMemento environmentMemento = environmentMementoStack.peek();
-		return true;
+		SignalMap signals = environmentMemento.getSignals();
+		return signals.validate(timeStep, 
+				lastAcceptedCosimulationTime - timeStep * maxCosimulationBacktraking);
 	}
 
 	/**

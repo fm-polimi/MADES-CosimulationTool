@@ -47,6 +47,7 @@ public class CosimulatorTestCase {
 		ArrayList<Variable> systemParams = new ArrayList<Variable>();
 		
 		double startTime = 0;
+		int startStep = 0;
 		double timeStep = 1;
 		double maxCosimulationTime = 10;
 		int maxCosimulationAttemptsForStep = 1;
@@ -54,6 +55,7 @@ public class CosimulatorTestCase {
 		
 		cosimulator.startCosimulation(
 				startTime,
+				startStep,
 				timeStep,
 				maxCosimulationTime, 
 				maxCosimulationAttemptsForStep,
