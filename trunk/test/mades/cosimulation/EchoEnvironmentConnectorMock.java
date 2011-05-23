@@ -19,7 +19,7 @@ import mades.system.SystemMemento;
  * the same parameters it had in input.
  */
 public class EchoEnvironmentConnectorMock implements EnvironmentConnector {
-
+	
 	protected double currentSimulationTime;
 	protected ArrayList<Variable> params;
 	protected SignalMap signals;
