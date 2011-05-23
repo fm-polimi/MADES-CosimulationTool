@@ -4,7 +4,6 @@
 package mades.cosimulation;
 
 import java.util.ArrayList;
-import java.util.Set;
 import java.util.Stack;
 import java.util.logging.Logger;
 
@@ -289,9 +288,6 @@ public class Cosimulator {
 	}
 	
 	protected void performCosimulationStep() {
-		//double nextSimulationTime = lastAcceptedCosimulationTime + timeStep;
-		//int nextSimulationStep = lastAccceptedCosimulationStep + 1;
-
 		int backtrakingAttemptsLeft = maxCosimulationBacktraking;
 		boolean stepApproved = false;
 		
@@ -309,7 +305,8 @@ public class Cosimulator {
 				// re-simulate the system at the previous time, then the
 				// environment again.
 				if (!isLastEnvironmentSimulationValid()) {
-					logger.severe("Last simulated system state is not valid.");
+					logger.severe("Last simulated system state is " +
+							"not valid.");
 					rollbackEnvironment();
 					attemptsInStep -= 1;
 
@@ -320,7 +317,8 @@ public class Cosimulator {
 					
 					if (attemptsInStep < 0) {
 						logger.severe(
-							"Max co-simulation attempts at this step reached: backtracking...");
+							"Max co-simulation attempts at this step " +
+							"reached: backtracking...");
 						break;
 					}
 				} else {
@@ -333,7 +331,8 @@ public class Cosimulator {
 				backtrakingAttemptsLeft -= 1;
 				if (backtrakingAttemptsLeft < 0) {
 					logger.severe(
-							"Max co-simulation backtraking attempts reached: aborting...");
+							"Max co-simulation backtraking attempts " +
+							"reached: aborting...");
 					throw new RuntimeException(
 							"Max co-simulation backtraking attempts reached.");
 				} else {
@@ -470,7 +469,8 @@ public class Cosimulator {
 		EnvironmentMemento environmentMemento = environmentMementoStack.peek();
 		SignalMap signals = environmentMemento.getSignals();
 		return signals.validate(timeStep, 
-				lastAcceptedCosimulationTime - timeStep * maxCosimulationBacktraking);
+				lastAcceptedCosimulationTime - timeStep * maxCosimulationBacktraking,
+				lastAcceptedCosimulationTime);
 	}
 
 	/**
