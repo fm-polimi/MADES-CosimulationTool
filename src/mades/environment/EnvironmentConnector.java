@@ -7,7 +7,6 @@ import java.util.ArrayList;
 
 import mades.common.Variable;
 import mades.cosimulation.Cosimulator;
-import mades.system.SignalMap;
 import mades.system.SystemMemento;
 
 /**

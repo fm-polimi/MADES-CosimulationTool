@@ -7,7 +7,6 @@ import java.util.ArrayList;
 
 import mades.common.Memento;
 import mades.common.Variable;
-import mades.system.SignalMap;
 
 /**
  * @author Michele Sama (m.sama@puzzledev.com)
