@@ -49,21 +49,19 @@ public class EchoEnvironmentConnectorMock implements EnvironmentConnector {
 	@Override
 	public void load(EnvironmentMemento environmentParams,
 			SystemMemento systemParams) {
-		assert(environmentParams.getTime() != systemParams.getTime());
 		currentSimulationTime = environmentParams.getTime();
 		params = environmentParams.getParams();
 		signals = environmentParams.getSignals();
 	}
 
 	/* (non-Javadoc)
-	 * @see mades.environment.EnvironmentConnector#load(mades.system.SystemMemento)
+	 * @see mades.environment.EnvironmentConnector#load(double, mades.system.SystemMemento)
 	 */
 	@Override
-	public void load(SystemMemento systemParams) {
-		assert(currentSimulationTime < systemParams.getTime());
-		currentSimulationTime = systemParams.getTime();
+	public void load(double time, SystemMemento systemParams) {
+		currentSimulationTime = time;
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see mades.environment.EnvironmentConnector#simulateNext(double)
 	 */
@@ -89,4 +87,5 @@ public class EchoEnvironmentConnectorMock implements EnvironmentConnector {
 	public SignalMap getEventsHistory() {
 		return signals;
 	}
+
 }

@@ -14,7 +14,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.google.common.collect.HashMultimap;
+import com.google.common.collect.TreeMultimap;
 
 /**
  * @author Michele Sama (m.sama@puzzledev.com)
@@ -79,7 +79,7 @@ public class CosimulatorTestCase {
 				systemParams);
 		
 		assertTrue(maxCosimulationTime <= cosimulator.getSimulationTime());
-		HashMultimap<Double, Variable> results = cosimulator.getSharedVariablesMultimap();
+		TreeMultimap<Double, Variable> results = cosimulator.getSharedVariablesMultimap();
 		int steps = (int)maxCosimulationTime;
 		Set<Double> keys = results.keySet();
 		assertEquals(steps, keys.size());

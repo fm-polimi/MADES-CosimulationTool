@@ -52,7 +52,7 @@ public interface EnvironmentConnector {
 	 * @throws AssertionError if no simulation steps have been 
 	 *         performed.
 	 */
-	public void load(SystemMemento systemParams);
+	public void load(double time, SystemMemento systemParams);
 	
 	/**
 	 * Performs the next step of the simulation.
