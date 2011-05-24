@@ -5,6 +5,8 @@ package mades.cosimulation;
 
 import java.util.ArrayList;
 
+import com.google.common.collect.TreeMultimap;
+
 import mades.common.Variable;
 import mades.environment.EnvironmentMemento;
 import mades.environment.SignalMap;
@@ -19,8 +21,8 @@ import mades.system.SystemMemento;
  */
 public class EchoSystemConnectorMock implements SystemConnector {
 
-	protected double currentSimulationTime;
-	protected ArrayList<Variable> params;
+	protected int currentSimulationStep;
+	TreeMultimap<Integer, Variable> variablesMultimap;
 	protected SignalMap signals;
 	
 	/**
@@ -34,11 +36,12 @@ public class EchoSystemConnectorMock implements SystemConnector {
 	 * @see mades.system.SystemConnector#initialize(mades.common.ParamMap, double)
 	 */
 	@Override
-	public SystemMemento initialize(ArrayList<Variable> params, double initialTime) {
-		assert(initialTime > 0);
-		currentSimulationTime = initialTime;
-		this.params = params;
-		return new SystemMemento(currentSimulationTime, params);
+	public SystemMemento initialize(ArrayList<Variable> params, int initialStep) {
+		assert(step >= 0);
+		currentSimulationStep = initialStep;
+		variablesMultimap = TreeMultimap.create();
+		variablesMultimap.putAll(initialStep, params)
+		return new SystemMemento(variablesMultimap);
 	}
 
 	/* (non-Javadoc)

@@ -4,12 +4,12 @@
 package mades.cosimulation;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Stack;
 import java.util.logging.Logger;
 
-import com.google.common.collect.HashMultimap;
+import com.google.common.collect.TreeMultimap;
 
-import mades.common.Memento;
 import mades.common.Variable;
 import mades.environment.EnvironmentConnector;
 import mades.environment.EnvironmentMemento;
@@ -90,8 +90,7 @@ public class Cosimulator {
 	 * Stores all the simulation variables that have to be returned
 	 * at the end of the co-simulation. It only contains shared variables.
 	 */
-	private HashMultimap<Double, Variable> sharedVariablesMultimap;
-	
+	private TreeMultimap<Double, Variable> sharedVariablesMultimap;
 	
 	/**
 	 * Default constructor.
@@ -277,7 +276,7 @@ public class Cosimulator {
 			systemMementoStack = new Stack<SystemMemento>();
 		}
 		
-		sharedVariablesMultimap = HashMultimap.create();
+		sharedVariablesMultimap = TreeMultimap.create();
 		
 		// Add the initial states to the bottom of the stack
 		environmentMementoStack.push(
@@ -389,9 +388,7 @@ public class Cosimulator {
 				maxCosimulationBacktraking;
 		for (int i = elementsToremove; i > 0; i--) {
 			SystemMemento memento = systemMementoStack.remove(0);
-			assert(memento.getTime() <
-					(lastAcceptedCosimulationTime - 
-							(maxCosimulationBacktraking * timeStep)));
+			// TODO(rax): assert is the right memento
 			memento.deleteRelatedFiles();
 		}
 		logger.fine("Obsolete system state deleted.");
@@ -409,7 +406,9 @@ public class Cosimulator {
 		assert(memento.getTime() == lastAcceptedCosimulationTime);
 		
 		// Remove shared variables
-		sharedVariablesMultimap.replaceValues(memento.getTime(), memento.getParams());
+		for (Variable v: memento.getParams()) {
+			sharedVariablesMultimap.remove(memento.getTime(), v);
+		}
 	}
 	
 	protected void rollbackSystem() {
@@ -420,10 +419,13 @@ public class Cosimulator {
 			throw new RuntimeException("Cannot rollback initial system state: aborting...");
 		}
 		SystemMemento memento = systemMementoStack.pop();
-		assert(memento.getTime() == lastAcceptedCosimulationTime);
+		// TODO(rax): assert is the right memento
 		
 		// Remove shared variables
-		sharedVariablesMultimap.replaceValues(memento.getTime(), memento.getParams());
+		Collection<Variable> variables = memento.get(lastAccceptedCosimulationStep);
+		for (Variable v: variables) {
+			sharedVariablesMultimap.remove(lastAcceptedCosimulationTime, v);
+		}
 	}
 	
 	protected void simulateEnvironment() {
@@ -457,7 +459,7 @@ public class Cosimulator {
 		systemMementoStack.push(systemMemento);
 		
 		// Add shared variables to the variable map
-		for (Variable var: systemMemento.getParams()) 
+		for (Variable var: systemMemento.get(lastAccceptedCosimulationStep)) 
 		{
 			if (var.isVisible()) {
 				sharedVariablesMultimap.put(lastAcceptedCosimulationTime, var);
@@ -476,7 +478,7 @@ public class Cosimulator {
 	/**
 	 * @return the sharedVariablesMultimap
 	 */
-	public HashMultimap<Double, Variable> getSharedVariablesMultimap() {
+	public TreeMultimap<Double, Variable> getSharedVariablesMultimap() {
 		return sharedVariablesMultimap;
 	}
 	
