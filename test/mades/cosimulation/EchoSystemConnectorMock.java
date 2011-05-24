@@ -37,10 +37,13 @@ public class EchoSystemConnectorMock implements SystemConnector {
 	 */
 	@Override
 	public SystemMemento initialize(ArrayList<Variable> params, int initialStep) {
-		assert(step >= 0);
+		assert(initialStep >= 0);
 		currentSimulationStep = initialStep;
 		variablesMultimap = TreeMultimap.create();
-		variablesMultimap.putAll(initialStep, params)
+		for (Variable v: params) {
+			variablesMultimap.put(initialStep, v);
+		}
+		
 		return new SystemMemento(variablesMultimap);
 	}
 
@@ -50,19 +53,18 @@ public class EchoSystemConnectorMock implements SystemConnector {
 	@Override
 	public void load(SystemMemento systemParams,
 			EnvironmentMemento environmentParams) {
-		assert(environmentParams.getTime() != systemParams.getTime());
-		currentSimulationTime = systemParams.getTime();
-		params = systemParams.getParams();
+		variablesMultimap = TreeMultimap.create(systemParams.getVariablesMultimap());
 	}
 
 	/* (non-Javadoc)
 	 * @see mades.system.SystemConnector#simulateNext(double)
 	 */
 	@Override
-	public SystemMemento simulateNext(double time) {
-		assert(currentSimulationTime < time);
-		currentSimulationTime = time;
-		return new SystemMemento(currentSimulationTime, params);
+	public SystemMemento simulateNext(int step) {
+		assert(currentSimulationStep < step);
+		variablesMultimap.putAll(step, variablesMultimap.get(currentSimulationStep));
+		currentSimulationStep = step;
+		return new SystemMemento(variablesMultimap);
 	}
 
 	/* (non-Javadoc)
@@ -70,7 +72,7 @@ public class EchoSystemConnectorMock implements SystemConnector {
 	 */
 	@Override
 	public SystemMemento getCurrentParams() {
-		return new SystemMemento(currentSimulationTime, params);
+		return new SystemMemento(variablesMultimap);
 	}
 
 
