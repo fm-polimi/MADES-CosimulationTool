@@ -20,6 +20,7 @@ import mades.common.Variable;
  */
 public class SystemMemento {
 
+
 	/**
 	 * 
 	 */
@@ -33,6 +34,15 @@ public class SystemMemento {
 		variablesMultimap = TreeMultimap.create();
 	}
 
+	/**
+	 * @param variablesMultimap
+	 */
+	public SystemMemento(TreeMultimap<Integer, Variable> variablesMultimap) {
+		super();
+		this.variablesMultimap = TreeMultimap.create(variablesMultimap);
+	}
+
+	
 	/**
 	 * 
 	 */
@@ -138,6 +148,13 @@ public class SystemMemento {
 	 */
 	public Collection<Variable> values() {
 		return variablesMultimap.values();
+	}
+
+	/**
+	 * @return the variablesMultimap
+	 */
+	public TreeMultimap<Integer, Variable> getVariablesMultimap() {
+		return variablesMultimap;
 	}
 		
 }

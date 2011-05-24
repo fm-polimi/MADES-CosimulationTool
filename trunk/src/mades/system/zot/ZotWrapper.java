@@ -160,7 +160,7 @@ public class ZotWrapper {
 	}
 	
 	protected SystemMemento runZot() {
-		
+		throw new RuntimeException("Not implemented yet");
 	}
 	
 	public SystemMemento executeSimulationStep(int step, SystemMemento memento) {

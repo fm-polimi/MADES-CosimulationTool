@@ -25,11 +25,11 @@ public interface SystemConnector {
 	 * once and only once.
 	 * 
 	 * @param params: A collection of key,value initialization parameters.
-	 * @param initialTime the initial time of the simulation.
+	 * @param initialStep the initial step of the simulation.
 	 * @return an instance representing the configuration of
 	 *         this connector at the initial state.
 	 */
-	public SystemMemento initialize(ArrayList<Variable> params, double initialTime);
+	public SystemMemento initialize(ArrayList<Variable> params, int initialStep);
 	
 	/**
 	 * Loads a given initial state to the system. This method is supposed
@@ -46,12 +46,12 @@ public interface SystemConnector {
 	/**
 	 * Performs the next step of the simulation.
 	 * 
-	 * @param time: The time to simulate.
+	 * @param step: The step to simulate.
 	 * @return The result of the simulation.
 	 * @throws IllegalArgumentException: If time is negative or lesser 
 	 *         than the last simulated step.
 	 */
-	public SystemMemento simulateNext(double time);
+	public SystemMemento simulateNext(int step);
 	
 	/**
 	 * Returns the value of the current step of the system. The returned

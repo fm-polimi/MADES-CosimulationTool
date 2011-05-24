@@ -55,13 +55,15 @@ public class Variable implements Comparable<Variable>{
 	}
 
 	@Override
-	public int compareTo(Variable arg0) {
-		if (this.value > arg0.value) {
-			return -1;
-		} else if (this.value == arg0.value){
-			return 0;
-		} else {
-			return 1;
-		}
+	public int compareTo(Variable arg0) {		
+		return this.name.compareTo(arg0.name);
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return name + ": " + value;
 	}
 }

@@ -11,17 +11,16 @@ import mades.system.SystemConnector;
 import mades.system.SystemMemento;
 
 /**
- * @author rax
+ * @author Michele Sama (m.sama@puzzledev.com)
  *
  */
 public class ZotSystemConnector implements SystemConnector {
 
 	/* (non-Javadoc)
-	 * @see mades.system.SystemConnector#initialize(java.util.ArrayList, double)
+	 * @see mades.system.SystemConnector#initialize(java.util.ArrayList, int)
 	 */
 	@Override
-	public SystemMemento initialize(ArrayList<Variable> params,
-			double initialTime) {
+	public SystemMemento initialize(ArrayList<Variable> params, int initialStep) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -33,14 +32,14 @@ public class ZotSystemConnector implements SystemConnector {
 	public void load(SystemMemento systemParams,
 			EnvironmentMemento environmentParams) {
 		// TODO Auto-generated method stub
-
+		
 	}
 
 	/* (non-Javadoc)
-	 * @see mades.system.SystemConnector#simulateNext(double)
+	 * @see mades.system.SystemConnector#simulateNext(int)
 	 */
 	@Override
-	public SystemMemento simulateNext(double time) {
+	public SystemMemento simulateNext(int step) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -53,5 +52,7 @@ public class ZotSystemConnector implements SystemConnector {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	
 
 }

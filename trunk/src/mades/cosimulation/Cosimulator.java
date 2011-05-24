@@ -282,7 +282,7 @@ public class Cosimulator {
 		environmentMementoStack.push(
 				environment.initialize(environmentParams, initialSimulationTime));
 		systemMementoStack.push(
-				system.initialize(systemParams, initialSimulationTime));
+				system.initialize(systemParams, initialCosimulationStep));
 		
 	}
 	
@@ -453,13 +453,14 @@ public class Cosimulator {
 		logger.fine("Symulating system at time: " + lastAcceptedCosimulationTime);
 		system.load( systemMementoStack.peek(), environmentMementoStack.peek());
 		
-		SystemMemento systemMemento = system.simulateNext(lastAcceptedCosimulationTime);
+		SystemMemento systemMemento = system.simulateNext(lastAccceptedCosimulationStep);
 		
 		// Add memento to the top of the stack
 		systemMementoStack.push(systemMemento);
 		
 		// Add shared variables to the variable map
-		for (Variable var: systemMemento.get(lastAccceptedCosimulationStep)) 
+		Collection<Variable> vars = systemMemento.get(lastAccceptedCosimulationStep);
+		for (Variable var: vars) 
 		{
 			if (var.isVisible()) {
 				sharedVariablesMultimap.put(lastAcceptedCosimulationTime, var);
