@@ -3,8 +3,11 @@
  */
 package mades.system.zot;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.Set;
@@ -30,6 +33,9 @@ import mades.system.SystemMemento;
  */
 public class ZotWrapper {
 
+	public static String LISP_INTERPRETER = "clisp";
+	
+	
 	/**
 	 * The name of the lisp file containing the engine to run the
 	 * simulation with Zot.
@@ -55,20 +61,13 @@ public class ZotWrapper {
 	 * @param engineFileName the engine file name.
 	 * @param systemFileName the system file name.
 	 * @param initialVariablesFileName the variables file name.
+	 * @param maxSimulationTime the maximum simulation time.
 	 * 
 	 * @throws AssertionError if any of the given files do not 
 	 *         exist or if they are a directory.
 	 */
 	public ZotWrapper(String engineFileName, String systemFileName,
-			String initialVariablesFileName) {
-		this.engineFileName = engineFileName;
-		File engineFile = new File(engineFileName);
-		if (!engineFile.exists() || engineFile.isDirectory()) {
-			throw new AssertionError(
-					"Engine file not found or is a directory: " +
-					engineFileName);
-		}
-		
+			String initialVariablesFileName, int maxSimulationTime) {		
 		this.systemFileName = systemFileName;
 		File systemFile = new File(systemFileName);
 		if (!systemFile.exists() || systemFile.isDirectory()) {
@@ -78,13 +77,41 @@ public class ZotWrapper {
 		}
 		
 		this.initialVariablesFileName = initialVariablesFileName;
-		File currenVariablesFile = new File(initialVariablesFileName);
+		/*File currenVariablesFile = new File(initialVariablesFileName);
 		if (!currenVariablesFile.exists() || currenVariablesFile.isDirectory()) {
 			throw new AssertionError(
 					"Variables file not found or is a directory: " +
 					initialVariablesFileName);
+		}*/
+		
+		this.engineFileName = engineFileName;
+		try {
+			writeEngine(maxSimulationTime);
+		} catch (FileNotFoundException e) {
+			throw new AssertionError(
+					"Engine file " + systemFileName +
+					" is not writable: " + e.getMessage()
+					);
 		}
 		
+	}
+	
+	private void writeEngine(int maxSimulationTime) throws FileNotFoundException {
+		StringBuilder builder = new StringBuilder();
+		builder.append("(asdf:operate 'asdf:load-op 'eezot)\n");
+		builder.append("(use-package :trio-utils)\n");
+		builder.append("(defvar TSPACE " + maxSimulationTime + ")\n");
+		builder.append("\n");
+		builder.append("(load \"" + systemFileName + "\")\n");
+		builder.append("(load \"" + initialVariablesFileName + "\")\n");
+		builder.append("\n");
+		builder.append("(eezot:zot TSPACE (&& the-system constraints))\n");
+		String engine = builder.toString();
+		
+		PrintWriter writer = new PrintWriter(engineFileName);
+		writer.write(engine);
+		writer.flush();
+		writer.close();
 	}
 	
 	/**
@@ -120,7 +147,7 @@ public class ZotWrapper {
 				"(defvar constraints\n" +
 				"(&&\n" +
 				"	history\n" +
-		  		")))\n");
+		  		"))\n");
 		return builder.toString();
 	}
 	
@@ -140,7 +167,7 @@ public class ZotWrapper {
 				builder.append("(-P- " + v.getName() + ")");
 			}
 		}
-		builder.append(")");
+		builder.append(")\n");
 	}
 
 	/**
@@ -150,7 +177,8 @@ public class ZotWrapper {
 	 */
 	protected void overrideVariables(SystemMemento memento) {
 		try {
-			PrintWriter variableswriter = new PrintWriter(initialVariablesFileName);
+			PrintWriter variableswriter = new PrintWriter(
+					initialVariablesFileName);
 			variableswriter.write(composeVariablesFile(memento));
 			variableswriter.flush();
 			variableswriter.close();
@@ -160,15 +188,42 @@ public class ZotWrapper {
 	}
 	
 	protected SystemMemento runZot() {
-		throw new RuntimeException("Not implemented yet");
+		String cmd = LISP_INTERPRETER + " " + engineFileName;
+		Runtime run = Runtime.getRuntime();
+		Process process = null;
+		try {
+			process = run.exec(cmd);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		try {
+			process.waitFor();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		BufferedReader buf = new BufferedReader(
+				new InputStreamReader(process.getInputStream()));
+		String line = "";
+		try {
+			while ((line=buf.readLine())!=null) {
+				System.out.println(line);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
+		
+		return null;
 	}
 	
-	public SystemMemento executeSimulationStep(int step, SystemMemento memento) {
+	public SystemMemento executeSimulationStep(
+			int step, SystemMemento memento) {
 		if (step < 0) {
-			throw new IllegalArgumentException("Step must be grater than 0. Found: " + step);
+			throw new IllegalArgumentException(
+					"Step must be grater than 0. Found: " + step);
 		}
 		if (memento == null) {
-			throw new IllegalArgumentException("Memento cannot be null.");
+			throw new IllegalArgumentException(
+					"Memento cannot be null.");
 		}
 		overrideVariables(memento);
 		return runZot();
