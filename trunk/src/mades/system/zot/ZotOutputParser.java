@@ -61,10 +61,9 @@ public class ZotOutputParser {
 		reader = new BufferedReader(
 				new InputStreamReader(stream));
 		this.simulationStep = simulationStep;
-		parse();
 	}
 	
-	protected void parse() {
+	public TreeMultimap<Time, VariableAssignment> parse() {
 		variablesMultimap = TreeMultimap.create();
 		step = 0;
 		
@@ -77,7 +76,7 @@ public class ZotOutputParser {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} 
-		
+		return variablesMultimap;
 	}
 	
 	protected void processLine(String line) {

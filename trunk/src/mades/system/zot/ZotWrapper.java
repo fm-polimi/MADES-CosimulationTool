@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
 
+import mades.common.timing.Clock;
 import mades.common.timing.Time;
 import mades.common.variables.VariableAssignment;
 import mades.common.variables.VariableDefinition;
@@ -58,6 +59,8 @@ public class ZotWrapper {
 	 */
 	private String initialVariablesFileName;
 	
+	private Clock clock;
+	private VariableFactory variableFactory;
 	private ArrayList<VariableDefinition> variables;
 	
 	
@@ -74,9 +77,12 @@ public class ZotWrapper {
 	 */
 	public ZotWrapper(String engineFileName, String systemFileName,
 			String initialVariablesFileName, int maxSimulationStep,
+			Clock clock, VariableFactory variableFactory,
 			ArrayList<VariableDefinition> variables) {
 		
 		this.variables = variables;
+		this.clock = clock;
+		this.variableFactory = variableFactory;
 		
 		this.systemFileName = systemFileName;
 		File systemFile = new File(systemFileName);
@@ -199,7 +205,7 @@ public class ZotWrapper {
 		}
 	}
 	
-	protected SystemMemento runZot() {
+	protected SystemMemento runZot(Time time) {
 		String cmd = LISP_INTERPRETER + " " + engineFileName;
 		Runtime run = Runtime.getRuntime();
 		Process process = null;
@@ -213,6 +219,12 @@ public class ZotWrapper {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+		
+		ZotOutputParser parser = new ZotOutputParser(clock, 
+				variableFactory, variables, time.getSimulationStep(), 
+				process.getInputStream());
+		SystemMemento memento = new SystemMemento(parser.parse());
+		/*
 		BufferedReader buf = new BufferedReader(
 				new InputStreamReader(process.getInputStream()));
 		String line = "";
@@ -223,22 +235,18 @@ public class ZotWrapper {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} 
-		
-		return null;
+		*/
+		return memento;
 	}
 	
 	public SystemMemento executeSimulationStep(
-			int step, SystemMemento memento) {
-		if (step < 0) {
-			throw new IllegalArgumentException(
-					"Step must be grater than 0. Found: " + step);
-		}
+			Time time, SystemMemento memento) {
 		if (memento == null) {
 			throw new IllegalArgumentException(
 					"Memento cannot be null.");
 		}
 		overrideVariables(memento);
-		return runZot();
+		return runZot(time);
 	}
 	
 	
