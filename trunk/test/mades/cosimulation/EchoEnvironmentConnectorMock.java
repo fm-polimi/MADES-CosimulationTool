@@ -6,7 +6,7 @@ package mades.cosimulation;
 
 import java.util.ArrayList;
 
-import mades.common.Variable;
+import mades.common.variables.VariableAssignment;
 import mades.environment.EnvironmentConnector;
 import mades.environment.EnvironmentMemento;
 import mades.environment.SignalMap;
@@ -21,7 +21,7 @@ import mades.system.SystemMemento;
 public class EchoEnvironmentConnectorMock implements EnvironmentConnector {
 	
 	protected double currentSimulationTime;
-	protected ArrayList<Variable> params;
+	protected ArrayList<VariableAssignment> params;
 	protected SignalMap signals;
 	
 	/**
@@ -35,7 +35,7 @@ public class EchoEnvironmentConnectorMock implements EnvironmentConnector {
 	 * @see mades.environment.EnvironmentConnector#initialize(mades.common.ParamMap, double)
 	 */
 	@Override
-	public EnvironmentMemento initialize(ArrayList<Variable> params, double initialTime) {
+	public EnvironmentMemento initialize(ArrayList<VariableAssignment> params, double initialTime) {
 		assert(initialTime > 0);
 		currentSimulationTime = initialTime;
 		this.params = params;

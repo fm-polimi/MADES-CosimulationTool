@@ -10,7 +10,8 @@ import java.util.Set;
 import com.google.common.collect.Multiset;
 import com.google.common.collect.TreeMultimap;
 
-import mades.common.Variable;
+import mades.common.timing.Time;
+import mades.common.variables.VariableAssignment;
 
 /**
  * @author Michele Sama (m.sama@puzzledev.com)
@@ -24,7 +25,7 @@ public class SystemMemento {
 	/**
 	 * 
 	 */
-	private TreeMultimap<Integer, Variable> variablesMultimap;
+	private TreeMultimap<Time, VariableAssignment> variablesMultimap;
 	
 	/**
 	 * @param time
@@ -37,8 +38,7 @@ public class SystemMemento {
 	/**
 	 * @param variablesMultimap
 	 */
-	public SystemMemento(TreeMultimap<Integer, Variable> variablesMultimap) {
-		super();
+	public SystemMemento(TreeMultimap<Time, VariableAssignment> variablesMultimap) {
 		this.variablesMultimap = TreeMultimap.create(variablesMultimap);
 	}
 
@@ -77,7 +77,7 @@ public class SystemMemento {
 	/**
 	 * @return
 	 */
-	public Collection<Entry<Integer, Variable>> entries() {
+	public Collection<Entry<Time, VariableAssignment>> entries() {
 		return variablesMultimap.entries();
 	}
 
@@ -85,7 +85,7 @@ public class SystemMemento {
 	 * @param key
 	 * @return
 	 */
-	public Collection<Variable> get(Integer key) {
+	public Collection<VariableAssignment> get(Time key) {
 		return variablesMultimap.get(key);
 	}
 
@@ -99,14 +99,14 @@ public class SystemMemento {
 	/**
 	 * @return
 	 */
-	public Set<Integer> keySet() {
+	public Set<Time> keySet() {
 		return variablesMultimap.keySet();
 	}
 
 	/**
 	 * @return
 	 */
-	public Multiset<Integer> keys() {
+	public Multiset<Time> keys() {
 		return variablesMultimap.keys();
 	}
 
@@ -115,7 +115,7 @@ public class SystemMemento {
 	 * @param value
 	 * @return
 	 */
-	public boolean put(Integer key, Variable value) {
+	public boolean put(Time key, VariableAssignment value) {
 		return variablesMultimap.put(key, value);
 	}
 
@@ -132,7 +132,7 @@ public class SystemMemento {
 	 * @param key
 	 * @return
 	 */
-	public Collection<Variable> removeAll(Object key) {
+	public Collection<VariableAssignment> removeAll(Object key) {
 		return variablesMultimap.removeAll(key);
 	}
 
@@ -146,14 +146,14 @@ public class SystemMemento {
 	/**
 	 * @return
 	 */
-	public Collection<Variable> values() {
+	public Collection<VariableAssignment> values() {
 		return variablesMultimap.values();
 	}
 
 	/**
 	 * @return the variablesMultimap
 	 */
-	public TreeMultimap<Integer, Variable> getVariablesMultimap() {
+	public TreeMultimap<Time, VariableAssignment> getVariablesMultimap() {
 		return variablesMultimap;
 	}
 		

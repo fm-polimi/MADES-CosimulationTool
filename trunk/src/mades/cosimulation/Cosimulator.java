@@ -10,7 +10,10 @@ import java.util.logging.Logger;
 
 import com.google.common.collect.TreeMultimap;
 
-import mades.common.Variable;
+import mades.common.timing.Clock;
+import mades.common.timing.Time;
+import mades.common.variables.Scope;
+import mades.common.variables.VariableAssignment;
 import mades.environment.EnvironmentConnector;
 import mades.environment.EnvironmentMemento;
 import mades.environment.SignalMap;
@@ -31,30 +34,7 @@ public class Cosimulator {
 	
 	private boolean simulationStarted;
 	
-	/**
-	 * The last accepted co-simulation time.
-	 */
-	private double lastAcceptedCosimulationTime;
-	
-	/**
-	 * The last accepted number of steps.
-	 */
-	private int lastAccceptedCosimulationStep;
-	
-	/**
-	 * The initial time of this co-simulation.
-	 */
-	private double initialSimulationTime;
-	
-	/**
-	 * The initial step of this co-simulation.
-	 */
-	private int initialCosimulationStep;
-	
-	/**
-	 * The final time of this co-simulation.
-	 */
-	private double maxCosimulationTime;
+	private Clock clock;
 	
 	/**
 	 * The environment simulator used in this co-simulation.
@@ -66,10 +46,6 @@ public class Cosimulator {
 	 */
 	private SystemConnector system;
 	
-	/**
-	 * The time step of each simulation step.
-	 */
-	private double timeStep;
 	
 	/**
 	 * The maximum number of attempts at each simulation step.
@@ -90,7 +66,7 @@ public class Cosimulator {
 	 * Stores all the simulation variables that have to be returned
 	 * at the end of the co-simulation. It only contains shared variables.
 	 */
-	private TreeMultimap<Double, Variable> sharedVariablesMultimap;
+	private TreeMultimap<Time, VariableAssignment> sharedVariablesMultimap;
 	
 	/**
 	 * Default constructor.
@@ -166,14 +142,6 @@ public class Cosimulator {
 		return simulationStarted;
 	}
 
-	/**
-	 * Gets the current simulation time.
-	 * 
-	 * @return the simulationTime
-	 */
-	public double getSimulationTime() {
-		return lastAcceptedCosimulationTime;
-	}
 
 	/**
 	 * Starts a new co-simulation.
@@ -199,13 +167,12 @@ public class Cosimulator {
 	 */
 	public void startCosimulation(
 			double initialSimulationTime,
-			int initialCosimulationStep,
 			double timeStep,
 			double maxCosimulationTime,
 			int maxCosimulationAttemptsForStep,
 			int maxCosimulationBacktraking,
-			ArrayList<Variable> environmentParams,
-			ArrayList<Variable> systemParams
+			ArrayList<VariableAssignment> environmentParams,
+			ArrayList<VariableAssignment> systemParams
 			) {
 		if (simulationStarted) {
 			throw new IllegalStateException("Simulation is already running"); 
@@ -217,12 +184,9 @@ public class Cosimulator {
 			throw new AssertionError("SystemConnector cannot be null.");
 		}
 		
-		this.initialSimulationTime = initialSimulationTime;
-		this.initialCosimulationStep = initialCosimulationStep;
-		lastAcceptedCosimulationTime = this.initialSimulationTime;
-		lastAccceptedCosimulationStep = this.initialCosimulationStep;
-		this.maxCosimulationTime = maxCosimulationTime;
-		this.timeStep = timeStep;
+		clock = new Clock(logger, timeStep,
+				initialSimulationTime, maxCosimulationTime);
+		
 		this.maxCosimulationAttemptsForStep = maxCosimulationAttemptsForStep;
 		this.maxCosimulationBacktraking = maxCosimulationBacktraking;
 		
@@ -235,12 +199,12 @@ public class Cosimulator {
 		
 		try {
 			// Runs the co-simulation
-			while(lastAcceptedCosimulationTime < this.maxCosimulationTime) {
+			while(clock.hasReachCosimulationEnd()) {
 				performCosimulationStep();
 			}
 		} finally {
 			simulationStarted = false;
-			logger.fine("Simulation ended at time: " + lastAcceptedCosimulationTime);
+			logger.fine("Simulation ended at time: " + clock.getCurrentTime().getSimulationTime());
 		}
 	}
 
@@ -253,13 +217,12 @@ public class Cosimulator {
 	 */
 	private void reinitializeSimulation(
 			double initialSimulationTime, 
-			ArrayList<Variable> environmentParams,
-			ArrayList<Variable> systemParams) {
+			ArrayList<VariableAssignment> environmentParams,
+			ArrayList<VariableAssignment> systemParams) {
 		
 		if (environmentMementoStack != null) {
 			while (!environmentMementoStack.isEmpty()) {
-				EnvironmentMemento memento = environmentMementoStack.pop();
-				memento.deleteRelatedFiles();
+				environmentMementoStack.pop();
 			}
 			assert(environmentMementoStack.isEmpty());
 		} else {
@@ -280,9 +243,9 @@ public class Cosimulator {
 		
 		// Add the initial states to the bottom of the stack
 		environmentMementoStack.push(
-				environment.initialize(environmentParams, initialSimulationTime));
+				environment.initialize(environmentParams, clock.getCurrentTime()));
 		systemMementoStack.push(
-				system.initialize(systemParams, initialCosimulationStep));
+				system.initialize(systemParams, clock.getCurrentTime()));
 		
 	}
 	
@@ -296,7 +259,7 @@ public class Cosimulator {
 			while (!stepApproved) {
 				assert(environmentMementoStack.size() == 
 					    systemMementoStack.size());
-				increaseTime();
+				clock.tickForward();
 				// Simulate the environment at the next time.
 				simulateEnvironment();
 				
@@ -310,7 +273,7 @@ public class Cosimulator {
 					attemptsInStep -= 1;
 
 					// Roll back the environment and try again.
-					decreaseTime();
+					clock.tickBackward();
 					rollbackSystem();
 					simulateSystem();
 					
@@ -337,7 +300,7 @@ public class Cosimulator {
 				} else {
 					// Roll back the system and the simulation time
 					rollbackEnvironment();
-					decreaseTime();
+					clock.tickBackward();
 					simulateSystem();
 				}
 			}
@@ -349,23 +312,6 @@ public class Cosimulator {
 		deleteObsoleteData();
 	}
 
-	protected void increaseTime() {
-		lastAcceptedCosimulationTime += timeStep;
-		lastAccceptedCosimulationStep++;
-		logger.fine("Simulation time increased to: " +
-				lastAcceptedCosimulationTime);
-		logger.fine("Simulation steps increased to: " +
-				lastAccceptedCosimulationStep);
-	}
-	
-	protected void decreaseTime() {
-		lastAcceptedCosimulationTime -= timeStep;
-		lastAccceptedCosimulationStep--;
-		logger.fine("Simulation time decreased to: " +
-				lastAcceptedCosimulationTime);
-		logger.fine("Simulation steps decreased to: " +
-				lastAccceptedCosimulationStep);
-	}
 	
 	/**
 	 * Removes from the stacks all the {@link Memento} which represent an
@@ -376,11 +322,7 @@ public class Cosimulator {
 		int elementsToremove = environmentMementoStack.size() -
 				maxCosimulationBacktraking;
 		for (int i = elementsToremove; i > 0; i--) {
-			EnvironmentMemento memento = environmentMementoStack.remove(0);
-			assert(memento.getTime() <
-					(lastAcceptedCosimulationTime - 
-							(maxCosimulationBacktraking * timeStep)));
-			memento.deleteRelatedFiles();
+			environmentMementoStack.remove(0);
 		}
 		logger.fine("Obsolete environment state deleted.");
 		
@@ -403,10 +345,10 @@ public class Cosimulator {
 					"Cannot rollback initial environment state: aborting...");
 		}
 		EnvironmentMemento memento = environmentMementoStack.pop();
-		assert(memento.getTime() == lastAcceptedCosimulationTime);
+		assert(memento.getTime() == clock.getCurrentTime());
 		
 		// Remove shared variables
-		for (Variable v: memento.getParams()) {
+		for (VariableAssignment v: memento.getParams()) {
 			sharedVariablesMultimap.remove(memento.getTime(), v);
 		}
 	}
@@ -422,48 +364,49 @@ public class Cosimulator {
 		// TODO(rax): assert is the right memento
 		
 		// Remove shared variables
-		Collection<Variable> variables = memento.get(lastAccceptedCosimulationStep);
-		for (Variable v: variables) {
-			sharedVariablesMultimap.remove(lastAcceptedCosimulationTime, v);
+		Collection<VariableAssignment> variables = 
+				memento.get(clock.getCurrentTime());
+		for (VariableAssignment v: variables) {
+			sharedVariablesMultimap.remove(clock.getCurrentTime(), v);
 		}
 	}
 	
 	protected void simulateEnvironment() {
 		assert(simulationStarted);
-		logger.fine("Symulating environment at time: " + lastAcceptedCosimulationTime);
+		logger.fine("Symulating environment at time: " + clock.getCurrentTime().getSimulationTime());
 		environment.load(environmentMementoStack.peek(), systemMementoStack.peek());
 		
 		EnvironmentMemento environmentMemento =
-			    environment.simulateNext(lastAcceptedCosimulationTime);
+			    environment.simulateNext(clock.getCurrentTime());
 		
 		// Add memento on top of the stack
 		environmentMementoStack.push(environmentMemento);
 		
 		// Add variables to shared variables map
-		for (Variable var: environmentMemento.getParams()) 
+		for (VariableAssignment var: environmentMemento.getParams()) 
 		{
-			if (var.isVisible()) {
-				sharedVariablesMultimap.put(lastAcceptedCosimulationTime, var);
+			if (var.getVariableDefinition().getScope() == Scope.ENVIRONMENT_SHARED) {
+				sharedVariablesMultimap.put(clock.getCurrentTime(), var);
 			}
 		}
 	}
 	
 	protected void simulateSystem() {
 		assert(simulationStarted);
-		logger.fine("Symulating system at time: " + lastAcceptedCosimulationTime);
+		logger.fine("Symulating system at step: " + clock.getCurrentTime().getSimulationStep());
 		system.load( systemMementoStack.peek(), environmentMementoStack.peek());
 		
-		SystemMemento systemMemento = system.simulateNext(lastAccceptedCosimulationStep);
+		SystemMemento systemMemento = system.simulateNext(clock.getCurrentTime());
 		
 		// Add memento to the top of the stack
 		systemMementoStack.push(systemMemento);
 		
 		// Add shared variables to the variable map
-		Collection<Variable> vars = systemMemento.get(lastAccceptedCosimulationStep);
-		for (Variable var: vars) 
+		Collection<VariableAssignment> vars = systemMemento.get(clock.getCurrentTime());
+		for (VariableAssignment var: vars) 
 		{
-			if (var.isVisible()) {
-				sharedVariablesMultimap.put(lastAcceptedCosimulationTime, var);
+			if (var.getVariableDefinition().getScope() == Scope.SYSTEM_SHARED) {
+				sharedVariablesMultimap.put(clock.getCurrentTime(), var);
 			}
 		}
 	}
@@ -479,7 +422,7 @@ public class Cosimulator {
 	/**
 	 * @return the sharedVariablesMultimap
 	 */
-	public TreeMultimap<Double, Variable> getSharedVariablesMultimap() {
+	public TreeMultimap<Time, VariableAssignment> getSharedVariablesMultimap() {
 		return sharedVariablesMultimap;
 	}
 	

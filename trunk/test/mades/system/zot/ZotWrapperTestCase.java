@@ -5,7 +5,7 @@ package mades.system.zot;
 
 import java.io.File;
 
-import mades.common.Variable;
+import mades.common.variables.VariableAssignment;
 import mades.system.SystemMemento;
 
 import org.junit.After;
@@ -55,7 +55,7 @@ public class ZotWrapperTestCase {
 	@Test
 	public void testExecuteSimulationStep() {
 		SystemMemento memento = new SystemMemento();
-		memento.put(0, new Variable("cond1", 0, true));
+		memento.put(0, new VariableAssignment("cond1", 0, true));
 		wrapper.executeSimulationStep(1, memento);
 	}
 

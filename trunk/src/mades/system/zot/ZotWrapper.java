@@ -12,7 +12,9 @@ import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.Set;
 
-import mades.common.Variable;
+import mades.common.timing.Time;
+import mades.common.variables.VariableAssignment;
+import mades.common.variables.VariableDefinition;
 import mades.system.SystemMemento;
 
 /**
@@ -130,15 +132,16 @@ public class ZotWrapper {
 				"(defvar history\n" +
 				"	(&&\n");
 		
-		Set<Integer> keys = memento.keySet();
-		for (Integer k: keys) {
-			Collection<Variable> variables = memento.get(k);
-			if (k == 0) {
+		Set<Time> keys = memento.keySet();
+		for (Time t: keys) {
+			Collection<VariableAssignment> variables = memento.get(t);
+			int step = t.getSimulationStep();
+			if (step == 0) {
 				composeVariableCollection(builder, variables);
 			} else {
 				builder.append("(futr ");
 				composeVariableCollection(builder, variables);
-				builder.append(" " + k +")/n");
+				builder.append(" " + step +")/n");
 			}
 		}
 		
@@ -158,13 +161,14 @@ public class ZotWrapper {
 	 * @param variables The collection of variables to be added.
 	 */
 	private void composeVariableCollection(StringBuilder builder,
-			Collection<Variable> variables) {
+			Collection<VariableAssignment> variables) {
 		builder.append("(&& ");
-		for (Variable v: variables) {
+		for (VariableAssignment v: variables) {
+			VariableDefinition def = v.getVariableDefinition();
 			if (v.getValue() == 0) {
-				builder.append("(!! (-P- " + v.getName() + "))");
+				builder.append("(!! (-P- " + def.getName() + "))");
 			} else {
-				builder.append("(-P- " + v.getName() + ")");
+				builder.append("(-P- " + def.getName() + ")");
 			}
 		}
 		builder.append(")\n");
