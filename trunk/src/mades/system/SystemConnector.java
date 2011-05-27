@@ -5,6 +5,7 @@ package mades.system;
 
 import java.util.ArrayList;
 
+import mades.common.timing.Clock;
 import mades.common.timing.Time;
 import mades.common.variables.VariableAssignment;
 import mades.cosimulation.Cosimulator;
@@ -26,11 +27,11 @@ public interface SystemConnector {
 	 * once and only once.
 	 * 
 	 * @param params: A collection of key,value initialization parameters.
-	 * @param initialTime the initial step of the simulation.
+	 * @param clock the timer for this co-simulation.
 	 * @return an instance representing the configuration of
 	 *         this connector at the initial state.
 	 */
-	public SystemMemento initialize(ArrayList<VariableAssignment> params, Time initialTime);
+	public SystemMemento initialize(ArrayList<VariableAssignment> params, Clock clock);
 	
 	/**
 	 * Loads a given initial state to the system. This method is supposed

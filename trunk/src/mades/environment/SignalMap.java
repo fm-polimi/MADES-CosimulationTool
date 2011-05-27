@@ -20,26 +20,17 @@ public class SignalMap {
 	 * a given delta time, which would be the simulation ste time.
 	 * 
 	 * @param minSignalDelta the delta time.
-	 * @param startTime the minimum time in which signals have to be checked.
-	 * @param endTime the maximum time in which the signals have to be checked.
 	 * @return <code>true</code> if the signals are correct, 
 	 *         <code>false</code> otherwise.
 	 */
-	public boolean validate(double minSignalDelta, double startTime, double endTime) {
+	public boolean validate(double minSignalDelta) {
 		Set<String> keys = signals.keySet();
 		for (String key: keys) {
 			ArrayList<Double> signal = signals.get(key);
 			for (int i = signal.size(); i > 1; i--) {
 				double end = signal.get(i);
 				double begin = signal.get(i - 1);
-				if (begin < startTime) {
-					// skip the remaining values because too old
-					break;
-				}
-				if (end > end) {
-					// skip this value because too recent
-					continue;
-				}
+				
 				if ((end - begin) < minSignalDelta) {
 					return false;
 				}

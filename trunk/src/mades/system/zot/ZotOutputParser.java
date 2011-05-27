@@ -7,8 +7,9 @@ import java.io.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import mades.common.timing.Clock;
 import mades.common.timing.Time;
-import mades.common.variables.Variable;
+import mades.common.timing.TimeFactory;
 import mades.common.variables.VariableAssignment;
 import mades.common.variables.VariableDefinition;
 
@@ -28,6 +29,9 @@ public class ZotOutputParser {
 	    HEADER, VARIABLES 
 	}
 	
+	private Clock clock;
+	private TimeFactory factory;
+	
 	private State state = State.HEADER;
 	private int step;
 	private int lastStep;
@@ -37,7 +41,11 @@ public class ZotOutputParser {
 	private BufferedReader reader;
 	private TreeMultimap<Time, VariableDefinition> variablesMultimap;
 	
-	public ZotOutputParser(InputStream stream, int lastStep) {
+	private Time currentTime;
+	
+	public ZotOutputParser(Clock clock, InputStream stream, int lastStep) {
+		this.clock = clock;
+		factory = clock.getFactory();
 		reader = new BufferedReader(
 				new InputStreamReader(stream));
 		this.lastStep = lastStep;
@@ -73,9 +81,10 @@ public class ZotOutputParser {
 				if (matcher.matches()) {
 					// TODO(rax): Set all the missing variables to false
 					step = Integer.parseInt(matcher.group(1));
+					currentTime = factory.get(step);
 				} else {
 					// TODO(rax): We should know if a variable is shared or private
-					variablesMultimap.put(step, new VariableAssignment(line, true, ));
+					variablesMultimap.put(currentTime, new VariableAssignment(line, true, ));
 				}
 				break;
 			}

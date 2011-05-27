@@ -414,9 +414,7 @@ public class Cosimulator {
 	boolean isLastEnvironmentSimulationValid() {
 		EnvironmentMemento environmentMemento = environmentMementoStack.peek();
 		SignalMap signals = environmentMemento.getSignals();
-		return signals.validate(timeStep, 
-				lastAcceptedCosimulationTime - timeStep * maxCosimulationBacktraking,
-				lastAcceptedCosimulationTime);
+		return signals.validate(clock.getTimeStep());
 	}
 
 	/**

@@ -5,6 +5,7 @@ package mades.environment;
 
 import java.util.ArrayList;
 
+import mades.common.timing.Clock;
 import mades.common.timing.Time;
 import mades.common.variables.VariableAssignment;
 import mades.cosimulation.Cosimulator;
@@ -26,11 +27,11 @@ public interface EnvironmentConnector {
 	 * once at the beginning of the simulation.
 	 * 
 	 * @param params a collection of initialization parameters.
-	 * @param initialTime the initial time of the simulation.
+	 * @param clock the timer for this co-simulation.
 	 * @return an instance representing the configuration of
 	 *         this connector at the initial state.
 	 */
-	public EnvironmentMemento initialize(ArrayList<VariableAssignment> params, Time initialTime);
+	public EnvironmentMemento initialize(ArrayList<VariableAssignment> params, Clock clock);
 	
 	/**
 	 * Loads a given initial state to the environment. This method is supposed
