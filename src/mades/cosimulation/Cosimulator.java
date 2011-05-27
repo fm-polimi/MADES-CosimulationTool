@@ -243,9 +243,9 @@ public class Cosimulator {
 		
 		// Add the initial states to the bottom of the stack
 		environmentMementoStack.push(
-				environment.initialize(environmentParams, clock.getCurrentTime()));
+				environment.initialize(environmentParams, clock));
 		systemMementoStack.push(
-				system.initialize(systemParams, clock.getCurrentTime()));
+				system.initialize(systemParams, clock));
 		
 	}
 	
