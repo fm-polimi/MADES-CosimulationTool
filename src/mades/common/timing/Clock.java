@@ -64,5 +64,19 @@ public class Clock {
 		
 		return currentTime;
 	}
+
+	/**
+	 * @return the factory
+	 */
+	public TimeFactory getFactory() {
+		return factory;
+	}
+
+	/**
+	 * @return the timeStep
+	 */
+	public double getTimeStep() {
+		return timeStep;
+	}
 	
 }
