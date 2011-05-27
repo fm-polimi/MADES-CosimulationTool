@@ -9,12 +9,14 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
 
 import mades.common.timing.Time;
 import mades.common.variables.VariableAssignment;
 import mades.common.variables.VariableDefinition;
+import mades.common.variables.VariableFactory;
 import mades.system.SystemMemento;
 
 /**
@@ -56,20 +58,26 @@ public class ZotWrapper {
 	 */
 	private String initialVariablesFileName;
 	
-
+	private ArrayList<VariableDefinition> variables;
+	
+	
 	/**
 	 * Initializes this instance with the engine and the given system.
 	 * 
 	 * @param engineFileName the engine file name.
 	 * @param systemFileName the system file name.
 	 * @param initialVariablesFileName the variables file name.
-	 * @param maxSimulationTime the maximum simulation time.
+	 * @param maxSimulationStep the maximum simulation steps.
 	 * 
 	 * @throws AssertionError if any of the given files do not 
 	 *         exist or if they are a directory.
 	 */
 	public ZotWrapper(String engineFileName, String systemFileName,
-			String initialVariablesFileName, int maxSimulationTime) {		
+			String initialVariablesFileName, int maxSimulationStep,
+			ArrayList<VariableDefinition> variables) {
+		
+		this.variables = variables;
+		
 		this.systemFileName = systemFileName;
 		File systemFile = new File(systemFileName);
 		if (!systemFile.exists() || systemFile.isDirectory()) {
@@ -88,7 +96,7 @@ public class ZotWrapper {
 		
 		this.engineFileName = engineFileName;
 		try {
-			writeEngine(maxSimulationTime);
+			writeEngine(maxSimulationStep);
 		} catch (FileNotFoundException e) {
 			throw new AssertionError(
 					"Engine file " + systemFileName +
