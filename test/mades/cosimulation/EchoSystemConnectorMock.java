@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 import com.google.common.collect.TreeMultimap;
 
-import mades.common.Variable;
+import mades.common.variables.VariableAssignment;
 import mades.environment.EnvironmentMemento;
 import mades.environment.SignalMap;
 import mades.system.SystemConnector;
@@ -22,7 +22,7 @@ import mades.system.SystemMemento;
 public class EchoSystemConnectorMock implements SystemConnector {
 
 	protected int currentSimulationStep;
-	TreeMultimap<Integer, Variable> variablesMultimap;
+	TreeMultimap<Integer, VariableAssignment> variablesMultimap;
 	protected SignalMap signals;
 	
 	/**
@@ -36,11 +36,11 @@ public class EchoSystemConnectorMock implements SystemConnector {
 	 * @see mades.system.SystemConnector#initialize(mades.common.ParamMap, double)
 	 */
 	@Override
-	public SystemMemento initialize(ArrayList<Variable> params, int initialStep) {
+	public SystemMemento initialize(ArrayList<VariableAssignment> params, int initialStep) {
 		assert(initialStep >= 0);
 		currentSimulationStep = initialStep;
 		variablesMultimap = TreeMultimap.create();
-		for (Variable v: params) {
+		for (VariableAssignment v: params) {
 			variablesMultimap.put(initialStep, v);
 		}
 		

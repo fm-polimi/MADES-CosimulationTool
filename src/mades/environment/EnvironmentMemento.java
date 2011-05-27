@@ -5,7 +5,8 @@ package mades.environment;
 
 import java.util.ArrayList;
 
-import mades.common.Variable;
+import mades.common.timing.Time;
+import mades.common.variables.VariableAssignment;
 
 /**
  * @author Michele Sama (m.sama@puzzledev.com)
@@ -16,14 +17,14 @@ import mades.common.Variable;
 public class EnvironmentMemento {
 	
 	private SignalMap signals;
-	private double time;
-	private ArrayList<Variable> params;
+	private Time time;
+	private ArrayList<VariableAssignment> params;
 	
 	/**
 	 * @param time
 	 * @param params
 	 */
-	public EnvironmentMemento(double time, ArrayList<Variable> params, SignalMap signals) {
+	public EnvironmentMemento(Time time, ArrayList<VariableAssignment> params, SignalMap signals) {
 		this.time = time;
 		this.params = params;
 		this.signals = signals;
@@ -32,14 +33,14 @@ public class EnvironmentMemento {
 	/**
 	 * @return the time
 	 */
-	public double getTime() {
+	public Time getTime() {
 		return time;
 	}
 
 	/**
 	 * @return the params
 	 */
-	public ArrayList<Variable> getParams() {
+	public ArrayList<VariableAssignment> getParams() {
 		return params;
 	}
 	
@@ -50,8 +51,4 @@ public class EnvironmentMemento {
 		return signals;
 	}
 	
-	public void deleteRelatedFiles() {
-		// TODO Auto-generated method stub
-	}
-		
 }

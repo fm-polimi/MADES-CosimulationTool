@@ -5,7 +5,8 @@ package mades.environment;
 
 import java.util.ArrayList;
 
-import mades.common.Variable;
+import mades.common.timing.Time;
+import mades.common.variables.VariableAssignment;
 import mades.cosimulation.Cosimulator;
 import mades.system.SystemMemento;
 
@@ -29,7 +30,7 @@ public interface EnvironmentConnector {
 	 * @return an instance representing the configuration of
 	 *         this connector at the initial state.
 	 */
-	public EnvironmentMemento initialize(ArrayList<Variable> params, double initialTime);
+	public EnvironmentMemento initialize(ArrayList<VariableAssignment> params, Time initialTime);
 	
 	/**
 	 * Loads a given initial state to the environment. This method is supposed
@@ -62,7 +63,7 @@ public interface EnvironmentConnector {
 	 * @throws IllegalArgumentException: If time is negative or lesser 
 	 *         than the last simulated step.
 	 */
-	public EnvironmentMemento simulateNext(double time);
+	public EnvironmentMemento simulateNext(Time time);
 	
 	/**
 	 * Returns the value of the current step of the simulation. The returned

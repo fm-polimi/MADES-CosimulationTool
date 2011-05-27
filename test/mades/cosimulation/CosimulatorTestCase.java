@@ -8,7 +8,7 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.Set;
 
-import mades.common.Variable;
+import mades.common.variables.VariableAssignment;
 
 import org.junit.After;
 import org.junit.Before;
@@ -47,17 +47,17 @@ public class CosimulatorTestCase {
 	@Test
 	public void testStartCosimulation() {
 		int val= 15;
-		Variable sharedVar1 = new Variable("sharedVar1", val, true);
-		Variable sharedVar2 = new Variable("sharedVar2", val, true);
-		Variable privateVar1 = new Variable("privateVar1", val, false);
-		Variable privateVar2 = new Variable("privateVar2", val, false);
+		VariableAssignment sharedVar1 = new VariableAssignment("sharedVar1", val, true);
+		VariableAssignment sharedVar2 = new VariableAssignment("sharedVar2", val, true);
+		VariableAssignment privateVar1 = new VariableAssignment("privateVar1", val, false);
+		VariableAssignment privateVar2 = new VariableAssignment("privateVar2", val, false);
 
 
-		ArrayList<Variable> environmentParams = new ArrayList<Variable>();
+		ArrayList<VariableAssignment> environmentParams = new ArrayList<VariableAssignment>();
 		environmentParams.add(sharedVar1);
 		environmentParams.add(privateVar1);
 		
-		ArrayList<Variable> systemParams = new ArrayList<Variable>();
+		ArrayList<VariableAssignment> systemParams = new ArrayList<VariableAssignment>();
 		systemParams.add(sharedVar2);
 		systemParams.add(privateVar2);
 		
@@ -79,12 +79,12 @@ public class CosimulatorTestCase {
 				systemParams);
 		
 		assertTrue(maxCosimulationTime <= cosimulator.getSimulationTime());
-		TreeMultimap<Double, Variable> results = cosimulator.getSharedVariablesMultimap();
+		TreeMultimap<Double, VariableAssignment> results = cosimulator.getSharedVariablesMultimap();
 		int steps = (int)maxCosimulationTime;
 		Set<Double> keys = results.keySet();
 		assertEquals(steps, keys.size());
 		for (Double key: keys) {
-			Set<Variable> vars = results.get(key);
+			Set<VariableAssignment> vars = results.get(key);
 			assertEquals(2, vars.size());
 			assertTrue(vars.contains(sharedVar1));
 			assertTrue(vars.contains(sharedVar2));

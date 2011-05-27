@@ -5,7 +5,8 @@ package mades.system.zot;
 
 import java.util.ArrayList;
 
-import mades.common.Variable;
+import mades.common.timing.Time;
+import mades.common.variables.VariableAssignment;
 import mades.environment.EnvironmentMemento;
 import mades.system.SystemConnector;
 import mades.system.SystemMemento;
@@ -20,7 +21,7 @@ public class ZotSystemConnector implements SystemConnector {
 	 * @see mades.system.SystemConnector#initialize(java.util.ArrayList, int)
 	 */
 	@Override
-	public SystemMemento initialize(ArrayList<Variable> params, int initialStep) {
+	public SystemMemento initialize(ArrayList<VariableAssignment> params, Time initialStep) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -39,7 +40,7 @@ public class ZotSystemConnector implements SystemConnector {
 	 * @see mades.system.SystemConnector#simulateNext(int)
 	 */
 	@Override
-	public SystemMemento simulateNext(int step) {
+	public SystemMemento simulateNext(Time step) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -7,7 +7,10 @@ import java.io.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import mades.common.Variable;
+import mades.common.timing.Time;
+import mades.common.variables.Variable;
+import mades.common.variables.VariableAssignment;
+import mades.common.variables.VariableDefinition;
 
 import com.google.common.collect.TreeMultimap;
 
@@ -32,7 +35,7 @@ public class ZotOutputParser {
 	private Pattern stepPattern = Pattern.compile(STEP);
 	
 	private BufferedReader reader;
-	private TreeMultimap<Integer, Variable> variablesMultimap;
+	private TreeMultimap<Time, VariableDefinition> variablesMultimap;
 	
 	public ZotOutputParser(InputStream stream, int lastStep) {
 		reader = new BufferedReader(
@@ -72,7 +75,7 @@ public class ZotOutputParser {
 					step = Integer.parseInt(matcher.group(1));
 				} else {
 					// TODO(rax): We should know if a variable is shared or private
-					variablesMultimap.put(step, new Variable(line, true, ));
+					variablesMultimap.put(step, new VariableAssignment(line, true, ));
 				}
 				break;
 			}
