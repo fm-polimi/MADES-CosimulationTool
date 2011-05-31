@@ -6,7 +6,6 @@ package mades.system.zot;
 import java.util.ArrayList;
 
 import mades.common.timing.Clock;
-import mades.common.timing.Time;
 import mades.common.variables.VariableAssignment;
 import mades.environment.EnvironmentMemento;
 import mades.system.SystemConnector;
@@ -41,7 +40,7 @@ public class ZotSystemConnector implements SystemConnector {
 	 * @see mades.system.SystemConnector#simulateNext(int)
 	 */
 	@Override
-	public SystemMemento simulateNext(Time step) {
+	public SystemMemento simulateNext() {
 		// TODO Auto-generated method stub
 		return null;
 	}

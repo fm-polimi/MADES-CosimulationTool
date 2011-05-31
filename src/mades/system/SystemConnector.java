@@ -6,7 +6,6 @@ package mades.system;
 import java.util.ArrayList;
 
 import mades.common.timing.Clock;
-import mades.common.timing.Time;
 import mades.common.variables.VariableAssignment;
 import mades.cosimulation.Cosimulator;
 import mades.environment.EnvironmentMemento;
@@ -46,14 +45,13 @@ public interface SystemConnector {
 	public void load(SystemMemento systemParams, EnvironmentMemento environmentParams);
 	
 	/**
-	 * Performs the next step of the simulation.
+	 * Performs the next step of the simulation usign the time of the internal clock.
 	 * 
-	 * @param step: The step to simulate.
 	 * @return The result of the simulation.
 	 * @throws IllegalArgumentException: If time is negative or lesser 
 	 *         than the last simulated step.
 	 */
-	public SystemMemento simulateNext(Time step);
+	public SystemMemento simulateNext();
 	
 	/**
 	 * Returns the value of the current step of the system. The returned

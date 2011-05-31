@@ -3,11 +3,9 @@
  */
 package mades.system.zot;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -155,7 +153,7 @@ public class ZotWrapper {
 			} else {
 				builder.append("(futr ");
 				composeVariableCollection(builder, variables);
-				builder.append(" " + step +")/n");
+				builder.append(" " + step +")\n");
 			}
 		}
 		

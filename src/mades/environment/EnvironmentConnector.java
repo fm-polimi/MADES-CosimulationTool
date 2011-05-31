@@ -47,24 +47,13 @@ public interface EnvironmentConnector {
 	public void load(EnvironmentMemento environmentParams, SystemMemento systemParams);
 	
 	/**
-	 * Loads a given initial state to the environment. This method is supposed
-	 * to be invoked ad each step of the co-simulation.
+	 * Performs the next step of the simulation using the time given by the internal clock.
 	 * 
-	 * @param systemParams the system configuration to use.
-	 * @throws AssertionError if no simulation steps have been 
-	 *         performed.
-	 */
-	public void load(double time, SystemMemento systemParams);
-	
-	/**
-	 * Performs the next step of the simulation.
-	 * 
-	 * @param time: The time to simulate.
 	 * @return The result of the simulation.
 	 * @throws IllegalArgumentException: If time is negative or lesser 
 	 *         than the last simulated step.
 	 */
-	public EnvironmentMemento simulateNext(Time time);
+	public EnvironmentMemento simulateNext();
 	
 	/**
 	 * Returns the value of the current step of the simulation. The returned
