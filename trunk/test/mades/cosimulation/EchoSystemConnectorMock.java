@@ -7,6 +7,8 @@ import java.util.ArrayList;
 
 import com.google.common.collect.TreeMultimap;
 
+import mades.common.timing.Clock;
+import mades.common.timing.Time;
 import mades.common.variables.VariableAssignment;
 import mades.environment.EnvironmentMemento;
 import mades.environment.SignalMap;
@@ -21,8 +23,8 @@ import mades.system.SystemMemento;
  */
 public class EchoSystemConnectorMock implements SystemConnector {
 
-	protected int currentSimulationStep;
-	TreeMultimap<Integer, VariableAssignment> variablesMultimap;
+	protected Clock clock;
+	TreeMultimap<Time, VariableAssignment> variablesMultimap;
 	protected SignalMap signals;
 	
 	/**
@@ -36,12 +38,12 @@ public class EchoSystemConnectorMock implements SystemConnector {
 	 * @see mades.system.SystemConnector#initialize(mades.common.ParamMap, double)
 	 */
 	@Override
-	public SystemMemento initialize(ArrayList<VariableAssignment> params, int initialStep) {
-		assert(initialStep >= 0);
-		currentSimulationStep = initialStep;
+	public SystemMemento initialize(ArrayList<VariableAssignment> params, Clock clock) {
+		assert(clock.getCurrentTime().getSimulationStep() == 0);
+		this.clock = clock;
 		variablesMultimap = TreeMultimap.create();
 		for (VariableAssignment v: params) {
-			variablesMultimap.put(initialStep, v);
+			variablesMultimap.put(clock.getCurrentTime(), v);
 		}
 		
 		return new SystemMemento(variablesMultimap);
@@ -60,10 +62,8 @@ public class EchoSystemConnectorMock implements SystemConnector {
 	 * @see mades.system.SystemConnector#simulateNext(double)
 	 */
 	@Override
-	public SystemMemento simulateNext(int step) {
-		assert(currentSimulationStep < step);
-		variablesMultimap.putAll(step, variablesMultimap.get(currentSimulationStep));
-		currentSimulationStep = step;
+	public SystemMemento simulateNext() {
+		variablesMultimap.putAll(clock.getCurrentTime(), variablesMultimap.get(clock.getCurrentTime()));
 		return new SystemMemento(variablesMultimap);
 	}
 

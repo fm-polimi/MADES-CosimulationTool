@@ -6,6 +6,7 @@ package mades.cosimulation;
 
 import java.util.ArrayList;
 
+import mades.common.timing.Clock;
 import mades.common.variables.VariableAssignment;
 import mades.environment.EnvironmentConnector;
 import mades.environment.EnvironmentMemento;
@@ -20,7 +21,7 @@ import mades.system.SystemMemento;
  */
 public class EchoEnvironmentConnectorMock implements EnvironmentConnector {
 	
-	protected double currentSimulationTime;
+	protected Clock clock;
 	protected ArrayList<VariableAssignment> params;
 	protected SignalMap signals;
 	
@@ -35,12 +36,11 @@ public class EchoEnvironmentConnectorMock implements EnvironmentConnector {
 	 * @see mades.environment.EnvironmentConnector#initialize(mades.common.ParamMap, double)
 	 */
 	@Override
-	public EnvironmentMemento initialize(ArrayList<VariableAssignment> params, double initialTime) {
-		assert(initialTime > 0);
-		currentSimulationTime = initialTime;
+	public EnvironmentMemento initialize(ArrayList<VariableAssignment> params, Clock clock) {
+		this.clock = clock;
 		this.params = params;
 		signals = new SignalMap();
-		return new EnvironmentMemento(currentSimulationTime, params, signals);
+		return new EnvironmentMemento(clock.getCurrentTime(), params, signals);
 	}
 
 	/* (non-Javadoc)
@@ -49,27 +49,17 @@ public class EchoEnvironmentConnectorMock implements EnvironmentConnector {
 	@Override
 	public void load(EnvironmentMemento environmentParams,
 			SystemMemento systemParams) {
-		currentSimulationTime = environmentParams.getTime();
+		assert(clock.getCurrentTime().getSimulationStep() - 1 == environmentParams.getTime().getSimulationStep());
 		params = environmentParams.getParams();
 		signals = environmentParams.getSignals();
-	}
-
-	/* (non-Javadoc)
-	 * @see mades.environment.EnvironmentConnector#load(double, mades.system.SystemMemento)
-	 */
-	@Override
-	public void load(double time, SystemMemento systemParams) {
-		currentSimulationTime = time;
 	}
 	
 	/* (non-Javadoc)
 	 * @see mades.environment.EnvironmentConnector#simulateNext(double)
 	 */
 	@Override
-	public EnvironmentMemento simulateNext(double time) {
-		assert(currentSimulationTime < time);
-		currentSimulationTime = time;
-		return new EnvironmentMemento(currentSimulationTime, params, signals);
+	public EnvironmentMemento simulateNext() {
+		return new EnvironmentMemento(clock.getCurrentTime(), params, signals);
 	}
 
 	/* (non-Javadoc)
@@ -77,7 +67,7 @@ public class EchoEnvironmentConnectorMock implements EnvironmentConnector {
 	 */
 	@Override
 	public EnvironmentMemento getCurrentParams() {
-		return new EnvironmentMemento(currentSimulationTime, params, signals);
+		return new EnvironmentMemento(clock.getCurrentTime(), params, signals);
 	}
 
 	/* (non-Javadoc)

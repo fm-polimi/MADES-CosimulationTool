@@ -8,7 +8,12 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.Set;
 
+import mades.common.timing.Time;
+import mades.common.timing.TimeFactory;
+import mades.common.variables.Scope;
 import mades.common.variables.VariableAssignment;
+import mades.common.variables.VariableDefinition;
+import mades.common.variables.VariableFactory;
 
 import org.junit.After;
 import org.junit.Before;
@@ -23,6 +28,9 @@ import com.google.common.collect.TreeMultimap;
 public class CosimulatorTestCase {
 	
 	Cosimulator cosimulator;
+	
+	TimeFactory timeFactory = new TimeFactory();
+	VariableFactory variableFactory = new VariableFactory();
 	
 	/**
 	 * @throws java.lang.Exception
@@ -47,43 +55,41 @@ public class CosimulatorTestCase {
 	@Test
 	public void testStartCosimulation() {
 		int val= 15;
-		VariableAssignment sharedVar1 = new VariableAssignment("sharedVar1", val, true);
-		VariableAssignment sharedVar2 = new VariableAssignment("sharedVar2", val, true);
-		VariableAssignment privateVar1 = new VariableAssignment("privateVar1", val, false);
-		VariableAssignment privateVar2 = new VariableAssignment("privateVar2", val, false);
+		
+		VariableDefinition sharedVar1 = variableFactory.define("sharedVar1", Scope.ENVIRONMENT_SHARED);
+		VariableDefinition sharedVar2 = variableFactory.define("sharedVar2", Scope.SYSTEM_SHARED);
+		VariableDefinition privateVar1 = variableFactory.define("privateVar1", Scope.ENVIRONMENT_INTERNAL);
+		VariableDefinition privateVar2 = variableFactory.define("privateVar2", Scope.SYSTEM_INTERNAL);
 
 
 		ArrayList<VariableAssignment> environmentParams = new ArrayList<VariableAssignment>();
-		environmentParams.add(sharedVar1);
-		environmentParams.add(privateVar1);
+		environmentParams.add(new VariableAssignment(sharedVar1, val));
+		environmentParams.add(new VariableAssignment(privateVar1, val));
 		
 		ArrayList<VariableAssignment> systemParams = new ArrayList<VariableAssignment>();
-		systemParams.add(sharedVar2);
-		systemParams.add(privateVar2);
+		systemParams.add(new VariableAssignment(sharedVar2, val));
+		systemParams.add(new VariableAssignment(privateVar2, val));
 		
-		double startTime = 0;
-		int startStep = 0;
+		double initialSimulationTime = 0;
 		double timeStep = 1;
 		double maxCosimulationTime = 10;
 		int maxCosimulationAttemptsForStep = 1;
 		int maxCosimulationBacktraking = 1;
 		
 		cosimulator.startCosimulation(
-				startTime,
-				startStep,
+				initialSimulationTime,
 				timeStep,
-				maxCosimulationTime, 
+				maxCosimulationTime,
 				maxCosimulationAttemptsForStep,
-				maxCosimulationBacktraking, 
+				maxCosimulationBacktraking,
 				environmentParams,
 				systemParams);
 		
-		assertTrue(maxCosimulationTime <= cosimulator.getSimulationTime());
-		TreeMultimap<Double, VariableAssignment> results = cosimulator.getSharedVariablesMultimap();
+		TreeMultimap<Time, VariableAssignment> results = cosimulator.getSharedVariablesMultimap();
 		int steps = (int)maxCosimulationTime;
-		Set<Double> keys = results.keySet();
+		Set<Time> keys = results.keySet();
 		assertEquals(steps, keys.size());
-		for (Double key: keys) {
+		for (Time key: keys) {
 			Set<VariableAssignment> vars = results.get(key);
 			assertEquals(2, vars.size());
 			assertTrue(vars.contains(sharedVar1));

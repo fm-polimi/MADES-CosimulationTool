@@ -377,7 +377,7 @@ public class Cosimulator {
 		environment.load(environmentMementoStack.peek(), systemMementoStack.peek());
 		
 		EnvironmentMemento environmentMemento =
-			    environment.simulateNext(clock.getCurrentTime());
+			    environment.simulateNext();
 		
 		// Add memento on top of the stack
 		environmentMementoStack.push(environmentMemento);
@@ -396,7 +396,7 @@ public class Cosimulator {
 		logger.fine("Symulating system at step: " + clock.getCurrentTime().getSimulationStep());
 		system.load( systemMementoStack.peek(), environmentMementoStack.peek());
 		
-		SystemMemento systemMemento = system.simulateNext(clock.getCurrentTime());
+		SystemMemento systemMemento = system.simulateNext();
 		
 		// Add memento to the top of the stack
 		systemMementoStack.push(systemMemento);

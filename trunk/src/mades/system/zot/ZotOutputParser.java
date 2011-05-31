@@ -26,6 +26,8 @@ public class ZotOutputParser {
 
 	private static String STEP0 = "------ time 0 ------";
 	private static String STEP = "^------ time (\\d+) ------$";
+	private static String END = "------ end ------";
+	private static String SIGNALS = "\\*\\*(\\w+)\\*\\*";
 	
 	private enum State {
 	    HEADER, VARIABLES 
@@ -39,6 +41,7 @@ public class ZotOutputParser {
 	private int simulationStep;
 	
 	private Pattern stepPattern = Pattern.compile(STEP);
+	private Pattern signalPattern = Pattern.compile(SIGNALS);
 	
 	private BufferedReader reader;
 	private TreeMultimap<Time, VariableAssignment> variablesMultimap;
@@ -69,7 +72,8 @@ public class ZotOutputParser {
 		
 		String line = "";
 		try {
-			while (!simulationStepReached && (line = reader.readLine()) != null) {
+			while (!simulationStepReached && 
+					(line = reader.readLine()) != null) {
 				System.out.println(line);
 				processLine(line);
 			}
@@ -84,19 +88,26 @@ public class ZotOutputParser {
 			case HEADER: {
 				if (line.equals(STEP0)) {
 					state = State.VARIABLES;
+					currentTime = timeFactory.get(0);
 					falseVariablesAtStep = (ArrayList<VariableDefinition>) variables.clone();
 				}
 				break;
 			}
 			case VARIABLES: {
-				Matcher matcher = stepPattern.matcher(line);
-				if (matcher.matches()) {
+				if (line.equals(END)) {
+					simulationStepReached = true;
+					break;
+				}
+				
+				Matcher lineMatcher = stepPattern.matcher(line);
+				
+				if (lineMatcher.matches()) {
 					// Set all the missing variables to false
 					for (VariableDefinition def: falseVariablesAtStep) {
 						variablesMultimap.put(currentTime, new VariableAssignment(def, 0));
 					}
 					
-					step = Integer.parseInt(matcher.group(1));
+					step = Integer.parseInt(lineMatcher.group(1));
 					if (step > simulationStep) {
 						simulationStepReached = true;
 						break;
@@ -104,7 +115,15 @@ public class ZotOutputParser {
 					currentTime = timeFactory.get(step);
 					falseVariablesAtStep = (ArrayList<VariableDefinition>) variables.clone();
 				} else {
-					VariableDefinition def = variableFactory.get(line);
+					String varname = line.trim();
+					if (varname.equals("")) {
+						break;
+					}
+					Matcher signalMatcher = signalPattern.matcher(varname);
+					if (signalMatcher.matches()) {
+						break;
+					}
+					VariableDefinition def = variableFactory.get(varname);
 					falseVariablesAtStep.remove(def);
 					// TODO(rax): We should know if a variable is shared or private
 					variablesMultimap.put(currentTime, new VariableAssignment(def, 1));

@@ -27,17 +27,19 @@ import org.junit.Test;
  */
 public class ZotWrapperTestCase {
 
-	public static String SYSTEM = "/home/rax/workspace-mades/mades/tools/zot/SimulationToyExample_system.zot";
-	protected String engine = "/tmp/MadesZotEngine.zot";
-	protected String variables = "/tmp/MadesZotVariables.zot";
+	static String SYSTEM = "/home/rax/workspace-mades/mades/tools/zot/SimulationToyExample_system.zot";
+	String engine = "/tmp/MadesZotEngine.zot";
+	String variables = "/tmp/MadesZotVariables.zot";
 	
-	protected VariableFactory factory = new VariableFactory();
-	protected Clock clock;
+	VariableFactory factory = new VariableFactory();
+	Clock clock;
 	
-	protected VariableDefinition cond1;
-	protected VariableDefinition react1;
-	protected VariableDefinition act1;
-	protected ZotWrapper wrapper;
+	VariableDefinition cond1;
+	VariableDefinition react1;
+	VariableDefinition act1;
+	ZotWrapper wrapper;
+	
+	int step = 15;
 	
 	/**
 	 * @throws java.lang.Exception
@@ -47,9 +49,9 @@ public class ZotWrapperTestCase {
 		clock = new Clock(Logger.getLogger(ZotWrapperTestCase.class.getName()), 
 				1, 0, 30);
 		
-		cond1 = factory.define("cond1", Scope.ENVIRONMENT_SHARED);
-		react1 = factory.define("react1", Scope.SYSTEM_SHARED);
-		act1 = factory.define("act1", Scope.SYSTEM_INTERNAL);
+		cond1 = factory.define("COND1", Scope.ENVIRONMENT_SHARED);
+		react1 = factory.define("REACT1", Scope.SYSTEM_SHARED);
+		act1 = factory.define("ACT1", Scope.SYSTEM_INTERNAL);
 		
 		ArrayList<VariableDefinition> vars = new ArrayList<VariableDefinition>();
 		vars.add(cond1);
@@ -81,6 +83,11 @@ public class ZotWrapperTestCase {
 	public void testExecuteSimulationStep() {
 		SystemMemento memento = new SystemMemento();
 		memento.put(clock.getCurrentTime(), new VariableAssignment(cond1, 0));
+		
+		for (int i = 0; i < step; i++) {
+			clock.tickForward();
+		}
+		
 		memento = wrapper.executeSimulationStep(clock.tickForward(), memento);
 	}
 
