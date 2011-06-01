@@ -1,5 +1,5 @@
-0.0 // start value
-10.0 // stop value
+25.0 // start value
+30.0 // stop value
 0.02 // step value
 1.0E-6 // tolerance
 1.0 // n states

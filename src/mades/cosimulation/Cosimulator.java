@@ -199,7 +199,7 @@ public class Cosimulator {
 		
 		try {
 			// Runs the co-simulation
-			while(clock.hasReachCosimulationEnd()) {
+			while(!clock.hasReachCosimulationEnd()) {
 				performCosimulationStep();
 			}
 		} finally {

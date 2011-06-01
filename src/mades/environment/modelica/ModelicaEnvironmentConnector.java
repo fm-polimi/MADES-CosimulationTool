@@ -26,15 +26,18 @@ public class ModelicaEnvironmentConnector implements EnvironmentConnector {
 	protected ModelicaWrapper wrapper;
 	protected VariableFactory variableFactory;
 	
+	private String environmentPath;
+	private String environmentName;
 	EnvironmentMemento environmentMemento;
 	
 	public ModelicaEnvironmentConnector(
 			String environmentPath,
 			String environmentName,
 			Logger logger,
-			Clock clock,
 			VariableFactory variableFactory) {
-		wrapper = new ModelicaWrapper(environmentPath, environmentName, clock);
+		this.variableFactory = variableFactory;
+		this.environmentPath = environmentPath;
+		this.environmentName = environmentName;
 	}
 	
 	/* (non-Javadoc)
@@ -43,6 +46,7 @@ public class ModelicaEnvironmentConnector implements EnvironmentConnector {
 	@Override
 	public EnvironmentMemento initialize(ArrayList<VariableAssignment> params,
 			Clock clock) {
+		wrapper = new ModelicaWrapper(environmentPath, environmentName, clock);
 		environmentMemento = wrapper.initFromFile(variableFactory);
 		// TODO(rax): merge the loaded variable with params
 		return environmentMemento;
