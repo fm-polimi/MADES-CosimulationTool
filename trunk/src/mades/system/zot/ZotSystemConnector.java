@@ -38,7 +38,7 @@ public class ZotSystemConnector implements SystemConnector {
 	
 	public ZotSystemConnector(String engineFileName, String systemFileName,
 			String initialVariablesFileName, int maxSimulationStep,
-			Clock clock, VariableFactory variableFactory,
+			VariableFactory variableFactory,
 			ArrayList<VariableDefinition> variables,
 			Logger logger) {
 		this.variableFactory = variableFactory;

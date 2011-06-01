@@ -91,7 +91,7 @@ public class ModelicaWrapper {
 		
 		File dest = new File(fileDest);
 		if (!dest.canWrite()) {
-			throw new AssertionError("Cannot write destintion file: " + fileSource);
+			throw new AssertionError("Cannot write destintion file: " + fileDest);
 		}
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(source));

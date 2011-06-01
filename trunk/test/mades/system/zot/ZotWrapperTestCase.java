@@ -26,7 +26,7 @@ import org.junit.Test;
  */
 public class ZotWrapperTestCase {
 
-	static String SYSTEM = "/home/rax/workspace-mades/mades/tools/zot/SimulationToyExample_system.zot";
+	static final String SYSTEM = "/home/rax/workspace-mades/mades/tools/zot/SimulationToyExample_system.zot";
 	String engine = "/tmp/MadesZotEngine.zot";
 	String variables = "/tmp/MadesZotVariables.zot";
 	
