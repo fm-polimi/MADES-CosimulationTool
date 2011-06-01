@@ -15,7 +15,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import mades.common.timing.Clock;
-import mades.common.timing.Time;
 import mades.common.variables.Scope;
 import mades.common.variables.VariableAssignment;
 import mades.common.variables.VariableDefinition;
@@ -25,6 +24,9 @@ import mades.environment.SignalMap;
 
 /**
  * @author Michele Sama (m.sama@puzzledev.com)
+ *
+ * Wrapper class for using modelica exported system as
+ * simulator for the environment.
  *
  */
 public class ModelicaWrapper {
