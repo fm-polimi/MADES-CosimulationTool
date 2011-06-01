@@ -82,4 +82,15 @@ public class VariableFactory {
 		definedVariables.put(name, var);
 		return var;
 	}
+	
+	/**
+	 * Check if a variable with a given name has been defined.
+	 * 
+	 * @param name the name to check.
+	 * @return <code>true</code> if a variable with the given name already
+	 *        exists <code>false</code> otherwise.
+	 */
+	public boolean isDefined(String name) {
+		return definedVariables.containsKey(name);
+	}
 }

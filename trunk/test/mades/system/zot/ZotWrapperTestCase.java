@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import mades.common.timing.Clock;
-import mades.common.timing.TimeFactory;
 import mades.common.variables.Scope;
 import mades.common.variables.VariableAssignment;
 import mades.common.variables.VariableDefinition;

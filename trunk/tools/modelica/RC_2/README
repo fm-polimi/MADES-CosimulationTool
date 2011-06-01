@@ -1,0 +1,7 @@
+In questo esempio il modello di una rete elettrica (contenente modelli della modelica std. library)
+è già stato compilato e corredato di un file per l'inizializzazione (attraverso l'OpenModelicaCompiler)
+
+lanciando lo script "run.sh" viene avviata la simulazione ed una volta terminata, uno scrpt si occupa dell'analisi
+degli output e della creazione di un file analogo a quello per l'inizializzazione del modello, contenente i valori finali
+delle variabili
+
