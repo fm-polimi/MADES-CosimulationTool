@@ -80,7 +80,7 @@ public class ZotSystemConnector implements SystemConnector {
 	public void load(SystemMemento systemMemento,
 			EnvironmentMemento environmentParams) {
 		this.systemMemento = systemMemento;
-		// TODO(rax): update shared variables
+		this.systemMemento.update(environmentParams);
 	}
 
 	/* (non-Javadoc)

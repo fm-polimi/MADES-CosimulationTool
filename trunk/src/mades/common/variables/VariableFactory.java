@@ -93,4 +93,5 @@ public class VariableFactory {
 	public boolean isDefined(String name) {
 		return definedVariables.containsKey(name);
 	}
+	
 }
