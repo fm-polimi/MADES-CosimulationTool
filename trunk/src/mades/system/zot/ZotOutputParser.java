@@ -29,6 +29,9 @@ public class ZotOutputParser {
 	private static String END = "------ end ------";
 	private static String SIGNALS = "\\*\\*(\\w+)\\*\\*";
 	
+	private static final String DOUBLE = "[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?";
+	private static String VARIABLE = "([\\w._-]+)[ = (" + DOUBLE + ")]?";
+	
 	private enum State {
 	    HEADER, VARIABLES 
 	}
@@ -42,6 +45,7 @@ public class ZotOutputParser {
 	
 	private Pattern stepPattern = Pattern.compile(STEP);
 	private Pattern signalPattern = Pattern.compile(SIGNALS);
+	private Pattern variablePattern = Pattern.compile(VARIABLE);
 	
 	private BufferedReader reader;
 	private TreeMultimap<Time, VariableAssignment> variablesMultimap;
@@ -123,10 +127,18 @@ public class ZotOutputParser {
 					if (signalMatcher.matches()) {
 						break;
 					}
-					VariableDefinition def = variableFactory.get(varname);
-					falseVariablesAtStep.remove(def);
-					// TODO(rax): We should know if a variable is shared or private
-					variablesMultimap.put(currentTime, new VariableAssignment(def, 1));
+					Matcher varMatcher = variablePattern.matcher(varname);
+					if (varMatcher.matches()) {
+						String name = varMatcher.group(1);
+						String value = varMatcher.group(2);
+						double dvalue = value==null?1:Double.parseDouble(value);
+						
+						VariableDefinition def = variableFactory.get(varname);
+						falseVariablesAtStep.remove(def);
+						// TODO(rax): We should know if a variable is shared or private
+						variablesMultimap.put(currentTime, new VariableAssignment(def, dvalue));
+					}
+
 				}
 				break;
 			}
