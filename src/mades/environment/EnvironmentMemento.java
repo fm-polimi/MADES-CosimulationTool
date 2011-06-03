@@ -6,7 +6,10 @@ package mades.environment;
 import java.util.ArrayList;
 
 import mades.common.timing.Time;
+import mades.common.variables.Scope;
 import mades.common.variables.VariableAssignment;
+import mades.common.variables.VariableDefinition;
+import mades.system.SystemMemento;
 
 /**
  * @author Michele Sama (m.sama@puzzledev.com)
@@ -51,4 +54,50 @@ public class EnvironmentMemento {
 		return signals;
 	}
 	
+	/**
+	 * Return a variable assignment for the given variable definition.
+	 * 
+	 * @param def the variable definition
+	 * @return the assignment of the given variable od <code>null</code> if not assigned.
+	 */
+	public VariableAssignment getVariable(VariableDefinition def) {
+		for (VariableAssignment v: params) {
+			// You can use == because they MUST be the same instance
+			if (v.getVariableDefinition() == def) {
+				return v;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * @param memento
+	 */
+	public void update(SystemMemento memento) {		
+		for (VariableAssignment envVar: params) {
+			VariableDefinition def = envVar.getVariableDefinition();
+			if (def.getScope() == Scope.SYSTEM_SHARED) {
+				envVar.setValue(memento.getVariable(def, getTime()).getValue());
+			}
+		}
+	}
+	
+	/**
+	 * @param params
+	 */
+	public void update(ArrayList<VariableAssignment> params) {		
+		for (VariableAssignment envVar: params) {
+			VariableDefinition def = envVar.getVariableDefinition();
+			if (def.getScope() == Scope.SYSTEM_SHARED) {
+				for (VariableAssignment v: params) {
+					// Same instance
+					if (v.getVariableDefinition() == def)
+					{
+						envVar.setValue(v.getValue());
+						break;
+					}
+				}
+			}
+		}
+	}
 }

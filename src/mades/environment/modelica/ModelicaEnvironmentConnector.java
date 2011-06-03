@@ -48,7 +48,7 @@ public class ModelicaEnvironmentConnector implements EnvironmentConnector {
 			Clock clock) {
 		wrapper = new ModelicaWrapper(environmentPath, environmentName, clock);
 		environmentMemento = wrapper.initFromFile(variableFactory);
-		// TODO(rax): merge the loaded variable with params
+		environmentMemento.update(params);
 		return environmentMemento;
 	}
 
@@ -59,7 +59,7 @@ public class ModelicaEnvironmentConnector implements EnvironmentConnector {
 	public void load(EnvironmentMemento environmentMemento,
 			SystemMemento systemParams) {
 		this.environmentMemento = environmentMemento;
-		// TODO(rax) update the shared variables
+		this.environmentMemento.update(systemParams);
 	}
 
 	/* (non-Javadoc)

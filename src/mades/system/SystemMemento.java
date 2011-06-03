@@ -3,15 +3,20 @@
  */
 package mades.system;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.SortedSet;
 
 import com.google.common.collect.Multiset;
 import com.google.common.collect.TreeMultimap;
 
 import mades.common.timing.Time;
+import mades.common.variables.Scope;
 import mades.common.variables.VariableAssignment;
+import mades.common.variables.VariableDefinition;
+import mades.environment.EnvironmentMemento;
 
 /**
  * @author Michele Sama (m.sama@puzzledev.com)
@@ -157,4 +162,37 @@ public class SystemMemento {
 		return variablesMultimap;
 	}
 		
+	
+	/**
+	 * Return a variable assignment for the given variable definition.
+	 * 
+	 * @param def the variable definition
+	 * @param time the time of this definition
+	 * @return the assignment of the given variable od <code>null</code> if not assigned.
+	 */
+	public VariableAssignment getVariable(VariableDefinition def, Time time) {
+		Collection<VariableAssignment> variables = variablesMultimap.get(time);
+		for (VariableAssignment v: variables) {
+			// You can use == because they MUST be the same instance
+			if (v.getVariableDefinition() == def) {
+				return v;
+			}
+		}
+		return null;
+	}
+	
+	public void update(EnvironmentMemento memento) {
+		Time time = memento.getTime();
+		SortedSet<VariableAssignment> variables = variablesMultimap.get(time);
+		if (variables == null) {
+			return;
+		}
+		
+		for (VariableAssignment systemVar: variables) {
+			VariableDefinition def = systemVar.getVariableDefinition();
+			if (def.getScope() == Scope.ENVIRONMENT_SHARED) {
+				systemVar.setValue(memento.getVariable(def).getValue());
+			}
+		}
+	}
 }
