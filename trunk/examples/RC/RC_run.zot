@@ -1,0 +1,8 @@
+(asdf:operate 'asdf:load-op 'eezot)
+(use-package :trio-utils)
+(defvar TSPACE 30)
+
+(load "/home/rax/workspace-mades/mades/examples/RC/RC_system.zot")
+(load "/home/rax/workspace-mades/mades/examples/RC/RC_constraints.zot")
+
+(eezot:zot TSPACE (&& the-system constraints))

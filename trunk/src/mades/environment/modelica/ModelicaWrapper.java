@@ -65,13 +65,15 @@ public class ModelicaWrapper {
 	 * @param environmentPath
 	 * @param environmentName
 	 */
-	protected ModelicaWrapper(String environmentPath, String environmentName, Clock clock) {
+	protected ModelicaWrapper(String environmentPath, Clock clock) {
 		this.environmentPath = environmentPath;
 		
 		this.clock = clock;
 		signals = new SignalMap();
 		
-		environmentFileName = environmentPath + File.separator + environmentName;
+		File folder = new File(environmentPath);
+		
+		environmentFileName = environmentPath + File.separator + folder.getName();
 		baseVariableFileName = environmentFileName + BASE_FILE_POSTFIX;
 		initialVariableFileName = environmentFileName + INIT_FILE_POSTFIX;
 		// Copy the base variables in the initial file
@@ -93,6 +95,14 @@ public class ModelicaWrapper {
 		}
 		
 		File dest = new File(fileDest);
+		if (!dest.exists()) {
+			try {
+				dest.createNewFile();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		if (!dest.canWrite()) {
 			throw new AssertionError("Cannot write destintion file: " + fileDest);
 		}

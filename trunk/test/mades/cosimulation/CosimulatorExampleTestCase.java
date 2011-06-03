@@ -23,16 +23,12 @@ import com.google.common.collect.TreeMultimap;
 
 public class CosimulatorExampleTestCase {
 
-	public final static String ENVIRONMENT_PATH = "/home/rax/workspace-mades/mades/tools/modelica/RC_2";
+	public final static String ENVIRONMENT_PATH = "/home/rax/workspace-mades/mades/examples/RC";
 	public final static String ENVIRONMENT_NAME = "RC";
 	
 	public static final String SYSTEM = "/home/rax/workspace-mades/mades/tools/zot/SimulationToyExample_system.zot";
 	String engine = "/tmp/MadesZotEngine.zot";
 	String variables = "/tmp/MadesZotVariables.zot";
-	
-	VariableDefinition cond1;
-	VariableDefinition react1;
-	VariableDefinition act1;
 	
 	Logger logger = Logger.getLogger(CosimulatorExampleTestCase.class.getName());
 
@@ -46,18 +42,9 @@ public class CosimulatorExampleTestCase {
 	@Before
 	public void setUp() throws Exception {
 		
-		cond1 = variableFactory.define("COND1", Scope.ENVIRONMENT_SHARED);
-		react1 = variableFactory.define("REACT1", Scope.SYSTEM_SHARED);
-		act1 = variableFactory.define("ACT1", Scope.SYSTEM_INTERNAL);
-		
-		ArrayList<VariableDefinition> vars = new ArrayList<VariableDefinition>();
-		vars.add(cond1);
-		vars.add(react1);
-		vars.add(act1);
-		
-		system = new ZotSystemConnector(engine, SYSTEM, variables, 30, variableFactory, vars, logger);
-		environment = new ModelicaEnvironmentConnector(ENVIRONMENT_PATH, ENVIRONMENT_NAME, logger, variableFactory);
-		cosimulator = new Cosimulator();
+		system = new ZotSystemConnector(ENVIRONMENT_PATH, 30, logger);
+		environment = new ModelicaEnvironmentConnector(ENVIRONMENT_PATH, logger);
+		cosimulator = new Cosimulator(logger);
 		cosimulator.setEnvironment(environment);
 		cosimulator.setSystem(system);
 	}
@@ -68,12 +55,6 @@ public class CosimulatorExampleTestCase {
 
 	@Test
 	public void testStartCosimulation() {
-		ArrayList<VariableAssignment> environmentParams = new ArrayList<VariableAssignment>();
-		environmentParams.add(new VariableAssignment(cond1, 0));
-		
-		ArrayList<VariableAssignment> systemParams = new ArrayList<VariableAssignment>();
-		systemParams.add(new VariableAssignment(react1, 0));
-		
 		double initialSimulationTime = 0;
 		double timeStep = 5;
 		double maxCosimulationTime = 30;
@@ -85,9 +66,7 @@ public class CosimulatorExampleTestCase {
 				timeStep,
 				maxCosimulationTime,
 				maxCosimulationAttemptsForStep,
-				maxCosimulationBacktraking,
-				environmentParams,
-				systemParams);
+				maxCosimulationBacktraking);
 		
 		TreeMultimap<Time, VariableAssignment> results = cosimulator.getSharedVariablesMultimap();
 		int steps = (int)(maxCosimulationTime / timeStep) + 1;
