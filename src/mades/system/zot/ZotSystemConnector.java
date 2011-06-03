@@ -25,48 +25,35 @@ public class ZotSystemConnector implements SystemConnector {
 
 	protected Clock clock;
 	protected Logger logger;
-	protected VariableFactory variableFactory;
 	protected ZotWrapper wrapper;
 	
 	protected SystemMemento systemMemento;
 	
-	private String engineFileName;
-	private String systemFileName;
-	private String initialVariablesFileName;
+	private String path;
 	private int maxSimulationStep;
-	private ArrayList<VariableDefinition> systemVariables;
 	
-	public ZotSystemConnector(String engineFileName, String systemFileName,
-			String initialVariablesFileName, int maxSimulationStep,
-			VariableFactory variableFactory,
-			ArrayList<VariableDefinition> variables,
+	public ZotSystemConnector(String path, int maxSimulationStep,
 			Logger logger) {
-		this.variableFactory = variableFactory;
 		this.logger = logger;
 		
-		this.engineFileName = engineFileName;
-		this.systemFileName = systemFileName;
-		this.initialVariablesFileName = initialVariablesFileName;
+		this.path = path;
 		this.maxSimulationStep = maxSimulationStep;
-		this.systemVariables = variables;
 	}
 	
 	/* (non-Javadoc)
 	 * @see mades.system.SystemConnector#initialize(java.util.ArrayList, int)
 	 */
 	@Override
-	public SystemMemento initialize(ArrayList<VariableAssignment> params, Clock clock) {
-		Time time = clock.getCurrentTime();
-		
+	public SystemMemento initialize(Clock clock,
+			VariableFactory variableFactory) {
 		this.clock = clock;
-		wrapper = new ZotWrapper(engineFileName,
-				systemFileName, initialVariablesFileName, 
-				maxSimulationStep, clock, variableFactory,
-				systemVariables);
+		wrapper = new ZotWrapper(path, 
+				maxSimulationStep, clock, variableFactory);
 		
+		ArrayList<VariableAssignment> variables = wrapper.parseInit(this.path);
 		TreeMultimap<Time, VariableAssignment> variablesMultimap = TreeMultimap.create();
-		for (VariableAssignment v: params) {
-			variablesMultimap.put(time, v);
+		for (VariableAssignment v: variables) {
+			variablesMultimap.put(clock.getCurrentTime(), v);
 		}
 		systemMemento = new SystemMemento(variablesMultimap);
 		systemMemento = wrapper.executeSimulationStep(clock.getCurrentTime(), systemMemento);

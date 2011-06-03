@@ -12,4 +12,6 @@ sudo ln -s ~/mades/zot/*.asd /usr/share/common-lisp/systems/
 
 
 
-
+# solvers
+#http://yices.csl.sri.com/download-yices2.shtml
+#http://research.microsoft.com/en-us/um/redmond/projects/z3/

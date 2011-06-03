@@ -27,28 +27,23 @@ public class ModelicaEnvironmentConnector implements EnvironmentConnector {
 	protected VariableFactory variableFactory;
 	
 	private String environmentPath;
-	private String environmentName;
 	EnvironmentMemento environmentMemento;
 	
 	public ModelicaEnvironmentConnector(
 			String environmentPath,
-			String environmentName,
-			Logger logger,
-			VariableFactory variableFactory) {
-		this.variableFactory = variableFactory;
+			Logger logger
+			) {
+		this.logger = logger;
 		this.environmentPath = environmentPath;
-		this.environmentName = environmentName;
 	}
 	
 	/* (non-Javadoc)
 	 * @see mades.environment.EnvironmentConnector#initialize(java.util.ArrayList, mades.common.timing.Clock)
 	 */
 	@Override
-	public EnvironmentMemento initialize(ArrayList<VariableAssignment> params,
-			Clock clock) {
-		wrapper = new ModelicaWrapper(environmentPath, environmentName, clock);
+	public EnvironmentMemento initialize(Clock clock, VariableFactory variableFactory) {
+		wrapper = new ModelicaWrapper(environmentPath, clock);
 		environmentMemento = wrapper.initFromFile(variableFactory);
-		environmentMemento.update(params);
 		return environmentMemento;
 	}
 

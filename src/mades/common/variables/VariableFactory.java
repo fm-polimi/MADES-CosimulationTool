@@ -75,7 +75,7 @@ public class VariableFactory {
 			throw new AssertionError(
 					"A variable named: " + 
 					name + 
-					" does not exist.");
+					" already exist.");
 		} 
 		
 		VariableDefinition var = new VariableDefinition(name, scope);

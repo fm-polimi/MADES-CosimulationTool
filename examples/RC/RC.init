@@ -1,0 +1,4 @@
+COND1 env shared 1
+REACT1 sys shared 0
+ACT1 sys private 0
+

@@ -3,16 +3,21 @@
  */
 package mades.system.zot;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import mades.common.timing.Clock;
 import mades.common.timing.Time;
+import mades.common.variables.Scope;
 import mades.common.variables.VariableAssignment;
 import mades.common.variables.VariableDefinition;
 import mades.common.variables.VariableFactory;
@@ -36,7 +41,10 @@ import mades.system.SystemMemento;
  */
 public class ZotWrapper {
 
-	public static String LISP_INTERPRETER = "clisp";
+	public static final String LISP_INTERPRETER = "clisp";
+	public static final String ENGINE = "_run.zot";
+	public static final String SYSTEM = "_system.zot";
+	public static final String VARIABLES = "_constraints.zot";
 	
 	
 	/**
@@ -59,8 +67,13 @@ public class ZotWrapper {
 	
 	private Clock clock;
 	private VariableFactory variableFactory;
-	private ArrayList<VariableDefinition> variables;
+	private ArrayList<VariableDefinition> definedVariables;
 	
+	private static final String DOUBLE = "[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?";
+	private static final String INIT_VARIABLE = "^([\\w]+) (env|sys) (private|shared) (" + DOUBLE + ")$";
+	private static final String SYSTEM_DEF = "sys";
+	private static final String SHARED_DEF = "shared";
+	private Pattern stepPattern = Pattern.compile(INIT_VARIABLE);
 	
 	/**
 	 * Initializes this instance with the engine and the given system.
@@ -73,16 +86,14 @@ public class ZotWrapper {
 	 * @throws AssertionError if any of the given files do not 
 	 *         exist or if they are a directory.
 	 */
-	public ZotWrapper(String engineFileName, String systemFileName,
-			String initialVariablesFileName, int maxSimulationStep,
-			Clock clock, VariableFactory variableFactory,
-			ArrayList<VariableDefinition> variables) {
+	public ZotWrapper(String path, int maxSimulationStep,
+			Clock clock, VariableFactory variableFactory) {
 		
-		this.variables = variables;
 		this.clock = clock;
 		this.variableFactory = variableFactory;
 		
-		this.systemFileName = systemFileName;
+		File folder = new File(path);
+		this.systemFileName = path + File.separator + folder.getName() + SYSTEM;
 		File systemFile = new File(systemFileName);
 		if (!systemFile.exists() || systemFile.isDirectory()) {
 			throw new AssertionError(
@@ -90,15 +101,9 @@ public class ZotWrapper {
 					systemFileName);
 		}
 		
-		this.initialVariablesFileName = initialVariablesFileName;
-		/*File currenVariablesFile = new File(initialVariablesFileName);
-		if (!currenVariablesFile.exists() || currenVariablesFile.isDirectory()) {
-			throw new AssertionError(
-					"Variables file not found or is a directory: " +
-					initialVariablesFileName);
-		}*/
+		this.initialVariablesFileName = path + File.separator + folder.getName() + VARIABLES;
 		
-		this.engineFileName = engineFileName;
+		this.engineFileName = path + File.separator + folder.getName() + ENGINE;
 		try {
 			writeEngine(maxSimulationStep);
 		} catch (FileNotFoundException e) {
@@ -108,6 +113,52 @@ public class ZotWrapper {
 					);
 		}
 		
+	}
+	
+	public ArrayList<VariableAssignment> parseInit(String path) {
+		definedVariables = new ArrayList<VariableDefinition>();
+		ArrayList<VariableAssignment> variables = new ArrayList<VariableAssignment>();
+		File folder = new File(path);
+		try {
+			BufferedReader reader = new BufferedReader(
+					new FileReader(
+							path + File.separator + folder.getName() + ".init"));
+			
+			String line;
+			while ((line = reader.readLine()) != null) {
+				Matcher matcher = stepPattern.matcher(line);
+				if (matcher.matches()) {
+					String name = matcher.group(1);
+					String sysOrEnv = matcher.group(2);
+					String privateOrShared = matcher.group(3);
+					String value = matcher.group(4);
+					Scope scope;
+					if (sysOrEnv.equals(SYSTEM_DEF)) {
+						if (privateOrShared.equals(SHARED_DEF)) {
+							scope = Scope.SYSTEM_SHARED;
+						} else {
+							scope = Scope.SYSTEM_INTERNAL;
+						}
+					} else {
+						if (privateOrShared.equals(SHARED_DEF)) {
+							scope = Scope.ENVIRONMENT_SHARED;
+						} else {
+							scope = Scope.SYSTEM_SHARED;
+						}
+					}
+					VariableDefinition def = variableFactory.define(name, scope);
+					definedVariables.add(def);
+					variables.add(new VariableAssignment(def, Double.parseDouble(value)));
+				}
+			}
+			
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return variables;
 	}
 	
 	private void writeEngine(int maxSimulationTime) throws FileNotFoundException {
@@ -150,6 +201,7 @@ public class ZotWrapper {
 			int step = t.getSimulationStep();
 			if (step == 0) {
 				composeVariableCollection(builder, variables);
+				builder.append("\n");
 			} else {
 				builder.append("(futr ");
 				composeVariableCollection(builder, variables);
@@ -183,7 +235,7 @@ public class ZotWrapper {
 				builder.append("(-P- " + def.getName() + ")");
 			}
 		}
-		builder.append(")\n");
+		builder.append(")");
 	}
 
 	/**
@@ -219,7 +271,7 @@ public class ZotWrapper {
 		}
 		
 		ZotOutputParser parser = new ZotOutputParser(clock, 
-				variableFactory, variables, time.getSimulationStep(), 
+				variableFactory, definedVariables, time.getSimulationStep(), 
 				process.getInputStream());
 		SystemMemento memento = new SystemMemento(parser.parse());
 		/*

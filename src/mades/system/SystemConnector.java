@@ -3,10 +3,8 @@
  */
 package mades.system;
 
-import java.util.ArrayList;
-
 import mades.common.timing.Clock;
-import mades.common.variables.VariableAssignment;
+import mades.common.variables.VariableFactory;
 import mades.cosimulation.Cosimulator;
 import mades.environment.EnvironmentMemento;
 
@@ -27,10 +25,11 @@ public interface SystemConnector {
 	 * 
 	 * @param params: A collection of key,value initialization parameters.
 	 * @param clock the timer for this co-simulation.
+	 * @param variableFactory the variable factory
 	 * @return an instance representing the configuration of
 	 *         this connector at the initial state.
 	 */
-	public SystemMemento initialize(ArrayList<VariableAssignment> params, Clock clock);
+	public SystemMemento initialize(Clock clock, VariableFactory variableFactory);
 	
 	/**
 	 * Loads a given initial state to the system. This method is supposed

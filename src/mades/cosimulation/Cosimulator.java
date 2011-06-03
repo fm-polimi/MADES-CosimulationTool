@@ -3,7 +3,6 @@
  */
 package mades.cosimulation;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Stack;
 import java.util.logging.Logger;
@@ -14,6 +13,7 @@ import mades.common.timing.Clock;
 import mades.common.timing.Time;
 import mades.common.variables.Scope;
 import mades.common.variables.VariableAssignment;
+import mades.common.variables.VariableFactory;
 import mades.environment.EnvironmentConnector;
 import mades.environment.EnvironmentMemento;
 import mades.environment.SignalMap;
@@ -30,11 +30,12 @@ import mades.system.SystemMemento;
  */
 public class Cosimulator {
 
-	Logger logger = Logger.getLogger(this.getClass().getName());
+	private Logger logger;
 	
 	private boolean simulationStarted;
 	
 	private Clock clock;
+	private VariableFactory variableFactory;
 	
 	/**
 	 * The environment simulator used in this co-simulation.
@@ -71,17 +72,10 @@ public class Cosimulator {
 	/**
 	 * Default constructor.
 	 */
-	public Cosimulator() {
-		// TODO Auto-generated constructor stub
+	public Cosimulator(Logger logger) {
+		this.logger = logger;
 	}
 	
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-	}
-
 	/**
 	 * Gets the current {@link EnvironmentConnector}.
 	 * 
@@ -153,10 +147,6 @@ public class Cosimulator {
 	 * @param maxCosimulationAttemptsForStep the maximum number of attempts
 	 *         at each step.
 	 * @param maxCosimulationBacktraking the maximum number of steps back.
-	 * @param environmentParams the initial configuration for the 
-	 *         {@link EnvironmentConnector}.
-	 * @param systemParams the initial configuration for the 
-	 *         {@link SystemConnector}. 
 	 * 
 	 * @throws IllegalStateException if the co-simulation is already running.
 	 * @throws AssertionError if either the {@link EnvironmentConnector} or the
@@ -170,9 +160,7 @@ public class Cosimulator {
 			double timeStep,
 			double maxCosimulationTime,
 			int maxCosimulationAttemptsForStep,
-			int maxCosimulationBacktraking,
-			ArrayList<VariableAssignment> environmentParams,
-			ArrayList<VariableAssignment> systemParams
+			int maxCosimulationBacktraking
 			) {
 		if (simulationStarted) {
 			throw new IllegalStateException("Simulation is already running"); 
@@ -186,12 +174,12 @@ public class Cosimulator {
 		
 		clock = new Clock(logger, timeStep,
 				initialSimulationTime, maxCosimulationTime);
+		variableFactory = new VariableFactory();
 		
 		this.maxCosimulationAttemptsForStep = maxCosimulationAttemptsForStep;
 		this.maxCosimulationBacktraking = maxCosimulationBacktraking;
 		
-		reinitializeSimulation(initialSimulationTime,
-				environmentParams, systemParams);
+		reinitializeSimulation(initialSimulationTime);
 		
 		
 		simulationStarted = true;
@@ -207,7 +195,8 @@ public class Cosimulator {
 			logger.fine("Simulation ended at time: " + clock.getCurrentTime().getSimulationTime());
 		}
 	}
-
+	
+	
 	/**
 	 * Cleans the internal stacks and initializes the first state.
 	 * 
@@ -216,9 +205,7 @@ public class Cosimulator {
 	 * @param systemParams
 	 */
 	private void reinitializeSimulation(
-			double initialSimulationTime, 
-			ArrayList<VariableAssignment> environmentParams,
-			ArrayList<VariableAssignment> systemParams) {
+			double initialSimulationTime) {
 		
 		if (environmentMementoStack != null) {
 			while (!environmentMementoStack.isEmpty()) {
@@ -242,10 +229,14 @@ public class Cosimulator {
 		sharedVariablesMultimap = TreeMultimap.create();
 		
 		// Add the initial states to the bottom of the stack
-		environmentMementoStack.push(
-				environment.initialize(environmentParams, clock));
+		// The system must be initialized first
 		systemMementoStack.push(
-				system.initialize(systemParams, clock));
+				system.initialize(clock,
+						variableFactory));
+		environmentMementoStack.push(
+				environment.initialize(clock,
+						variableFactory));
+		
 		
 	}
 	
