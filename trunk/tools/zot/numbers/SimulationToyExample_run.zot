@@ -15,6 +15,6 @@
 
 ;; (ae2zot:zot TSPACE (&& the-system constraints))
 (ae2zot:zot TSPACE (&& the-system constraints)
-             :smt-solver :yices
+             :smt-solver :z3
 )
 
