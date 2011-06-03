@@ -38,4 +38,15 @@ public class SignalMap {
 		}
 		return true;
 	}
+
+	/**
+	 * @param name
+	 * @param time
+	 * @return
+	 */
+	public ArrayList<Double> put(String name, Double time) {
+		ArrayList<Double> valuesArrayList = signals.get(name);
+		valuesArrayList.add(time);
+		return valuesArrayList;
+	}
 }

@@ -36,14 +36,18 @@ public class ModelicaWrapper {
 	private static String INIT_FILE_POSTFIX = "_init.txt";
 	private static String BASE_FILE_POSTFIX = "_variables.txt";
 	private static String FINAL_FILE_POSTFIX = "_final.txt";
-	private static String SIGNAL_FILE_POSTFIX = "_transitions.txt";
+	private static String SIGNAL_FILE_NAME = "A_Transitions";
 	private static String RUN_FILE = "run.sh";
 	
-	private static String VARIABLE_LINE = "^([-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?)( //[ ]?default)? //([ ]?[\\w \\._\\(\\)]+)$";
+	private static final String VARIABLE_NAME = "[\\w \\._\\(\\)]+";
+	private static final String DOUBLE = "[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?";
+	private static final String VARIABLE_LINE = "^(" + DOUBLE + ")( //[ ]?default)? //([ ]?" + VARIABLE_NAME + ")$";
 	private Pattern variablePattern = Pattern.compile(VARIABLE_LINE);
 	
+	private static final String SIGNAL_LINE = "^[TRANSnp|TRANSpn]:\t(" + VARIABLE_NAME + ")\t(" + DOUBLE + ")$";
+	private Pattern signalPattern = Pattern.compile(SIGNAL_LINE);
+	
 	private String environmentPath;
-	private String environmentName;
 	
 	private String environmentFileName;
 	private String runFileName;
@@ -63,7 +67,6 @@ public class ModelicaWrapper {
 	 */
 	protected ModelicaWrapper(String environmentPath, String environmentName, Clock clock) {
 		this.environmentPath = environmentPath;
-		this.environmentName = environmentName;
 		
 		this.clock = clock;
 		signals = new SignalMap();
@@ -75,7 +78,7 @@ public class ModelicaWrapper {
 		copy(baseVariableFileName, initialVariableFileName);
 		
 		finalVariableFileName = environmentFileName + FINAL_FILE_POSTFIX;
-		signalsFileName = environmentFileName + SIGNAL_FILE_POSTFIX;
+		signalsFileName = environmentPath + File.separator + SIGNAL_FILE_NAME;
 		runFileName = environmentPath + File.separator + RUN_FILE;
 	}
 	
@@ -265,6 +268,12 @@ public class ModelicaWrapper {
 	}
 	
 	protected void parseSignalLine(String line) {
-		
+		Matcher matcher = signalPattern.matcher(line);
+		if (matcher.matches()) {
+			String upDown = matcher.group(1);
+			String name = matcher.group(2);
+			String value = matcher.group(3);
+			signals.put(name, Double.parseDouble(value));
+		}
 	}
 }
