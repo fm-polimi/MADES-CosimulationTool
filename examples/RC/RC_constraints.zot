@@ -1,19 +1,29 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; variables 
+;;; CONSTRAINTS FOR TESTING
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; These are constraints just for testing, to produce meaningful sequences
+(defvar cond1_holds (somf (lasted (-P- cond1) C1)))
+(defvar cond1_ev_stops (somf (alwf (!! (-P- cond1)))))
+
 (defvar history
-	(&&
-(&& (!! (-P- ACT1))(-P- COND1)(-P- REACT1))
-(futr (&& (!! (-P- ACT1))(-P- COND1)(-P- REACT1)) 1)
-(futr (&& (!! (-P- ACT1))(-P- COND1)(-P- REACT1)) 2)
-(futr (&& (!! (-P- ACT1))(-P- COND1)(-P- REACT1)) 3)
-(futr (&& (!! (-P- ACT1))(-P- COND1)(-P- REACT1)) 4)
-(futr (&& (!! (-P- ACT1))(-P- COND1)(!! (-P- REACT1))) 5)
-(futr (&& (!! (-P- ACT1))(-P- COND1)(-P- REACT1)) 6)
-))
+  (&&
+    (!! (-P- cond1))
+    (futr (!! (-P- cond1)) 1)
+    (futr (-P- cond1) 2)
+    (futr (-P- cond1) 3)
+    (futr (!! (-P- cond1)) 4)
+    (futr (-P- cond1) 5)
+    (futr (-P- cond1) 6)
+    (futr (-P- cond1) 7)
+    (futr (-P- cond1) 8)
+    (futr (-P- cond1) 9)
+  ))
 
 (defvar constraints
-(&&
-	history
-))
+  (&&
+;;    cond1_holds
+;;    cond1_ev_stops
+    history
+    (somf ([>] (-V- num_react1) LB))
+  ))

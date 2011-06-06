@@ -3,11 +3,9 @@
  */
 package mades.environment.modelica;
 
-import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import mades.common.timing.Clock;
-import mades.common.variables.VariableAssignment;
 import mades.common.variables.VariableFactory;
 import mades.environment.EnvironmentConnector;
 import mades.environment.EnvironmentMemento;
@@ -24,7 +22,6 @@ public class ModelicaEnvironmentConnector implements EnvironmentConnector {
 
 	protected Logger logger;
 	protected ModelicaWrapper wrapper;
-	protected VariableFactory variableFactory;
 	
 	private String environmentPath;
 	EnvironmentMemento environmentMemento;

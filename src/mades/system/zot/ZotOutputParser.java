@@ -30,7 +30,7 @@ public class ZotOutputParser {
 	private static String SIGNALS = "\\*\\*(\\w+)\\*\\*";
 	
 	private static final String DOUBLE = "[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?";
-	private static String VARIABLE = "([\\w._-]+)[ = (" + DOUBLE + ")]?";
+	private static String VARIABLE = "([\\w._-]+)( = (" + DOUBLE + ")]?)";
 	
 	private enum State {
 	    HEADER, VARIABLES 
@@ -129,13 +129,13 @@ public class ZotOutputParser {
 					}
 					Matcher varMatcher = variablePattern.matcher(varname);
 					if (varMatcher.matches()) {
+						int count = varMatcher.groupCount();
 						String name = varMatcher.group(1);
 						String value = varMatcher.group(2);
-						double dvalue = value==null?1:Double.parseDouble(value);
+						double dvalue = value.equals("") ? 1 : Double.parseDouble(value);
 						
-						VariableDefinition def = variableFactory.get(varname);
+						VariableDefinition def = variableFactory.get(name);
 						falseVariablesAtStep.remove(def);
-						// TODO(rax): We should know if a variable is shared or private
 						variablesMultimap.put(currentTime, new VariableAssignment(def, dvalue));
 					}
 

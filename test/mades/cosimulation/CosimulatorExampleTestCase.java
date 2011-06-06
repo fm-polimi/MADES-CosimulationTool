@@ -2,14 +2,11 @@ package mades.cosimulation;
 
 import static org.junit.Assert.*;
 
-import java.util.ArrayList;
 import java.util.Set;
 import java.util.logging.Logger;
 
 import mades.common.timing.Time;
-import mades.common.variables.Scope;
 import mades.common.variables.VariableAssignment;
-import mades.common.variables.VariableDefinition;
 import mades.common.variables.VariableFactory;
 import mades.environment.modelica.ModelicaEnvironmentConnector;
 import mades.environment.modelica.ModelicaWrapper;
