@@ -163,14 +163,14 @@ public class ZotWrapper {
 	
 	private void writeEngine(int maxSimulationTime) throws FileNotFoundException {
 		StringBuilder builder = new StringBuilder();
-		builder.append("(asdf:operate 'asdf:load-op 'eezot)\n");
+		builder.append("(asdf:operate 'asdf:load-op 'ae2zot)\n");
 		builder.append("(use-package :trio-utils)\n");
 		builder.append("(defvar TSPACE " + maxSimulationTime + ")\n");
 		builder.append("\n");
 		builder.append("(load \"" + systemFileName + "\")\n");
 		builder.append("(load \"" + initialVariablesFileName + "\")\n");
 		builder.append("\n");
-		builder.append("(eezot:zot TSPACE (&& the-system constraints))\n");
+		builder.append("(ae2zot:zot TSPACE (&& the-system constraints):smt-solver :z3)\n");
 		String engine = builder.toString();
 		
 		PrintWriter writer = new PrintWriter(engineFileName);

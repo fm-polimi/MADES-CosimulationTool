@@ -5,6 +5,11 @@
 (defvar C2 8)
 (defvar C3 3)
 (defvar C4 5)
+(defvar LB 4)
+(defvar UB 8)
+
+
+(define-tvar 'num_react1 *int*)
 
 ;; cond1 is some condition that, when it holds for C1 instants, triggers some action act1 within C2 instants.
 ;; formula monitor:
@@ -22,4 +27,13 @@
   (-> (-P- act1)
       (futr (lasts (-P- react1) (- C4 C3)) C3)))
 
-(defvar the-system (Alw (&& monitor reaction)))
+(defvar numerical_reaction1
+  (-> (-P- react1)
+      (&& ([>=] (-V- num_react1) LB) ([<=] (-V- num_react1) UB))))
+
+(defvar numerical_reaction2
+  (-> (!! (-P- react1))
+      ([=] (-V- num_react1) 0)))
+
+
+(defvar the-system (Alw (&& monitor reaction numerical_reaction1 numerical_reaction2)))
