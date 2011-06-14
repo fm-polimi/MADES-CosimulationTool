@@ -12,6 +12,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -45,6 +46,7 @@ public class ZotWrapper {
 	public static final String ENGINE = "_run.zot";
 	public static final String SYSTEM = "_system.zot";
 	public static final String VARIABLES = "_constraints.zot";
+	public static final String INIT = ".init";
 	
 	
 	/**
@@ -63,17 +65,25 @@ public class ZotWrapper {
 	 * The name of the lisp file containing the simulation variables.
 	 * A new file will be used for each step of the simulation.
 	 */
-	private String initialVariablesFileName;
+	private String constraintsFileName;
 	
+	private String initFileName;
+	
+	private Logger logger;
 	private Clock clock;
 	private VariableFactory variableFactory;
 	private ArrayList<VariableDefinition> definedVariables;
 	
 	private static final String DOUBLE = "[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?";
-	private static final String INIT_VARIABLE = "^([\\w]+) (env|sys) (private|shared) (" + DOUBLE + ")$";
 	private static final String SYSTEM_DEF = "sys";
 	private static final String SHARED_DEF = "shared";
+	private static final String BOOLEAN = "boolean";
+	private static final String REAL = "real";
+	private static final String INIT_VARIABLE = "^([\\w]+) (env|sys) (private|shared) (" + BOOLEAN +"|" + REAL + ") (" + DOUBLE + ")$";
 	private Pattern stepPattern = Pattern.compile(INIT_VARIABLE);
+	
+	private static final String CONSTRAINS = "\\Q(defvar history\\E[\\n]+([.]+)\\Q)\\E[\\n]+\\Q(defvar constraints\\E";
+	private Pattern constrainsPattern = Pattern.compile(CONSTRAINS);
 	
 	/**
 	 * Initializes this instance with the engine and the given system.
@@ -87,42 +97,61 @@ public class ZotWrapper {
 	 *         exist or if they are a directory.
 	 */
 	public ZotWrapper(String path, int maxSimulationStep,
-			Clock clock, VariableFactory variableFactory) {
+			Clock clock, VariableFactory variableFactory, Logger logger) {
 		
 		this.clock = clock;
 		this.variableFactory = variableFactory;
+		this.logger = logger;
 		
+		// Check project directory
 		File folder = new File(path);
-		this.systemFileName = path + File.separator + folder.getName() + SYSTEM;
-		File systemFile = new File(systemFileName);
-		if (!systemFile.exists() || systemFile.isDirectory()) {
-			throw new AssertionError(
-					"System file not found or is a directory: " + 
-					systemFileName);
+		if (!folder.exists() || !folder.isDirectory()) {
+			String errorMsg = "Path " + path + " must be a folder: aborting...";
+			logger.severe(errorMsg);
+			throw new AssertionError(errorMsg);
+		}
+		if (!folder.canWrite()) {
+			String errorMsg = "Path " + path + " must have write permission: aborting...";
+			logger.severe(errorMsg);
+			throw new AssertionError(errorMsg);
 		}
 		
-		this.initialVariablesFileName = path + File.separator + folder.getName() + VARIABLES;
+		String projectName = folder.getName();
 		
-		this.engineFileName = path + File.separator + folder.getName() + ENGINE;
-		try {
-			writeEngine(maxSimulationStep);
-		} catch (FileNotFoundException e) {
-			throw new AssertionError(
-					"Engine file " + systemFileName +
-					" is not writable: " + e.getMessage()
-					);
-		}
+		systemFileName = path + File.separator + projectName + SYSTEM;
+		checkFileExist(systemFileName);
 		
+		constraintsFileName = path + File.separator + projectName + VARIABLES;
+		checkFileExist(constraintsFileName);
+		
+		engineFileName = path + File.separator + projectName + ENGINE;
+		checkAndUpdateEngine(maxSimulationStep);
+		
+		initFileName = path + File.separator + projectName + INIT;
+		checkFileExist(initFileName);
 	}
 	
-	public ArrayList<VariableAssignment> parseInit(String path) {
+	private void checkFileExist(String filename) {
+		File file = new File(filename);
+		if (!file.exists() || !file.isFile()) {
+			String errorMsg = "File not found or is a directory: " + 
+					filename;
+			logger.severe(errorMsg);
+			throw new AssertionError(errorMsg);
+		}
+	}
+	
+	private void checkAndUpdateEngine(int maxSimulationStep) {
+		checkFileExist(this.engineFileName);
+		// TODO(rax): update file
+	}
+	
+	public ArrayList<VariableAssignment> parseInit() {
 		definedVariables = new ArrayList<VariableDefinition>();
 		ArrayList<VariableAssignment> variables = new ArrayList<VariableAssignment>();
-		File folder = new File(path);
 		try {
 			BufferedReader reader = new BufferedReader(
-					new FileReader(
-							path + File.separator + folder.getName() + ".init"));
+					new FileReader(initFileName));
 			
 			String line;
 			while ((line = reader.readLine()) != null) {
@@ -131,7 +160,8 @@ public class ZotWrapper {
 					String name = matcher.group(1);
 					String sysOrEnv = matcher.group(2);
 					String privateOrShared = matcher.group(3);
-					String value = matcher.group(4);
+					String bool = matcher.group(4);
+					String value = matcher.group(5);
 					Scope scope;
 					if (sysOrEnv.equals(SYSTEM_DEF)) {
 						if (privateOrShared.equals(SHARED_DEF)) {
@@ -146,7 +176,8 @@ public class ZotWrapper {
 							scope = Scope.SYSTEM_SHARED;
 						}
 					}
-					VariableDefinition def = variableFactory.define(name, scope);
+					VariableDefinition def = variableFactory.define(
+							name, scope, bool.equals(BOOLEAN));
 					definedVariables.add(def);
 					variables.add(new VariableAssignment(def, Double.parseDouble(value)));
 				}
@@ -160,41 +191,66 @@ public class ZotWrapper {
 		
 		return variables;
 	}
-	
-	private void writeEngine(int maxSimulationTime) throws FileNotFoundException {
-		StringBuilder builder = new StringBuilder();
-		builder.append("(asdf:operate 'asdf:load-op 'ae2zot)\n");
-		builder.append("(use-package :trio-utils)\n");
-		builder.append("(defvar TSPACE " + maxSimulationTime + ")\n");
-		builder.append("\n");
-		builder.append("(load \"" + systemFileName + "\")\n");
-		builder.append("(load \"" + initialVariablesFileName + "\")\n");
-		builder.append("\n");
-		builder.append("(ae2zot:zot TSPACE (&& the-system constraints):smt-solver :z3)\n");
-		String engine = builder.toString();
-		
-		PrintWriter writer = new PrintWriter(engineFileName);
-		writer.write(engine);
-		writer.flush();
-		writer.close();
-	}
+
 	
 	/**
-	 * Converts the given {@link SystemMemento} in a lisp variables file. 
+	 * Adds to the string builder a collection of variables.
 	 * 
-	 * @param memento the memento to convert.
-	 * @return a string containing the lisp representation of
-	 *         the given memento.
+	 * @param builder The builder in use.
+	 * @param variables The collection of variables to be added.
 	 */
-	private String composeVariablesFile(SystemMemento memento) {
-		StringBuilder builder = new StringBuilder();
-		builder.append(";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\n");
-		builder.append(";;; variables \n");
-		builder.append(";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\n" +
-				"\n" +
-				"(defvar history\n" +
-				"	(&&\n");
+	private void composeVariableCollection(StringBuilder builder,
+			Collection<VariableAssignment> variables) {
+		builder.append("(&& ");
+		for (VariableAssignment v: variables) {
+			VariableDefinition def = v.getVariableDefinition();
+			if (def.isBoolean()) {
+				if (v.getValue() == 0) {
+					builder.append("(!! (-P- " + def.getName() + "))");
+				} else {
+					builder.append("(-P- " + def.getName() + ")");
+				}	
+			} else {
+				builder.append("([=] (-V- " + def.getName() + ") " + v.getValue() + ")");
+			}
+		}
+		builder.append(")");
+	}
+
+	/**
+	 * Overrides the variable file with the given new values.
+	 * 
+	 * @param step the simulation step.
+	 */
+	protected void overrideVariables(SystemMemento memento) {
 		
+		StringBuilder builder = new StringBuilder();
+		BufferedReader br = null;
+		try {
+			br = new BufferedReader(new FileReader(constraintsFileName));
+			String line = null;
+			while ((line = br.readLine()) != null) {
+				builder.append(line + "\n");
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new AssertionError(e);
+		} finally {
+			try {
+				br.close();
+			} catch (IOException e) {
+				// Fail silently
+			}
+		}
+		
+		String constrains = builder.toString();
+		Matcher matcher = constrainsPattern.matcher(constrains);
+		if (!matcher.find()) {
+			throw new AssertionError("Constraints file has no constraint");
+		}
+		
+		builder = new StringBuilder();
+
 		Set<Time> keys = memento.keySet();
 		for (Time t: keys) {
 			Collection<VariableAssignment> variables = memento.get(t);
@@ -208,51 +264,23 @@ public class ZotWrapper {
 				builder.append(" " + step +")\n");
 			}
 		}
+		System.out.println(matcher.group());
+		int start = matcher.start(1);
+		int end = matcher.end(1);
+		CharSequence toReplace = constrains.subSequence(start, end);
+		constrains =  constrains.replace(toReplace, builder.toString());
 		
-		builder.append("))\n" +
-		  		"\n" +
-				"(defvar constraints\n" +
-				"(&&\n" +
-				"	history\n" +
-		  		"))\n");
-		return builder.toString();
-	}
-	
-	/**
-	 * Adds to the string builder a collection of variables.
-	 * 
-	 * @param builder The builder in use.
-	 * @param variables The collection of variables to be added.
-	 */
-	private void composeVariableCollection(StringBuilder builder,
-			Collection<VariableAssignment> variables) {
-		builder.append("(&& ");
-		for (VariableAssignment v: variables) {
-			VariableDefinition def = v.getVariableDefinition();
-			if (v.getValue() == 0) {
-				builder.append("(!! (-P- " + def.getName() + "))");
-			} else {
-				builder.append("(-P- " + def.getName() + ")");
-			}
-		}
-		builder.append(")");
-	}
-
-	/**
-	 * Overrides the variable file with the given new values.
-	 * 
-	 * @param step the simulation step.
-	 */
-	protected void overrideVariables(SystemMemento memento) {
+		PrintWriter variableswriter;
 		try {
-			PrintWriter variableswriter = new PrintWriter(
-					initialVariablesFileName);
-			variableswriter.write(composeVariablesFile(memento));
+			variableswriter = new PrintWriter(
+					constraintsFileName);
+			variableswriter.write(constrains);
 			variableswriter.flush();
 			variableswriter.close();
 		} catch (FileNotFoundException e) {
-			throw new AssertionError(e);
+			e.printStackTrace();
 		}
+
 	}
 	
 	protected SystemMemento runZot(Time time) {
@@ -274,18 +302,6 @@ public class ZotWrapper {
 				variableFactory, definedVariables, time.getSimulationStep(), 
 				process.getInputStream());
 		SystemMemento memento = new SystemMemento(parser.parse());
-		/*
-		BufferedReader buf = new BufferedReader(
-				new InputStreamReader(process.getInputStream()));
-		String line = "";
-		try {
-			while ((line=buf.readLine())!=null) {
-				System.out.println(line);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		} 
-		*/
 		return memento;
 	}
 	

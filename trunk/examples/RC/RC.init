@@ -1,5 +1,5 @@
-COND1 env shared 1
-REACT1 sys shared 0
-NUM_REACT1 sys shared 3
-ACT1 sys private 0
+COND1 env shared boolean 1
+REACT1 sys shared boolean 0
+NUM_REACT1 sys shared real 3
+ACT1 sys private boolean 0
 

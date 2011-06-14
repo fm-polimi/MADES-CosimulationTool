@@ -15,6 +15,7 @@ package mades.common.variables;
 public class VariableDefinition implements Comparable<VariableDefinition>{
 	private String name;
 	private Scope scope;
+	private boolean bool;
 	
 	/**
 	 * Defines a new variable. 
@@ -22,9 +23,10 @@ public class VariableDefinition implements Comparable<VariableDefinition>{
 	 * @param name
 	 * @param scope
 	 */
-	protected VariableDefinition(String name, Scope scope) {
+	protected VariableDefinition(String name, Scope scope, boolean bool) {
 		this.name = name;
 		this.scope = scope;
+		this.bool = bool;
 	}
 
 	/* (non-Javadoc)
@@ -49,6 +51,10 @@ public class VariableDefinition implements Comparable<VariableDefinition>{
 		return scope;
 	}
 
+	public boolean isBoolean() {
+		return bool;
+	}
+	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */

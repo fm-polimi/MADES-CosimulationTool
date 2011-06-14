@@ -26,10 +26,10 @@ public class VariableFactory {
 	 * @throws AssertionError if a variable with the given name already
 	 *         exists but with a different scope.
 	 */
-	public VariableDefinition getOrDefine(String name, Scope scope) {
+	public VariableDefinition getOrDefine(String name, Scope scope, boolean bool) {
 		VariableDefinition var = definedVariables.get(name);
 		if (var == null) {
-			var = new VariableDefinition(name, scope);
+			var = new VariableDefinition(name, scope, bool);
 			definedVariables.put(name, var);
 		} else {
 			if (var.getScope() != scope) {
@@ -37,6 +37,12 @@ public class VariableFactory {
 						"A variable named: " + 
 						name + 
 						" already exists but with a different scope.");
+			}
+			if (var.isBoolean() != bool) {
+				throw new AssertionError(
+						"A variable named: " + 
+						name + 
+						" already exists but with a different type.");
 			}
 		}
 		return var;
@@ -70,7 +76,7 @@ public class VariableFactory {
 	 * @throws AssertionError if a variable with the same name
 	 *         already exists.
 	 */
-	public VariableDefinition define(String name, Scope scope) {
+	public VariableDefinition define(String name, Scope scope, boolean bool) {
 		if (definedVariables.containsKey(name)) {
 			throw new AssertionError(
 					"A variable named: " + 
@@ -78,7 +84,7 @@ public class VariableFactory {
 					" already exist.");
 		} 
 		
-		VariableDefinition var = new VariableDefinition(name, scope);
+		VariableDefinition var = new VariableDefinition(name, scope, bool);
 		definedVariables.put(name, var);
 		return var;
 	}
