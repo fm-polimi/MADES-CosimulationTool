@@ -7,18 +7,16 @@
 (defvar cond1_ev_stops (somf (alwf (!! (-P- cond1)))))
 
 (defvar history
-  (&&
-    (!! (-P- cond1))
-    (futr (!! (-P- cond1)) 1)
-    (futr (-P- cond1) 2)
-    (futr (-P- cond1) 3)
-    (futr (!! (-P- cond1)) 4)
-    (futr (-P- cond1) 5)
-    (futr (-P- cond1) 6)
-    (futr (-P- cond1) 7)
-    (futr (-P- cond1) 8)
-    (futr (-P- cond1) 9)
-  ))
+(&&
+(&&(!! (-P- ACT1))(!! (-P- COND1))([=] (-V- NUM_REACT1) 6)(-P- REACT1))
+(futr (&&(!! (-P- ACT1))(!! (-P- COND1))([=] (-V- NUM_REACT1) 0)(!! (-P- REACT1))) 1)
+(futr (&&(!! (-P- ACT1))(-P- COND1)([=] (-V- NUM_REACT1) 0)(!! (-P- REACT1))) 2)
+(futr (&&(!! (-P- ACT1))(-P- COND1)([=] (-V- NUM_REACT1) 4)(-P- REACT1)) 3)
+(futr (&&(!! (-P- ACT1))(-P- COND1)([=] (-V- NUM_REACT1) 4)(-P- REACT1)) 4)
+(futr (&&(!! (-P- ACT1))(!! (-P- COND1))([=] (-V- NUM_REACT1) 5)(-P- REACT1)) 5)
+(futr (&&(!! (-P- ACT1))(-P- COND1)([=] (-V- NUM_REACT1) 0)(!! (-P- REACT1))) 6)
+
+))
 
 (defvar constraints
   (&&

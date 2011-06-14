@@ -20,12 +20,8 @@ import com.google.common.collect.TreeMultimap;
 
 public class CosimulatorExampleTestCase {
 
-	public final static String ENVIRONMENT_PATH = "/home/rax/workspace-mades/mades/examples/RC";
+	public final static String ENVIRONMENT_PATH = "./examples/RC";
 	public final static String ENVIRONMENT_NAME = "RC";
-	
-	public static final String SYSTEM = "/home/rax/workspace-mades/mades/tools/zot/SimulationToyExample_system.zot";
-	String engine = "/tmp/MadesZotEngine.zot";
-	String variables = "/tmp/MadesZotVariables.zot";
 	
 	Logger logger = Logger.getLogger(CosimulatorExampleTestCase.class.getName());
 
@@ -55,8 +51,8 @@ public class CosimulatorExampleTestCase {
 		double initialSimulationTime = 0;
 		double timeStep = 5;
 		double maxCosimulationTime = 30;
-		int maxCosimulationAttemptsForStep = 1;
-		int maxCosimulationBacktraking = 1;
+		int maxCosimulationAttemptsForStep = 3;
+		int maxCosimulationBacktraking = 3;
 		
 		cosimulator.startCosimulation(
 				initialSimulationTime,
@@ -71,7 +67,7 @@ public class CosimulatorExampleTestCase {
 		assertEquals(steps, keys.size());
 		for (Time key: keys) {
 			Set<VariableAssignment> vars = results.get(key);
-			assertEquals(2, vars.size());
+			assertEquals(3, vars.size());
 		}
 	}
 

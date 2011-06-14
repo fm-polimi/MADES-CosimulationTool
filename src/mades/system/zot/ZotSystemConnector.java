@@ -56,7 +56,7 @@ public class ZotSystemConnector implements SystemConnector {
 			variablesMultimap.put(clock.getCurrentTime(), v);
 		}
 		systemMemento = new SystemMemento(variablesMultimap);
-		systemMemento = wrapper.executeSimulationStep(clock.getCurrentTime(), systemMemento);
+		//systemMemento = wrapper.executeSimulationStep(clock.getCurrentTime(), systemMemento);
 		return systemMemento;
 	}
 
