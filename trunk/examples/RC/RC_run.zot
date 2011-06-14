@@ -2,7 +2,7 @@
 (use-package :trio-utils)
 (defvar TSPACE 30)
 
-(load "/home/rax/workspace-mades/mades/examples/RC/RC_system.zot")
-(load "/home/rax/workspace-mades/mades/examples/RC/RC_constraints.zot")
+(load "./examples/RC/RC_system.zot")
+(load "./examples/RC/RC_constraints.zot")
 
 (ae2zot:zot TSPACE (&& the-system constraints):smt-solver :z3)

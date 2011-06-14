@@ -82,8 +82,10 @@ public class ZotWrapper {
 	private static final String INIT_VARIABLE = "^([\\w]+) (env|sys) (private|shared) (" + BOOLEAN +"|" + REAL + ") (" + DOUBLE + ")$";
 	private Pattern stepPattern = Pattern.compile(INIT_VARIABLE);
 	
-	private static final String CONSTRAINS = "\\Q(defvar history\\E[\\n]+([.]+)\\Q)\\E[\\n]+\\Q(defvar constraints\\E";
-	private Pattern constrainsPattern = Pattern.compile(CONSTRAINS);
+	private static final String CONSTRAINS_BEGIN = "\\Q(defvar history\\E[\\n]+";
+	private static final String CONSTRAINS_END = "\\Q)\\E[\\n]+\\Q(defvar constraints\\E";
+	private Pattern constrainsBeginPattern = Pattern.compile(CONSTRAINS_BEGIN);
+	private Pattern constrainsEndPattern = Pattern.compile(CONSTRAINS_END);
 	
 	/**
 	 * Initializes this instance with the engine and the given system.
@@ -201,7 +203,7 @@ public class ZotWrapper {
 	 */
 	private void composeVariableCollection(StringBuilder builder,
 			Collection<VariableAssignment> variables) {
-		builder.append("(&& ");
+		builder.append("(&&");
 		for (VariableAssignment v: variables) {
 			VariableDefinition def = v.getVariableDefinition();
 			if (def.isBoolean()) {
@@ -211,7 +213,7 @@ public class ZotWrapper {
 					builder.append("(-P- " + def.getName() + ")");
 				}	
 			} else {
-				builder.append("([=] (-V- " + def.getName() + ") " + v.getValue() + ")");
+				builder.append("([=] (-V- " + def.getName() + ") " + (int)v.getValue() + ")");
 			}
 		}
 		builder.append(")");
@@ -244,13 +246,17 @@ public class ZotWrapper {
 		}
 		
 		String constrains = builder.toString();
-		Matcher matcher = constrainsPattern.matcher(constrains);
-		if (!matcher.find()) {
+		Matcher matcherBegin = constrainsBeginPattern.matcher(constrains);
+		Matcher matcherEnd = constrainsEndPattern.matcher(constrains);
+		if (!matcherBegin.find() || !matcherEnd.find()) {
 			throw new AssertionError("Constraints file has no constraint");
 		}
 		
+		int start = matcherBegin.end();
+		int end = matcherEnd.start();
+		
 		builder = new StringBuilder();
-
+		builder.append("(&&\n");
 		Set<Time> keys = memento.keySet();
 		for (Time t: keys) {
 			Collection<VariableAssignment> variables = memento.get(t);
@@ -264,9 +270,8 @@ public class ZotWrapper {
 				builder.append(" " + step +")\n");
 			}
 		}
-		System.out.println(matcher.group());
-		int start = matcher.start(1);
-		int end = matcher.end(1);
+		builder.append("\n)");
+		
 		CharSequence toReplace = constrains.subSequence(start, end);
 		constrains =  constrains.replace(toReplace, builder.toString());
 		
@@ -302,6 +307,9 @@ public class ZotWrapper {
 				variableFactory, definedVariables, time.getSimulationStep(), 
 				process.getInputStream());
 		SystemMemento memento = new SystemMemento(parser.parse());
+		if (parser.isUnsat()) {
+			return null;
+		}
 		return memento;
 	}
 	

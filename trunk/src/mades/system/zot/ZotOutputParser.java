@@ -30,7 +30,10 @@ public class ZotOutputParser {
 	private static String SIGNALS = "\\*\\*(\\w+)\\*\\*";
 	
 	private static final String DOUBLE = "[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?";
-	private static String VARIABLE = "([\\w._-]+)( = (" + DOUBLE + ")]?)";
+	private static String VARIABLE = "([\\w._-]+)( = (" + DOUBLE + ")?)";
+	
+	private static final String UNSAT = "---UNSAT---";
+	private Pattern unsatPattern = Pattern.compile(UNSAT);
 	
 	private enum State {
 	    HEADER, VARIABLES 
@@ -56,6 +59,8 @@ public class ZotOutputParser {
 	private VariableFactory variableFactory;
 	private ArrayList<VariableDefinition> variables;
 	private ArrayList<VariableDefinition> falseVariablesAtStep;
+	
+	private boolean unsat = false;
 	
 	public ZotOutputParser(Clock clock,
 			VariableFactory variableFactory,
@@ -88,6 +93,11 @@ public class ZotOutputParser {
 	}
 	
 	protected void processLine(String line) {
+		Matcher matcher = unsatPattern.matcher(line);
+		if (matcher.matches()) {
+			unsat = true;
+		}
+		
 		switch(state) {
 			case HEADER: {
 				if (line.equals(STEP0)) {
@@ -108,7 +118,9 @@ public class ZotOutputParser {
 				if (lineMatcher.matches()) {
 					// Set all the missing variables to false
 					for (VariableDefinition def: falseVariablesAtStep) {
-						variablesMultimap.put(currentTime, new VariableAssignment(def, 0));
+						if (def.isBoolean()) {
+							variablesMultimap.put(currentTime, new VariableAssignment(def, 0));
+						}
 					}
 					
 					step = Integer.parseInt(lineMatcher.group(1));
@@ -129,20 +141,30 @@ public class ZotOutputParser {
 					}
 					Matcher varMatcher = variablePattern.matcher(varname);
 					if (varMatcher.matches()) {
-						int count = varMatcher.groupCount();
 						String name = varMatcher.group(1);
-						String value = varMatcher.group(2);
+						String value = varMatcher.group(3);
 						double dvalue = value.equals("") ? 1 : Double.parseDouble(value);
 						
 						VariableDefinition def = variableFactory.get(name);
 						falseVariablesAtStep.remove(def);
 						variablesMultimap.put(currentTime, new VariableAssignment(def, dvalue));
+					} else {
+						VariableDefinition def = variableFactory.get(line);
+						falseVariablesAtStep.remove(def);
+						variablesMultimap.put(currentTime, new VariableAssignment(def, 1));
 					}
 
 				}
 				break;
 			}
 		}
+	}
+
+	/**
+	 * @return the unsat
+	 */
+	public boolean isUnsat() {
+		return unsat;
 	}
 	
 }
