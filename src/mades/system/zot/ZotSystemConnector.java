@@ -11,7 +11,6 @@ import com.google.common.collect.TreeMultimap;
 import mades.common.timing.Clock;
 import mades.common.timing.Time;
 import mades.common.variables.VariableAssignment;
-import mades.common.variables.VariableDefinition;
 import mades.common.variables.VariableFactory;
 import mades.environment.EnvironmentMemento;
 import mades.system.SystemConnector;
@@ -48,9 +47,10 @@ public class ZotSystemConnector implements SystemConnector {
 			VariableFactory variableFactory) {
 		this.clock = clock;
 		wrapper = new ZotWrapper(path, 
-				maxSimulationStep, clock, variableFactory);
+				maxSimulationStep, clock, variableFactory,
+				logger);
 		
-		ArrayList<VariableAssignment> variables = wrapper.parseInit(this.path);
+		ArrayList<VariableAssignment> variables = wrapper.parseInit();
 		TreeMultimap<Time, VariableAssignment> variablesMultimap = TreeMultimap.create();
 		for (VariableAssignment v: variables) {
 			variablesMultimap.put(clock.getCurrentTime(), v);

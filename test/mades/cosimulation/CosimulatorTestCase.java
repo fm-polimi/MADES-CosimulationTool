@@ -7,6 +7,7 @@ import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import mades.common.timing.Time;
 import mades.common.timing.TimeFactory;
@@ -37,7 +38,8 @@ public class CosimulatorTestCase {
 	 */
 	@Before
 	public void setUp() throws Exception {
-		cosimulator = new Cosimulator();
+		cosimulator = new Cosimulator(
+				Logger.getLogger(this.getClass().getName()));
 		cosimulator.setEnvironment(new EchoEnvironmentConnectorMock());
 		cosimulator.setSystem(new EchoSystemConnectorMock());
 	}
@@ -56,10 +58,10 @@ public class CosimulatorTestCase {
 	public void testStartCosimulation() {
 		int val= 15;
 		
-		VariableDefinition sharedVar1 = variableFactory.define("sharedVar1", Scope.ENVIRONMENT_SHARED);
-		VariableDefinition sharedVar2 = variableFactory.define("sharedVar2", Scope.SYSTEM_SHARED);
-		VariableDefinition privateVar1 = variableFactory.define("privateVar1", Scope.ENVIRONMENT_INTERNAL);
-		VariableDefinition privateVar2 = variableFactory.define("privateVar2", Scope.SYSTEM_INTERNAL);
+		VariableDefinition sharedVar1 = variableFactory.define("sharedVar1", Scope.ENVIRONMENT_SHARED, true);
+		VariableDefinition sharedVar2 = variableFactory.define("sharedVar2", Scope.SYSTEM_SHARED, true);
+		VariableDefinition privateVar1 = variableFactory.define("privateVar1", Scope.ENVIRONMENT_INTERNAL, true);
+		VariableDefinition privateVar2 = variableFactory.define("privateVar2", Scope.SYSTEM_INTERNAL, true);
 
 
 		ArrayList<VariableAssignment> environmentParams = new ArrayList<VariableAssignment>();
@@ -81,9 +83,7 @@ public class CosimulatorTestCase {
 				timeStep,
 				maxCosimulationTime,
 				maxCosimulationAttemptsForStep,
-				maxCosimulationBacktraking,
-				environmentParams,
-				systemParams);
+				maxCosimulationBacktraking);
 		
 		TreeMultimap<Time, VariableAssignment> results = cosimulator.getSharedVariablesMultimap();
 		int steps = (int)maxCosimulationTime;

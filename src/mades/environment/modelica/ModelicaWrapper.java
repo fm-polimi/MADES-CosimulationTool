@@ -150,7 +150,8 @@ public class ModelicaWrapper {
 					String name = matcher.group(4);
 					VariableDefinition def = null;
 					if (!variableFactory.isDefined(name)) {
-						def = variableFactory.define(name, Scope.ENVIRONMENT_INTERNAL);
+						// All modelica variables are double
+						def = variableFactory.define(name, Scope.ENVIRONMENT_INTERNAL, false);
 					}
 					else {
 						def = variableFactory.get(name);
