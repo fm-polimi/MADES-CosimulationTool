@@ -77,7 +77,8 @@ public class EnvironmentMemento {
 		for (VariableAssignment envVar: params) {
 			VariableDefinition def = envVar.getVariableDefinition();
 			if (def.getScope() == Scope.SYSTEM_SHARED) {
-				envVar.setValue(memento.getVariable(def, getTime()).getValue());
+				VariableAssignment var = memento.getVariable(def, getTime());
+				envVar.setValue(var.getValue());
 			}
 		}
 	}
