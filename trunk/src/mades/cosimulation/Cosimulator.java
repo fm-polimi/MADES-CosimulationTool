@@ -3,9 +3,16 @@
  */
 package mades.cosimulation;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Collection;
+import java.util.Set;
 import java.util.Stack;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 
 import com.google.common.collect.TreeMultimap;
 
@@ -17,8 +24,10 @@ import mades.common.variables.VariableFactory;
 import mades.environment.EnvironmentConnector;
 import mades.environment.EnvironmentMemento;
 import mades.environment.SignalMap;
+import mades.environment.modelica.ModelicaEnvironmentConnector;
 import mades.system.SystemConnector;
 import mades.system.SystemMemento;
+import mades.system.zot.ZotSystemConnector;
 
 /**
  * @author Michele Sama (m.sama@puzzledev.com)
@@ -76,6 +85,50 @@ public class Cosimulator {
 		this.logger = logger;
 	}
 	
+	
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		String ENVIRONMENT_PATH = "./examples/RC";
+		Logger logger = Logger.getLogger(Cosimulator.class.getName());
+		logger.setLevel(Level.ALL);
+		logger.info("Starting co-simulation");
+		
+		SystemConnector system = new ZotSystemConnector(ENVIRONMENT_PATH, 30, logger);
+		EnvironmentConnector environment = new ModelicaEnvironmentConnector(ENVIRONMENT_PATH, logger);
+		Cosimulator cosimulator = new Cosimulator(logger);
+		cosimulator.setEnvironment(environment);
+		cosimulator.setSystem(system);
+		
+		double initialSimulationTime = 0;
+		double timeStep = 10;
+		double maxCosimulationTime = 60;
+		int maxCosimulationAttemptsForStep = 3;
+		int maxCosimulationBacktraking = 3;
+		
+		cosimulator.startCosimulation(
+				initialSimulationTime,
+				timeStep,
+				maxCosimulationTime,
+				maxCosimulationAttemptsForStep,
+				maxCosimulationBacktraking);
+		
+		TreeMultimap<Time, VariableAssignment> results = cosimulator.getSharedVariablesMultimap();
+		
+		StringBuilder builder = new StringBuilder();
+		builder.append("Simulation output:\n");
+		Set<Time> keys = results.keySet();
+		for (Time key: keys) {
+			builder.append("\n" + key.toString() + "\n");
+			Set<VariableAssignment> vars = results.get(key);
+			for(VariableAssignment v: vars) {
+				builder.append(v.getVariableDefinition().getName() + " = " + v.getValue() + "\n");
+			}
+		}
+		logger.info(builder.toString());
+	}
+	
 	/**
 	 * Gets the current {@link EnvironmentConnector}.
 	 * 
@@ -98,7 +151,7 @@ public class Cosimulator {
 					"simulation is running.");
 		}
 		this.environment = environment;
-		logger.fine("New environment set.");
+		logger.info("New environment set.");
 	}
 
 	/**
@@ -123,7 +176,7 @@ public class Cosimulator {
 					"simulation is running.");
 		}
 		this.system = system;
-		logger.fine("New system set.");
+		logger.info("New system set.");
 	}
 	
 	/**
@@ -183,7 +236,7 @@ public class Cosimulator {
 		
 		
 		simulationStarted = true;
-		logger.fine("Starting simulation at time: " + initialSimulationTime);
+		logger.info("Starting simulation at time: " + initialSimulationTime);
 		
 		try {
 			// Runs the co-simulation
@@ -192,7 +245,7 @@ public class Cosimulator {
 			}
 		} finally {
 			simulationStarted = false;
-			logger.fine("Simulation ended at time: " + clock.getCurrentTime().getSimulationTime());
+			logger.info("Simulation ended at time: " + clock.getCurrentTime().getSimulationTime());
 		}
 	}
 	
@@ -356,7 +409,7 @@ public class Cosimulator {
 		for (int i = elementsToremove; i > 0; i--) {
 			environmentMementoStack.remove(0);
 		}
-		logger.fine("Obsolete environment state deleted.");
+		logger.info("Obsolete environment state deleted.");
 		
 		elementsToremove = systemMementoStack.size() -
 				maxCosimulationBacktraking;
@@ -365,12 +418,12 @@ public class Cosimulator {
 			// TODO(rax): assert is the right memento
 			memento.deleteRelatedFiles();
 		}
-		logger.fine("Obsolete system state deleted.");
+		logger.info("Obsolete system state deleted.");
 	}
 	
 	protected void rollbackEnvironment() {
 		assert(simulationStarted);
-		logger.fine("Rolling back environment state.");
+		logger.info("Rolling back environment state.");
 		if (environmentMementoStack.size() == 1) {
 			logger.severe("End of environment state stack reached.");
 			throw new RuntimeException(
@@ -387,7 +440,7 @@ public class Cosimulator {
 	
 	protected void rollbackSystem() {
 		assert(simulationStarted);
-		logger.fine("Rolling back system state.");
+		logger.info("Rolling back system state.");
 		if (systemMementoStack.size() == 1) {
 			logger.severe("End of system state stack reached.");
 			throw new RuntimeException("Cannot rollback initial system state: aborting...");
@@ -405,7 +458,7 @@ public class Cosimulator {
 	
 	protected void simulateEnvironment() {
 		assert(simulationStarted);
-		logger.fine("Symulating environment at time: " + clock.getCurrentTime().getSimulationTime());
+		logger.info("Symulating environment at time: " + clock.getCurrentTime().getSimulationTime());
 		environment.load(environmentMementoStack.peek(), systemMementoStack.peek());
 		
 		EnvironmentMemento environmentMemento =
@@ -425,7 +478,7 @@ public class Cosimulator {
 	
 	protected void simulateSystem() {
 		assert(simulationStarted);
-		logger.fine("Symulating system at step: " + clock.getCurrentTime().getSimulationStep());
+		logger.info("Simulating system at step: " + clock.getCurrentTime().getSimulationStep());
 		system.load( systemMementoStack.peek(), environmentMementoStack.peek());
 		
 		SystemMemento systemMemento = system.simulateNext();

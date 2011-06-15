@@ -27,7 +27,7 @@ public class SignalMap {
 		Set<String> keys = signals.keySet();
 		for (String key: keys) {
 			ArrayList<Double> signal = signals.get(key);
-			for (int i = signal.size(); i > 1; i--) {
+			for (int i = signal.size() - 1; i > 1; i--) {
 				double end = signal.get(i);
 				double begin = signal.get(i - 1);
 				
@@ -46,6 +46,10 @@ public class SignalMap {
 	 */
 	public ArrayList<Double> put(String name, Double time) {
 		ArrayList<Double> valuesArrayList = signals.get(name);
+		if (valuesArrayList == null) {
+			valuesArrayList = new ArrayList<Double>();
+			signals.put(name, valuesArrayList);
+		}
 		valuesArrayList.add(time);
 		return valuesArrayList;
 	}

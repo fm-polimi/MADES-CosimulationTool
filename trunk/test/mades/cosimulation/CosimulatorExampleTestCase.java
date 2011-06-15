@@ -3,6 +3,7 @@ package mades.cosimulation;
 import static org.junit.Assert.*;
 
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import mades.common.timing.Time;
@@ -21,12 +22,10 @@ import com.google.common.collect.TreeMultimap;
 public class CosimulatorExampleTestCase {
 
 	public final static String ENVIRONMENT_PATH = "./examples/RC";
-	public final static String ENVIRONMENT_NAME = "RC";
 	
 	Logger logger = Logger.getLogger(CosimulatorExampleTestCase.class.getName());
 
 	ModelicaWrapper wrapper;
-	VariableFactory variableFactory = new VariableFactory();
 	
 	Cosimulator cosimulator;
 	ZotSystemConnector system;
@@ -34,7 +33,7 @@ public class CosimulatorExampleTestCase {
 	
 	@Before
 	public void setUp() throws Exception {
-		
+		logger.setLevel(Level.ALL);
 		system = new ZotSystemConnector(ENVIRONMENT_PATH, 30, logger);
 		environment = new ModelicaEnvironmentConnector(ENVIRONMENT_PATH, logger);
 		cosimulator = new Cosimulator(logger);
@@ -48,6 +47,7 @@ public class CosimulatorExampleTestCase {
 
 	@Test
 	public void testStartCosimulation() {
+		
 		double initialSimulationTime = 0;
 		double timeStep = 5;
 		double maxCosimulationTime = 30;
@@ -62,7 +62,7 @@ public class CosimulatorExampleTestCase {
 				maxCosimulationBacktraking);
 		
 		TreeMultimap<Time, VariableAssignment> results = cosimulator.getSharedVariablesMultimap();
-		int steps = (int)(maxCosimulationTime / timeStep) + 1;
+		int steps = (int)(maxCosimulationTime / timeStep);
 		Set<Time> keys = results.keySet();
 		assertEquals(steps, keys.size());
 		for (Time key: keys) {

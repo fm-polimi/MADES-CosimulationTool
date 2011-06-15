@@ -83,7 +83,7 @@ public class ZotOutputParser {
 		try {
 			while (!simulationStepReached && 
 					(line = reader.readLine()) != null) {
-				System.out.println(line);
+				//System.out.println(line);
 				processLine(line);
 			}
 		} catch (IOException e) {
@@ -143,7 +143,7 @@ public class ZotOutputParser {
 					if (varMatcher.matches()) {
 						String name = varMatcher.group(1);
 						String value = varMatcher.group(3);
-						double dvalue = value.equals("") ? 1 : Double.parseDouble(value);
+						double dvalue = Double.parseDouble(value);
 						
 						VariableDefinition def = variableFactory.get(name);
 						falseVariablesAtStep.remove(def);
