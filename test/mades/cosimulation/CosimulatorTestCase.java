@@ -6,6 +6,7 @@ package mades.cosimulation;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -28,6 +29,13 @@ import com.google.common.collect.TreeMultimap;
  */
 public class CosimulatorTestCase {
 	
+	ArrayList<VariableAssignment> environmentParams;
+	ArrayList<VariableAssignment> systemParams;
+	VariableDefinition sharedVar1;
+	VariableDefinition sharedVar2;
+	VariableDefinition privateVar1;
+	VariableDefinition privateVar2;
+	
 	Cosimulator cosimulator;
 	
 	TimeFactory timeFactory = new TimeFactory();
@@ -38,10 +46,27 @@ public class CosimulatorTestCase {
 	 */
 	@Before
 	public void setUp() throws Exception {
+		int val= 15;
+		
+		sharedVar1 = variableFactory.define("sharedVar1", Scope.ENVIRONMENT_SHARED, true);
+		sharedVar2 = variableFactory.define("sharedVar2", Scope.SYSTEM_SHARED, true);
+		privateVar1 = variableFactory.define("privateVar1", Scope.ENVIRONMENT_INTERNAL, true);
+		privateVar2 = variableFactory.define("privateVar2", Scope.SYSTEM_INTERNAL, true);
+
+
+		environmentParams = new ArrayList<VariableAssignment>();
+		environmentParams.add(new VariableAssignment(sharedVar1, val));
+		environmentParams.add(new VariableAssignment(privateVar1, val));
+		
+		systemParams = new ArrayList<VariableAssignment>();
+		systemParams.add(new VariableAssignment(sharedVar2, val));
+		systemParams.add(new VariableAssignment(privateVar2, val));
+		
+		
 		cosimulator = new Cosimulator(
 				Logger.getLogger(this.getClass().getName()));
-		cosimulator.setEnvironment(new EchoEnvironmentConnectorMock());
-		cosimulator.setSystem(new EchoSystemConnectorMock());
+		cosimulator.setEnvironment(new EchoEnvironmentConnectorMock(environmentParams));
+		cosimulator.setSystem(new EchoSystemConnectorMock(systemParams));
 	}
 
 	/**
@@ -56,22 +81,6 @@ public class CosimulatorTestCase {
 	 */
 	@Test
 	public void testStartCosimulation() {
-		int val= 15;
-		
-		VariableDefinition sharedVar1 = variableFactory.define("sharedVar1", Scope.ENVIRONMENT_SHARED, true);
-		VariableDefinition sharedVar2 = variableFactory.define("sharedVar2", Scope.SYSTEM_SHARED, true);
-		VariableDefinition privateVar1 = variableFactory.define("privateVar1", Scope.ENVIRONMENT_INTERNAL, true);
-		VariableDefinition privateVar2 = variableFactory.define("privateVar2", Scope.SYSTEM_INTERNAL, true);
-
-
-		ArrayList<VariableAssignment> environmentParams = new ArrayList<VariableAssignment>();
-		environmentParams.add(new VariableAssignment(sharedVar1, val));
-		environmentParams.add(new VariableAssignment(privateVar1, val));
-		
-		ArrayList<VariableAssignment> systemParams = new ArrayList<VariableAssignment>();
-		systemParams.add(new VariableAssignment(sharedVar2, val));
-		systemParams.add(new VariableAssignment(privateVar2, val));
-		
 		double initialSimulationTime = 0;
 		double timeStep = 1;
 		double maxCosimulationTime = 10;
@@ -92,8 +101,12 @@ public class CosimulatorTestCase {
 		for (Time key: keys) {
 			Set<VariableAssignment> vars = results.get(key);
 			assertEquals(2, vars.size());
-			assertTrue(vars.contains(sharedVar1));
-			assertTrue(vars.contains(sharedVar2));
+			HashSet<VariableDefinition> definitions = new HashSet<VariableDefinition>();
+			for (VariableAssignment v: vars) {
+				definitions.add(v.getVariableDefinition());
+			}
+			assertTrue(definitions.contains(sharedVar1));
+			assertTrue(definitions.contains(sharedVar2));
 		}
 	}
 }

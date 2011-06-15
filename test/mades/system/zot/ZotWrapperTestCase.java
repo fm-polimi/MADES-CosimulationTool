@@ -3,11 +3,13 @@
  */
 package mades.system.zot;
 
-import java.io.File;
+import static org.junit.Assert.*;
+
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import mades.common.timing.Clock;
+import mades.common.timing.Time;
 import mades.common.variables.Scope;
 import mades.common.variables.VariableAssignment;
 import mades.common.variables.VariableDefinition;
@@ -18,6 +20,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.google.common.collect.TreeMultimap;
+
 /**
  * 
  * @author Michele Sama (m.sama@puzzledev.com)
@@ -26,19 +30,16 @@ import org.junit.Test;
  */
 public class ZotWrapperTestCase {
 
-	static final String SYSTEM = "/home/rax/workspace-mades/mades/tools/zot/SimulationToyExample_system.zot";
-	String engine = "/tmp/MadesZotEngine.zot";
-	String variables = "/tmp/MadesZotVariables.zot";
+	static final String SYSTEM = "./examples/RC/";
+
 	
 	VariableFactory factory = new VariableFactory();
 	Clock clock;
-	
-	VariableDefinition cond1;
-	VariableDefinition react1;
-	VariableDefinition act1;
+
 	ZotWrapper wrapper;
 	
 	int step = 15;
+	ArrayList<VariableDefinition> vars;
 	
 	/**
 	 * @throws java.lang.Exception
@@ -48,16 +49,7 @@ public class ZotWrapperTestCase {
 		clock = new Clock(Logger.getLogger(ZotWrapperTestCase.class.getName()), 
 				1, 0, 30);
 		
-		cond1 = factory.define("COND1", Scope.ENVIRONMENT_SHARED);
-		react1 = factory.define("REACT1", Scope.SYSTEM_SHARED);
-		act1 = factory.define("ACT1", Scope.SYSTEM_INTERNAL);
-		
-		ArrayList<VariableDefinition> vars = new ArrayList<VariableDefinition>();
-		vars.add(cond1);
-		vars.add(react1);
-		vars.add(act1);
-		
-		wrapper = new ZotWrapper(engine, SYSTEM, variables, 30, clock, factory, vars);
+		wrapper = new ZotWrapper(SYSTEM, step, clock, factory, Logger.getAnonymousLogger());
 	}
 
 	/**
@@ -65,29 +57,59 @@ public class ZotWrapperTestCase {
 	 */
 	@After
 	public void tearDown() throws Exception {
-		File engineFile = new File(engine);
-		if (engineFile.exists()) {
-			engineFile.deleteOnExit();
-		}
-		File variablesFile = new File(variables);
-		if (variablesFile.exists()) {
-			variablesFile.deleteOnExit();
-		}
+
 	}
 
+	/**
+	 * Test method for {@link mades.system.zot.ZotWrapper#parseInit()}.
+	 * 
+	 * The init file contains:
+	 *     COND1 env shared boolean 1
+	 *     REACT1 sys shared boolean 0
+	 *     NUM_REACT1 sys shared real 0
+	 *     ACT1 sys private boolean 0
+	 */
+	@Test
+	public void testParseInit() {
+		ArrayList<VariableAssignment> variables = wrapper.parseInit();
+		assertEquals(4, variables.size());
+		assertVariableExists("COND1", Scope.ENVIRONMENT_SHARED, true, 1, variables);
+		assertVariableExists("REACT1", Scope.SYSTEM_SHARED, true, 0, variables);
+		assertVariableExists("NUM_REACT1", Scope.SYSTEM_SHARED, false, 0, variables);
+		assertVariableExists("ACT1", Scope.SYSTEM_INTERNAL, true, 0, variables);
+	}
+	
+	private void assertVariableExists(String name, Scope scope, boolean isBool,
+			double value, ArrayList<VariableAssignment> variables) {
+		VariableDefinition def;
+		assertTrue(factory.isDefined(name));
+		def = factory.get(name);
+		assertEquals(scope, def.getScope());
+		assertEquals(isBool, def.isBoolean());
+		boolean found = false;
+		for (VariableAssignment v: variables) {
+			if (v.getVariableDefinition().equals(def)) {
+				found = true;
+				assertEquals(value, v.getValue(), 0.01);
+				break;
+			}
+		}
+		assertTrue(found);
+	}
+	
 	/**
 	 * Test method for {@link mades.system.zot.ZotWrapper#runZot()}.
 	 */
 	@Test
 	public void testExecuteSimulationStep() {
-		SystemMemento memento = new SystemMemento();
-		memento.put(clock.getCurrentTime(), new VariableAssignment(cond1, 0));
-		
-		for (int i = 0; i < step; i++) {
-			clock.tickForward();
+		ArrayList<VariableAssignment> variables = wrapper.parseInit();
+		TreeMultimap<Time, VariableAssignment> variablesMultimap = TreeMultimap.create();
+		for (VariableAssignment v: variables) {
+			variablesMultimap.put(clock.getCurrentTime(), v);
 		}
+		SystemMemento systemMemento = new SystemMemento(variablesMultimap);
 		
-		memento = wrapper.executeSimulationStep(clock.tickForward(), memento);
+		systemMemento = wrapper.executeSimulationStep(clock.tickForward(), systemMemento);
 	}
 
 }

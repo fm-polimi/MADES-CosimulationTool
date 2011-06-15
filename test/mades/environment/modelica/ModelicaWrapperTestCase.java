@@ -18,8 +18,7 @@ import org.junit.Test;
 
 public class ModelicaWrapperTestCase {
 
-	public final static String PATH = "/home/rax/workspace-mades/mades/tools/modelica/RC_2";
-	public final static String NAME = "RC";
+	public final static String PATH = "./examples/RC/";
 	
 	VariableDefinition cond1;
 	VariableDefinition react1;
@@ -34,11 +33,11 @@ public class ModelicaWrapperTestCase {
 		clock = new Clock(Logger.getLogger(ModelicaWrapperTestCase.class.getName()), 
 				10, 0, 30);
 		
-		cond1 = variableFactory.define("COND1", Scope.ENVIRONMENT_SHARED);
-		react1 = variableFactory.define("REACT1", Scope.SYSTEM_SHARED);
-		act1 = variableFactory.define("ACT1", Scope.SYSTEM_INTERNAL);
+		cond1 = variableFactory.define("COND1", Scope.ENVIRONMENT_SHARED, true);
+		react1 = variableFactory.define("REACT1", Scope.SYSTEM_SHARED, true);
+		act1 = variableFactory.define("ACT1", Scope.SYSTEM_INTERNAL, true);
 		
-		wrapper = new ModelicaWrapper(PATH, NAME, clock);
+		wrapper = new ModelicaWrapper(PATH, clock);
 		
 	}
 

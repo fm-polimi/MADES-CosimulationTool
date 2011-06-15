@@ -36,7 +36,7 @@ public class Clock {
 	}
 	
 	public boolean hasReachCosimulationEnd() {
-		return currentTime.getSimulationTime() > finalTime;
+		return currentTime.getSimulationTime() >= finalTime;
 	}
 	
 	public Time tickForward() {
