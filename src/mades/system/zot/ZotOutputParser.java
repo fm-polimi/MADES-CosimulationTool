@@ -20,7 +20,8 @@ import com.google.common.collect.TreeMultimap;
 /**
  * @author Michele Sama (m.sama@puzzledev.com)
  * 
- * Parse the output of Zot and saves it into a collection of variables.
+ * Parse the output of Zot and saves it into a
+ * collection of variables.
  */
 public class ZotOutputParser {
 

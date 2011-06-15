@@ -12,6 +12,8 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
+import java.util.SortedSet;
+
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -221,6 +223,13 @@ public class ZotWrapper {
 		builder.append(")");
 	}
 
+	private void composeUnsatConstrains(StringBuilder builder,
+			Collection<VariableAssignment> variables) {
+		builder.append("(!!");
+		composeVariableCollection(builder, variables);
+		builder.append(")");
+	}
+	
 	/**
 	 * Overrides the variable file with the given new values.
 	 * 
@@ -269,6 +278,12 @@ public class ZotWrapper {
 			} else {
 				builder.append("(futr ");
 				composeVariableCollection(builder, variables);
+				SortedSet<Collection<VariableAssignment>> unsat = memento.getUnsatConfiguration(t);
+				if (unsat != null) {
+					for (Collection<VariableAssignment> set: memento.getUnsatConfiguration(t)) {
+						composeUnsatConstrains(builder, set);
+					}
+				}
 				builder.append(" " + step +")\n");
 			}
 		}

@@ -3,16 +3,11 @@
  */
 package mades.cosimulation;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.Collection;
 import java.util.Set;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
 
 import com.google.common.collect.TreeMultimap;
 
@@ -56,7 +51,6 @@ public class Cosimulator {
 	 */
 	private SystemConnector system;
 	
-	
 	/**
 	 * The maximum number of attempts at each simulation step.
 	 * If the maximum number of attempts is reached the co-simulation
@@ -84,7 +78,6 @@ public class Cosimulator {
 	public Cosimulator(Logger logger) {
 		this.logger = logger;
 	}
-	
 	
 	/**
 	 * @param args
@@ -304,14 +297,33 @@ public class Cosimulator {
 		boolean systemStepApproved = false;
 		
 		while (!systemStepApproved) {
-			boolean stepApproved = false;
+			boolean environmentStepApproved = false;
 			
-			while (!stepApproved) {
+			while (!environmentStepApproved) {
+				systemBacktrakingAttemptsLeft -= 1;
+				if (systemBacktrakingAttemptsLeft < 0) {
+					logger.severe(
+							"Max co-simulation backtraking attempts " +
+							"reached: aborting...");
+					throw new RuntimeException(
+							"Max co-simulation backtraking attempts reached.");
+				}
+	
 				int attemptsInStep = maxCosimulationAttemptsForStep;
 				
-				while (!stepApproved) {
+				while (!environmentStepApproved) {
 					assert(environmentMementoStack.size() == 
 						    systemMementoStack.size());
+					
+					environmentBacktrakingAttemptsLeft -= 1;
+					if (environmentBacktrakingAttemptsLeft < 0) {
+						logger.severe(
+								"Max co-simulation backtraking attempts " +
+								"reached: aborting...");
+						throw new RuntimeException(
+								"Max co-simulation backtraking attempts reached.");
+					}
+					
 					clock.tickForward();
 					// Simulate the environment at the next time.
 					simulateEnvironment();
@@ -330,8 +342,7 @@ public class Cosimulator {
 						rollbackSystem();
 						try {
 							simulateSystem();
-						}
-						catch(AssertionError err) {
+						} catch(AssertionError err) {
 							break;
 						}
 						
@@ -342,31 +353,21 @@ public class Cosimulator {
 							break;
 						}
 					} else {
-						stepApproved = true;
+						environmentStepApproved = true;
 					}
 				}
 				
-				if (!stepApproved) {
-					// Roll back to previous system state
-					environmentBacktrakingAttemptsLeft -= 1;
-					if (environmentBacktrakingAttemptsLeft < 0) {
-						logger.severe(
-								"Max co-simulation backtraking attempts " +
-								"reached: aborting...");
-						throw new RuntimeException(
-								"Max co-simulation backtraking attempts reached.");
-					} else {
-						// Roll back the system and the simulation time
-						rollbackEnvironment();
-						clock.tickBackward();
-						try {
-							simulateSystem();
-						}
-						catch(AssertionError err) {
-							String msg = "Unsatisfiable configuration during backtraking: aborting.";
-							logger.severe(msg);
-							throw err;
-						}
+				if (!environmentStepApproved) {
+					// Roll back the system and the simulation time
+					rollbackEnvironment();
+					clock.tickBackward();
+					try {
+						simulateSystem();
+					}
+					catch(AssertionError err) {
+						String msg = "Unsatisfiable configuration during backtraking: aborting.";
+						logger.severe(msg);
+						throw err;
 					}
 				}
 			}
@@ -375,21 +376,11 @@ public class Cosimulator {
 			try {
 				simulateSystem();
 				systemStepApproved = true;
-			}
-			catch(AssertionError err) {
-				systemBacktrakingAttemptsLeft -= 1;
-				if (systemBacktrakingAttemptsLeft < 0) {
-					logger.severe(
-							"Max system co-simulation backtraking attempts " +
-							"reached: aborting...");
-					throw new RuntimeException(
-							"Max system co-simulation backtraking attempts reached.");
-				} else {
-					// Roll back the system and the simulation time
-					rollbackEnvironment();
-					clock.tickBackward();
-					rollbackSystem();
-				}
+			} catch(AssertionError err) {
+				// Roll back the system and the simulation time
+				rollbackEnvironment();
+				clock.tickBackward();
+				rollbackSystem();
 			}
 			
 		}
@@ -445,15 +436,19 @@ public class Cosimulator {
 			logger.severe("End of system state stack reached.");
 			throw new RuntimeException("Cannot rollback initial system state: aborting...");
 		}
-		SystemMemento memento = systemMementoStack.pop();
+		SystemMemento discardedMemento = systemMementoStack.pop();
 		// TODO(rax): assert is the right memento
 		
 		// Remove shared variables
 		Collection<VariableAssignment> variables = 
-				memento.get(clock.getCurrentTime());
+				discardedMemento.get(clock.getCurrentTime());
 		for (VariableAssignment v: variables) {
 			sharedVariablesMultimap.remove(clock.getCurrentTime(), v);
 		}
+		
+		// Add the unsat configuration to the current memento
+		SystemMemento currentMemento = systemMementoStack.peek();
+		currentMemento.addUnsatConfiguration(clock.getCurrentTime(), variables);
 	}
 	
 	protected void simulateEnvironment() {
