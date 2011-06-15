@@ -44,7 +44,7 @@ public class ModelicaWrapper {
 	private static final String VARIABLE_LINE = "^(" + DOUBLE + ")( //[ ]?default)? //([ ]?" + VARIABLE_NAME + ")$";
 	private Pattern variablePattern = Pattern.compile(VARIABLE_LINE);
 	
-	private static final String SIGNAL_LINE = "^[TRANSnp|TRANSpn]:\t(" + VARIABLE_NAME + ")\t(" + DOUBLE + ")$";
+	private static final String SIGNAL_LINE = "^(TRANSnp|TRANSpn):\\t(" + VARIABLE_NAME + ")\\t(" + DOUBLE + ")$";
 	private Pattern signalPattern = Pattern.compile(SIGNAL_LINE);
 	
 	private String environmentPath;

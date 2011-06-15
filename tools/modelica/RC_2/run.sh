@@ -15,8 +15,8 @@ nomeModello="RC"
 # nomeModello_res. (csv/mat)
 
 # questo deve essere processato dal programma in python
- python ReadMAT.py ./$nomeModello
+python ReadMAT.py ./$nomeModello
  
- # alla fine verrà prodotto il file di output con i risultati della simulazione
+# alla fine verrà prodotto il file di output con i risultati della simulazione
  
  

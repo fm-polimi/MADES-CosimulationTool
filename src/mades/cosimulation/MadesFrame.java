@@ -12,7 +12,6 @@ import java.awt.HeadlessException;
 import javax.swing.JFrame;
 import java.awt.Dimension;
 import javax.swing.JLabel;
-import java.awt.Font;
 import java.awt.Color;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
@@ -73,7 +72,6 @@ public class MadesFrame extends JFrame {
 	 */
 	public MadesFrame(String title, GraphicsConfiguration gc) {
 		super(title, gc);
-		// TODO Auto-generated constructor stub
 		initialize();
 	}
 

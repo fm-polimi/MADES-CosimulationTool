@@ -213,7 +213,7 @@ public class ZotWrapper {
 					builder.append("(-P- " + def.getName() + ")");
 				}	
 			} else {
-				builder.append("([=] (-V- " + def.getName() + ") " + (int)v.getValue() + ")");
+				builder.append("([=] (-V- " + def.getName() + ") " + (int)Math.round(v.getValue()) + ")");
 			}
 		}
 		builder.append(")");
