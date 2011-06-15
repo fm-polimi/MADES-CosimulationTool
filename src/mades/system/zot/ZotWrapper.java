@@ -178,8 +178,10 @@ public class ZotWrapper {
 							scope = Scope.SYSTEM_SHARED;
 						}
 					}
+					boolean isBoolean = bool.equals(BOOLEAN);
 					VariableDefinition def = variableFactory.define(
-							name, scope, bool.equals(BOOLEAN));
+							name, scope, isBoolean);
+					
 					definedVariables.add(def);
 					variables.add(new VariableAssignment(def, Double.parseDouble(value)));
 				}
