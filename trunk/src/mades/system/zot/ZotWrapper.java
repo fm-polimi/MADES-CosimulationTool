@@ -278,7 +278,7 @@ public class ZotWrapper {
 			} else {
 				builder.append("(futr ");
 				composeVariableCollection(builder, variables);
-				SortedSet<Collection<VariableAssignment>> unsat = memento.getUnsatConfiguration(t);
+				Set<Collection<VariableAssignment>> unsat = memento.getUnsatConfiguration(t);
 				if (unsat != null) {
 					for (Collection<VariableAssignment> set: memento.getUnsatConfiguration(t)) {
 						composeUnsatConstrains(builder, set);
