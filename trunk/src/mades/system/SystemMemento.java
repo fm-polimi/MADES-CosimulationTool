@@ -32,6 +32,8 @@ public class SystemMemento {
 	 */
 	private TreeMultimap<Time, VariableAssignment> variablesMultimap;
 	
+	private TreeMultimap<Time, Collection<VariableAssignment>> rolledBackVariablesMultimap;
+	
 	/**
 	 * @param time
 	 * @param params
@@ -45,9 +47,9 @@ public class SystemMemento {
 	 */
 	public SystemMemento(TreeMultimap<Time, VariableAssignment> variablesMultimap) {
 		this.variablesMultimap = TreeMultimap.create(variablesMultimap);
+		rolledBackVariablesMultimap = TreeMultimap.create();
 	}
 
-	
 	/**
 	 * 
 	 */
@@ -194,5 +196,13 @@ public class SystemMemento {
 				systemVar.setValue(memento.getVariable(def).getValue());
 			}
 		}
+	}
+	
+	public void addUnsatConfiguration(Time time, Collection<VariableAssignment> variables) {
+		rolledBackVariablesMultimap.put(time, variables);
+	}
+	
+	public SortedSet<Collection<VariableAssignment>> getUnsatConfiguration(Time time) {
+		return rolledBackVariablesMultimap.get(time);
 	}
 }
