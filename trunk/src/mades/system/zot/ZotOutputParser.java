@@ -38,8 +38,7 @@ public class ZotOutputParser {
 	private enum State {
 	    HEADER, VARIABLES 
 	}
-	
-	private Clock clock;
+
 	private TimeFactory timeFactory;
 	
 	private State state = State.HEADER;
@@ -66,7 +65,6 @@ public class ZotOutputParser {
 			VariableFactory variableFactory,
 			ArrayList<VariableDefinition> variables,
 			int simulationStep, InputStream stream) {
-		this.clock = clock;
 		timeFactory = clock.getFactory();
 		this.variableFactory = variableFactory;
 		this.variables = variables;
