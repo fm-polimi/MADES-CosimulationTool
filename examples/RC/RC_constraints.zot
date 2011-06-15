@@ -8,7 +8,12 @@
 
 (defvar history
 (&&
-(&&(!! (-P- ACT1))(!! (-P- COND1))([=] (-V- NUM_REACT1) 0)(!! (-P- REACT1)))
+(&&(!! (-P- ACT1))(-P- COND1)([=] (-V- NUM_REACT1) 6)(-P- REACT1))
+(futr (&&(!! (-P- ACT1))(-P- COND1)([=] (-V- NUM_REACT1) 7)(-P- REACT1)) 1)
+(futr (&&(-P- ACT1)(-P- COND1)([=] (-V- NUM_REACT1) 6)(-P- REACT1)) 2)
+(futr (&&(-P- ACT1)(-P- COND1)([=] (-V- NUM_REACT1) 0)(!! (-P- REACT1))) 3)
+(futr (&&(!! (-P- ACT1))(!! (-P- COND1))([=] (-V- NUM_REACT1) 5)(-P- REACT1)) 4)
+(futr (&&(!! (-P- ACT1))(!! (-P- COND1))([=] (-V- NUM_REACT1) 0)(!! (-P- REACT1))) 5)
 
 ))
 

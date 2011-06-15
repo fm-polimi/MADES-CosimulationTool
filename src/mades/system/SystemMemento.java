@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedSet;
 
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multiset;
 import com.google.common.collect.TreeMultimap;
 
@@ -32,7 +33,7 @@ public class SystemMemento {
 	 */
 	private TreeMultimap<Time, VariableAssignment> variablesMultimap;
 	
-	private TreeMultimap<Time, Collection<VariableAssignment>> rolledBackVariablesMultimap;
+	private HashMultimap<Time, Collection<VariableAssignment>> rolledBackVariablesMultimap;
 	
 	/**
 	 * @param time
@@ -47,7 +48,7 @@ public class SystemMemento {
 	 */
 	public SystemMemento(TreeMultimap<Time, VariableAssignment> variablesMultimap) {
 		this.variablesMultimap = TreeMultimap.create(variablesMultimap);
-		rolledBackVariablesMultimap = TreeMultimap.create();
+		rolledBackVariablesMultimap = HashMultimap.create();
 	}
 
 	/**
@@ -202,7 +203,7 @@ public class SystemMemento {
 		rolledBackVariablesMultimap.put(time, variables);
 	}
 	
-	public SortedSet<Collection<VariableAssignment>> getUnsatConfiguration(Time time) {
+	public Set<Collection<VariableAssignment>> getUnsatConfiguration(Time time) {
 		return rolledBackVariablesMultimap.get(time);
 	}
 }
