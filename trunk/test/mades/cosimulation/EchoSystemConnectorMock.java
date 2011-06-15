@@ -10,6 +10,7 @@ import com.google.common.collect.TreeMultimap;
 import mades.common.timing.Clock;
 import mades.common.timing.Time;
 import mades.common.variables.VariableAssignment;
+import mades.common.variables.VariableFactory;
 import mades.environment.EnvironmentMemento;
 import mades.environment.SignalMap;
 import mades.system.SystemConnector;
@@ -26,19 +27,20 @@ public class EchoSystemConnectorMock implements SystemConnector {
 	protected Clock clock;
 	TreeMultimap<Time, VariableAssignment> variablesMultimap;
 	protected SignalMap signals;
+	protected ArrayList<VariableAssignment> params;
 	
 	/**
 	 * 
 	 */
-	public EchoSystemConnectorMock() {
-		// TODO Auto-generated constructor stub
+	public EchoSystemConnectorMock(ArrayList<VariableAssignment> params) {
+		this.params = params;
 	}
 
 	/* (non-Javadoc)
 	 * @see mades.system.SystemConnector#initialize(mades.common.ParamMap, double)
 	 */
 	@Override
-	public SystemMemento initialize(ArrayList<VariableAssignment> params, Clock clock) {
+	public SystemMemento initialize(Clock clock, VariableFactory factory) {
 		assert(clock.getCurrentTime().getSimulationStep() == 0);
 		this.clock = clock;
 		variablesMultimap = TreeMultimap.create();
@@ -63,7 +65,7 @@ public class EchoSystemConnectorMock implements SystemConnector {
 	 */
 	@Override
 	public SystemMemento simulateNext() {
-		variablesMultimap.putAll(clock.getCurrentTime(), variablesMultimap.get(clock.getCurrentTime()));
+		variablesMultimap.putAll(clock.getCurrentTime(), params);
 		return new SystemMemento(variablesMultimap);
 	}
 

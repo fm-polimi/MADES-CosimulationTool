@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import mades.common.timing.Clock;
 import mades.common.variables.VariableAssignment;
+import mades.common.variables.VariableFactory;
 import mades.environment.EnvironmentConnector;
 import mades.environment.EnvironmentMemento;
 import mades.environment.SignalMap;
@@ -22,25 +23,26 @@ import mades.system.SystemMemento;
 public class EchoEnvironmentConnectorMock implements EnvironmentConnector {
 	
 	protected Clock clock;
-	protected ArrayList<VariableAssignment> params;
+	protected VariableFactory factory;
 	protected SignalMap signals;
+	protected ArrayList<VariableAssignment> environmentParams;
 	
 	/**
 	 * 
 	 */
-	public EchoEnvironmentConnectorMock() {
-		// TODO Auto-generated constructor stub
+	public EchoEnvironmentConnectorMock(ArrayList<VariableAssignment> environmentParams) {
+		this.environmentParams = environmentParams;
 	}
 
 	/* (non-Javadoc)
 	 * @see mades.environment.EnvironmentConnector#initialize(mades.common.ParamMap, double)
 	 */
 	@Override
-	public EnvironmentMemento initialize(ArrayList<VariableAssignment> params, Clock clock) {
+	public EnvironmentMemento initialize(Clock clock, VariableFactory factory) {
 		this.clock = clock;
-		this.params = params;
+		this.factory = factory;
 		signals = new SignalMap();
-		return new EnvironmentMemento(clock.getCurrentTime(), params, signals);
+		return new EnvironmentMemento(clock.getCurrentTime(), environmentParams, signals);
 	}
 
 	/* (non-Javadoc)
@@ -50,7 +52,7 @@ public class EchoEnvironmentConnectorMock implements EnvironmentConnector {
 	public void load(EnvironmentMemento environmentParams,
 			SystemMemento systemParams) {
 		assert(clock.getCurrentTime().getSimulationStep() - 1 == environmentParams.getTime().getSimulationStep());
-		params = environmentParams.getParams();
+		this.environmentParams = environmentParams.getParams();
 		signals = environmentParams.getSignals();
 	}
 	
@@ -59,7 +61,7 @@ public class EchoEnvironmentConnectorMock implements EnvironmentConnector {
 	 */
 	@Override
 	public EnvironmentMemento simulateNext() {
-		return new EnvironmentMemento(clock.getCurrentTime(), params, signals);
+		return new EnvironmentMemento(clock.getCurrentTime(), environmentParams, signals);
 	}
 
 	/* (non-Javadoc)
@@ -67,7 +69,7 @@ public class EchoEnvironmentConnectorMock implements EnvironmentConnector {
 	 */
 	@Override
 	public EnvironmentMemento getCurrentParams() {
-		return new EnvironmentMemento(clock.getCurrentTime(), params, signals);
+		return new EnvironmentMemento(clock.getCurrentTime(), environmentParams, signals);
 	}
 
 	/* (non-Javadoc)
