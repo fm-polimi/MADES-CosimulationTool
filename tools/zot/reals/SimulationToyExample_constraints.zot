@@ -18,7 +18,7 @@
     (futr (-P- cond1) 7)
     (futr (-P- cond1) 8)
     (futr (-P- cond1) 9)
-    (futr ([=] (-V- num_react1) '(/ 19 3)) 9)
+    (futr ([=] (-V- num_react1) 63e-1) 9)
   ))
 
 (defvar constraints
