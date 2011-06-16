@@ -82,7 +82,7 @@ public class ZotOutputParser {
 		try {
 			while (!simulationStepReached && 
 					(line = reader.readLine()) != null) {
-				//System.out.println(line);
+				System.out.println(line);
 				processLine(line);
 			}
 		} catch (IOException e) {
@@ -148,7 +148,7 @@ public class ZotOutputParser {
 						falseVariablesAtStep.remove(def);
 						variablesMultimap.put(currentTime, new VariableAssignment(def, dvalue));
 					} else {
-						VariableDefinition def = variableFactory.get(line);
+						VariableDefinition def = variableFactory.get(varname);
 						falseVariablesAtStep.remove(def);
 						variablesMultimap.put(currentTime, new VariableAssignment(def, 1));
 					}
