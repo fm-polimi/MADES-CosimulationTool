@@ -357,7 +357,7 @@
 (defun trio-to-ltl (f)
   "defines the semantics of TRIO in terms of PLTL"
   (cond 
-    ((or (symbolp f) (stringp f) (integerp f) (typep f 'boolean))
+    ((or (symbolp f) (stringp f) (numberp f) (typep f 'boolean))
      f)
     (t
       (case (car f)

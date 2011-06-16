@@ -125,14 +125,14 @@
   (cond     
     ((null f) 'false)
     ((eq f t) 'true)   
-    ((or (symbolp f) (stringp f) (integerp f) (predicatep f) (arith-cop f) (arith-opp f)) f)
+    ((or (symbolp f) (stringp f) (numberp f) (predicatep f) (arith-cop f) (arith-opp f)) f)
     ((eq (car f) 'not)
      (let ((a (second f)))
        (cond 
 	 ((eq a t) 'false)
 	 ((null a) 'true)	 
-	 ;((or (symbolp a) (stringp a) (integerp a) (predicatep a) (arith-cop a) (arith-opp a)) f)
-	 ((or (symbolp a) (stringp a) (integerp a) (predicatep a)  (arith-opp a)) f)
+	 ;((or (symbolp a) (stringp a) (numberp a) (predicatep a) (arith-cop a) (arith-opp a)) f)
+	 ((or (symbolp a) (stringp a) (numberp a) (predicatep a)  (arith-opp a)) f)
 	 (t 
 	  (case (car a)
 	    ((not) (deneg (second a)))
@@ -718,7 +718,7 @@
 (defun manage-transitions (trans the-k)
   (labels ((call-recur (f i)
 	     (cond
-	       ((or (stringp f) (integerp f) (typep f 'boolean)) f)
+	       ((or (stringp f) (numberp f) (typep f 'boolean)) f)
 	       ((or (symbolp f) (arith-itemp f)) (call *PROPS* f i))	       
 	       ((eq 'next (car f)) (call-recur (second f) (1+ i)))
 	       (t
