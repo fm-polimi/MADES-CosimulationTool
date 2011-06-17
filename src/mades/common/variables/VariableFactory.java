@@ -3,7 +3,7 @@
  */
 package mades.common.variables;
 
-import java.util.WeakHashMap;
+import java.util.HashMap;
 
 /**
  * @author Michele Sama (m.sama@puzzledev.com)
@@ -13,8 +13,8 @@ import java.util.WeakHashMap;
  */
 public class VariableFactory {
 
-	private WeakHashMap<String, VariableDefinition> definedVariables =
-			new WeakHashMap<String, VariableDefinition>();
+	private HashMap<String, VariableDefinition> definedVariables =
+			new HashMap<String, VariableDefinition>();
 	
 	/**
 	 * Get an already defined variable by name or defines a new one if
@@ -27,10 +27,10 @@ public class VariableFactory {
 	 *         exists but with a different scope.
 	 */
 	public VariableDefinition getOrDefine(String name, Scope scope, boolean bool) {
-		VariableDefinition var = definedVariables.get(name);
+		VariableDefinition var = definedVariables.get(name.toUpperCase());
 		if (var == null) {
 			var = new VariableDefinition(name, scope, bool);
-			definedVariables.put(name, var);
+			definedVariables.put(name.toUpperCase(), var);
 		} else {
 			if (var.getScope() != scope) {
 				throw new AssertionError(
@@ -57,7 +57,7 @@ public class VariableFactory {
 	 *         not exist.
 	 */
 	public VariableDefinition get(String name) {
-		VariableDefinition var =  definedVariables.get(name);
+		VariableDefinition var =  definedVariables.get(name.toUpperCase());
 		if (var == null) {
 			throw new AssertionError(
 					"A variable named: " + 
@@ -77,7 +77,7 @@ public class VariableFactory {
 	 *         already exists.
 	 */
 	public VariableDefinition define(String name, Scope scope, boolean bool) {
-		if (definedVariables.containsKey(name)) {
+		if (definedVariables.containsKey(name.toUpperCase())) {
 			throw new AssertionError(
 					"A variable named: " + 
 					name + 
@@ -85,7 +85,7 @@ public class VariableFactory {
 		} 
 		
 		VariableDefinition var = new VariableDefinition(name, scope, bool);
-		definedVariables.put(name, var);
+		definedVariables.put(name.toUpperCase(), var);
 		return var;
 	}
 	
@@ -97,7 +97,7 @@ public class VariableFactory {
 	 *        exists <code>false</code> otherwise.
 	 */
 	public boolean isDefined(String name) {
-		return definedVariables.containsKey(name);
+		return definedVariables.containsKey(name.toUpperCase());
 	}
 	
 }

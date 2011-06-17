@@ -231,15 +231,15 @@ public class Cosimulator {
 		simulationStarted = true;
 		logger.info("Starting simulation at time: " + initialSimulationTime);
 		
-		try {
+		//try {
 			// Runs the co-simulation
 			while(!clock.hasReachCosimulationEnd()) {
 				performCosimulationStep();
 			}
-		} finally {
+		//} finally {
 			simulationStarted = false;
 			logger.info("Simulation ended at time: " + clock.getCurrentTime().getSimulationTime());
-		}
+		//}
 	}
 	
 	
@@ -274,6 +274,7 @@ public class Cosimulator {
 		
 		sharedVariablesMultimap = TreeMultimap.create();
 		
+	
 		// Add the initial states to the bottom of the stack
 		// The system must be initialized first
 		SystemMemento systemMemento = system.initialize(clock, variableFactory);
@@ -283,10 +284,13 @@ public class Cosimulator {
 			throw new AssertionError(msg);
 		}
 		systemMementoStack.push(systemMemento);
-		environmentMementoStack.push(
-				environment.initialize(clock,
-						variableFactory));
+		storeSharedVariables(systemMemento);
 		
+		EnvironmentMemento environmentMemento = environment.initialize(clock,
+				variableFactory);
+		
+		environmentMementoStack.push(environmentMemento);
+		storeSharedVariables(environmentMemento);
 		
 	}
 	
@@ -452,8 +456,11 @@ public class Cosimulator {
 	}
 	
 	protected void simulateEnvironment() {
-		assert(simulationStarted);
+		if (!simulationStarted) {
+			throw new AssertionError("Simulation is not started");
+		}
 		logger.info("Symulating environment at time: " + clock.getCurrentTime().getSimulationTime());
+		
 		environment.load(environmentMementoStack.peek(), systemMementoStack.peek());
 		
 		EnvironmentMemento environmentMemento =
@@ -463,16 +470,23 @@ public class Cosimulator {
 		environmentMementoStack.push(environmentMemento);
 		
 		// Add variables to shared variables map
+		storeSharedVariables(environmentMemento);
+	}
+
+	private void storeSharedVariables(EnvironmentMemento environmentMemento) {
 		for (VariableAssignment var: environmentMemento.getParams()) 
 		{
 			if (var.getVariableDefinition().getScope() == Scope.ENVIRONMENT_SHARED) {
+				System.out.println("(" + environmentMemento.getTime() + "):" + var);
 				sharedVariablesMultimap.put(clock.getCurrentTime(), var);
 			}
 		}
 	}
 	
 	protected void simulateSystem() {
-		assert(simulationStarted);
+		if (!simulationStarted) {
+			throw new AssertionError("Simulation is not started");
+		}
 		logger.info("Simulating system at step: " + clock.getCurrentTime().getSimulationStep());
 		system.load( systemMementoStack.peek(), environmentMementoStack.peek());
 		
@@ -488,10 +502,15 @@ public class Cosimulator {
 		systemMementoStack.push(systemMemento);
 		
 		// Add shared variables to the variable map
+		storeSharedVariables(systemMemento);
+	}
+
+	private void storeSharedVariables(SystemMemento systemMemento) {
 		Collection<VariableAssignment> vars = systemMemento.get(clock.getCurrentTime());
 		for (VariableAssignment var: vars) 
 		{
 			if (var.getVariableDefinition().getScope() == Scope.SYSTEM_SHARED) {
+				System.out.println("(" + clock.getCurrentTime() + "):" + var);
 				sharedVariablesMultimap.put(clock.getCurrentTime(), var);
 			}
 		}

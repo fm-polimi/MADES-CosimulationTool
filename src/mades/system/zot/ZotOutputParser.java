@@ -32,6 +32,7 @@ public class ZotOutputParser {
 	
 	private static final String DOUBLE = "[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?";
 	private static String VARIABLE = "([\\w._-]+)( = (" + DOUBLE + ")?)";
+	private static String VARIABLE_FRACTION = "([\\w._-]+)( = ([0-9]+)/([0-9]+)?)";
 	
 	private static final String UNSAT = "---UNSAT---";
 	private Pattern unsatPattern = Pattern.compile(UNSAT);
@@ -49,6 +50,7 @@ public class ZotOutputParser {
 	private Pattern stepPattern = Pattern.compile(STEP);
 	private Pattern signalPattern = Pattern.compile(SIGNALS);
 	private Pattern variablePattern = Pattern.compile(VARIABLE);
+	private Pattern variableFractionPattern = Pattern.compile(VARIABLE_FRACTION);
 	
 	private BufferedReader reader;
 	private TreeMultimap<Time, VariableAssignment> variablesMultimap;
@@ -148,9 +150,21 @@ public class ZotOutputParser {
 						falseVariablesAtStep.remove(def);
 						variablesMultimap.put(currentTime, new VariableAssignment(def, dvalue));
 					} else {
-						VariableDefinition def = variableFactory.get(varname);
-						falseVariablesAtStep.remove(def);
-						variablesMultimap.put(currentTime, new VariableAssignment(def, 1));
+						Matcher fractMatcher = variableFractionPattern.matcher(varname);
+						if (fractMatcher.matches()) {
+							String name = fractMatcher.group(1);
+							String value1 = fractMatcher.group(3);
+							String value2 = fractMatcher.group(4);
+							double dvalue = Double.parseDouble(value1) /Double.parseDouble(value2);
+							
+							VariableDefinition def = variableFactory.get(name);
+							falseVariablesAtStep.remove(def);
+							variablesMultimap.put(currentTime, new VariableAssignment(def, dvalue));
+						}else {
+							VariableDefinition def = variableFactory.get(varname);
+							falseVariablesAtStep.remove(def);
+							variablesMultimap.put(currentTime, new VariableAssignment(def, 1));
+						}
 					}
 
 				}

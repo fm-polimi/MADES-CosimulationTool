@@ -1,22 +1,22 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; THE SYSTEM
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defvar C1 5)
-(defvar C2 8)
-(defvar C3 3)
-(defvar C4 5)
-(defvar LB 4)
-(defvar UB 8)
+(defvar C1 3)
+(defvar C2 2)
+(defvar C3 1)
+(defvar C4 2)
+(defvar LB 9)
+(defvar UB 11)
 
 
 (define-tvar 'react1 *real*)
 
-;; cond1 is some condition that, when it holds for C1 instants, triggers some action act1 within C2 instants.
+;; s is some condition that, when it holds for C1 instants, triggers some action act1 within C2 instants.
 ;; formula monitor:
-;; Lasted(cond1, C1) -> Futr(WithinF(act1, C2), 1)
+;; Lasted(s, C1) -> Futr(WithinF(act1, C2), 1)
 
 (defvar monitor  
-  (-> (lasted (-P- cond1) C1)
+  (-> (lasted (!! (-P- s)) C1)
       (futr (withinf (-P- act1) C2) 1)))
 
 ;; action act1, in turn, triggers a reaction sigreact1 in an interval [C3,C4]

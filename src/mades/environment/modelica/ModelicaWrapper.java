@@ -39,9 +39,9 @@ public class ModelicaWrapper {
 	private static String SIGNAL_FILE_NAME = "A_Transitions";
 	private static String RUN_FILE = "run.sh";
 	
-	private static final String VARIABLE_NAME = "[\\w \\._\\(\\)]+";
+	private static final String VARIABLE_NAME = "[ ]*[\\w \\._\\(\\)]+";
 	private static final String DOUBLE = "[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?";
-	private static final String VARIABLE_LINE = "^(" + DOUBLE + ")( //[ ]?default)? //([ ]?" + VARIABLE_NAME + ")$";
+	private static final String VARIABLE_LINE = "^(" + DOUBLE + ")( //[ ]*default)? //(" + VARIABLE_NAME + ")$";
 	private Pattern variablePattern = Pattern.compile(VARIABLE_LINE);
 	
 	private static final String SIGNAL_LINE = "^(TRANSnp|TRANSpn):\\t(" + VARIABLE_NAME + ")\\t(" + DOUBLE + ")$";
@@ -173,6 +173,11 @@ public class ModelicaWrapper {
 			e1.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+		
+		File signalFile = new File(signalsFileName);
+		if (signalFile.exists()) {
+			signalFile.delete();
 		}
 		
 		EnvironmentMemento memento = new EnvironmentMemento(clock.getCurrentTime(), variables, signals);
