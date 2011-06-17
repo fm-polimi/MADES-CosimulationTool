@@ -1,4 +1,4 @@
-10.0 // start value
+20.0 // start value
 50.0 // stop value
 0.02 // step value
 1.0E-6 // tolerance
@@ -10,12 +10,12 @@
 1.0 // n bool parameters
 0.0 // n bool variables
 0.0 // n string variables
-0.0004550022273 //COND1
--0.0004550022273 //der(COND1)
--0.0004550022273 //der(C1.v)
--0.0004550022273 //R1.v
-2.07027026848e-08 //R1.LossPower
--4.550022273e-05 //C1.p.i
+0.999951379082 //COND1
+4.86209182338e-05 //der(COND1)
+4.86209182338e-05 //der(C1.v)
+4.86209182338e-05 //R1.v
+2.36399368989e-10 //R1.LossPower
+4.86209182338e-06 //C1.p.i
 0.0 //G.p.i
 0.0 //s
 0.0 //C1.n.v
@@ -28,7 +28,7 @@
 0.0 //R1.alpha
 0.1 //C1.C
 6.0 //SOGLIA
-0.0 //REACT1
+1.0 //REACT1
 10.0 //R
 0.1 //C
 0.0 //R1.useHeatPort

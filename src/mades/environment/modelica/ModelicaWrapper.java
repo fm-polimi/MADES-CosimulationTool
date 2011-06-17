@@ -192,7 +192,15 @@ public class ModelicaWrapper {
 			PrintWriter writer = new PrintWriter(initialVariableFileName);
 			
 			for (VariableAssignment v: variables) {
-				writer.println(v.getValue() + " //" + v.getVariableDefinition().getName());
+				String name = v.getVariableDefinition().getName();
+				double value = v.getValue();
+				// Update simulation time
+				if (name.equals(START_TIME_VAR_NAME)) {
+					value = clock.getCurrentTime().getSimulationTime() - clock.getTimeStep();
+				} else if (name.equals(END_TIME_VAR_NAME)) {
+					value = clock.getCurrentTime().getSimulationTime();
+				}
+				writer.println(value + " //" + name);
 			}
 			writer.flush();
 			writer.close();
