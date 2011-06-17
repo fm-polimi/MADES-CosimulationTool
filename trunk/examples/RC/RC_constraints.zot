@@ -8,17 +8,7 @@
 
 (defvar history
 (&&
-(&&(!! (-P- ACT1))(-P- COND1)([=] (-V- REACT1) 0.0)(!! (-P- SIGREACT1)))
-(futr (&&(!! (-P- ACT1))(-P- COND1)([=] (-V- REACT1) 0.0)(!! (-P- SIGREACT1))) 1)
-(futr (&&(!! (-P- ACT1))(-P- COND1)([=] (-V- REACT1) 0.0)(!! (-P- SIGREACT1))) 2)
-(futr (&&(!! (-P- ACT1))(-P- COND1)([=] (-V- REACT1) 0.0)(!! (-P- SIGREACT1))) 3)
-(futr (&&(!! (-P- ACT1))(-P- COND1)([=] (-V- REACT1) 0.0)(!! (-P- SIGREACT1))) 4)
-(futr (&&(!! (-P- ACT1))(-P- COND1)([=] (-V- REACT1) 0.0)(!! (-P- SIGREACT1))) 5)
-(futr (&&(!! (-P- ACT1))(-P- COND1)([=] (-V- REACT1) 0.0)(!! (-P- SIGREACT1))) 6)
-(futr (&&(!! (-P- ACT1))(-P- COND1)([=] (-V- REACT1) 0.0)(!! (-P- SIGREACT1))) 7)
-(futr (&&(!! (-P- ACT1))(-P- COND1)([=] (-V- REACT1) 5.0)(-P- SIGREACT1)) 8)
-(futr (&&(!! (-P- ACT1))(!! (-P- COND1))([=] (-V- REACT1) 0.0)(!! (-P- SIGREACT1))) 9)
-
+(&&(!! (-P- ACT1))([=] (-V- REACT1) 0.0)(!! (-P- SIGREACT1))(-P- s))
 ))
 
 (defvar constraints

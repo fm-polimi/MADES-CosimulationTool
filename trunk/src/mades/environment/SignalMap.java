@@ -50,7 +50,9 @@ public class SignalMap {
 			valuesArrayList = new ArrayList<Double>();
 			signals.put(name, valuesArrayList);
 		}
-		valuesArrayList.add(time);
+		if (!valuesArrayList.contains(time)) {
+			valuesArrayList.add(time);
+		}
 		return valuesArrayList;
 	}
 }
