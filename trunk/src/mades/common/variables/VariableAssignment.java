@@ -13,6 +13,7 @@ public class VariableAssignment implements Comparable<VariableAssignment>{
 
 	private VariableDefinition definition;
 	private String value;
+	private String annotation;
 	
 	/**
 	 * @param name
@@ -85,5 +86,19 @@ public class VariableAssignment implements Comparable<VariableAssignment>{
 		return definition.getScope() + " " + 
 				definition.getName() + ": " +
 				value;
+	}
+
+	/**
+	 * @return the annotation
+	 */
+	public String getAnnotation() {
+		return annotation;
+	}
+
+	/**
+	 * @param annotation the annotation to set
+	 */
+	public void setAnnotation(String annotation) {
+		this.annotation = annotation;
 	}
 }

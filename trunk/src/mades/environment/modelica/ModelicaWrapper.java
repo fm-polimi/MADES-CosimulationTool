@@ -42,7 +42,7 @@ public class ModelicaWrapper {
 	private static final String VARIABLE_NAME = "[ ]*[\\w -\\._\\(\\)]+";
 	private static final String DOUBLE = "[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?";
 	private static final String LABEL = "(\"[\\w\\W]+\")";
-	private static final String VARIABLE_LINE = "^("  + DOUBLE + "|" + LABEL + ")( //[ ]*default)? //(" + VARIABLE_NAME + ")$";
+	private static final String VARIABLE_LINE = "^("  + DOUBLE + "|" + LABEL + ")( //[ ]*(default))? //(" + VARIABLE_NAME + ")$";
 	private Pattern variablePattern = Pattern.compile(VARIABLE_LINE);
 	
 	private static final String SIGNAL_LINE = "^(TRANSnp|TRANSpn):\\t(" + VARIABLE_NAME + ")\\t(" + DOUBLE + ")$";
@@ -151,7 +151,8 @@ public class ModelicaWrapper {
 				Matcher matcher = variablePattern.matcher(line);
 				if (matcher.matches()) {
 					String value = matcher.group(1);
-					String name = matcher.group(5);
+					String annotation = matcher.group(5);
+					String name = matcher.group(6);
 					VariableDefinition def = null;
 					if (!variableFactory.isDefined(name)) {
 						// All modelica variables are double
@@ -167,8 +168,9 @@ public class ModelicaWrapper {
 						value = "" + clock.getTimeStep();
 					}
 					
-					variables.add(
-						    new VariableAssignment(def, value));
+					VariableAssignment var = new VariableAssignment(def, value);
+					var.setAnnotation(annotation);
+					variables.add(var);
 				} else {
 					System.out.println("** Skipped line: " + line);
 				}
@@ -204,6 +206,7 @@ public class ModelicaWrapper {
 			
 			for (VariableAssignment v: variables) {
 				String name = v.getVariableDefinition().getName();
+				String annotation = v.getAnnotation();
 				String value = v.getValue();
 				// Update simulation time
 				if (name.equals(START_TIME_VAR_NAME)) {
@@ -211,7 +214,11 @@ public class ModelicaWrapper {
 				} else if (name.equals(END_TIME_VAR_NAME)) {
 					value = "" + (clock.getCurrentTime().getSimulationTime());
 				}
-				writer.println(value + " //" + name);
+				if (annotation != null) {
+					writer.println(value + " //" + annotation +" //" +name);
+				}else {
+					writer.println(value + " //" + name);
+				}
 			}
 			writer.flush();
 			writer.close();
@@ -263,7 +270,8 @@ public class ModelicaWrapper {
 				Matcher matcher = variablePattern.matcher(line);
 				if (matcher.matches()) {
 					String value = matcher.group(1);
-					String name = matcher.group(5);
+					String annotation = matcher.group(5);
+					String name = matcher.group(6);
 					VariableDefinition def = variableFactory.get(name);
 					
 					if (name.equals(START_TIME_VAR_NAME)) {
@@ -274,7 +282,9 @@ public class ModelicaWrapper {
 						value = "" + clock.getCurrentTime().getSimulationTime();
 					}
 					
-					variables.add(new VariableAssignment(def, value));
+					VariableAssignment var = new VariableAssignment(def, value);
+					var.setAnnotation(annotation);
+					variables.add(var);
 				} else {
 					System.out.println("** Skipped line: " + line);
 				}
