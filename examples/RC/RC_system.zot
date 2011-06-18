@@ -1,10 +1,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; THE SYSTEM
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defvar C1 3)
-(defvar C2 2)
+(defvar C1 2)
+(defvar C2 1)
 (defvar C3 1)
-(defvar C4 2)
+(defvar C4 1)
 (defvar LB 9)
 (defvar UB 11)
 
