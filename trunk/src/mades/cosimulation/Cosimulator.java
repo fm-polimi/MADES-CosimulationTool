@@ -95,7 +95,7 @@ public class Cosimulator {
 		cosimulator.setSystem(system);
 		
 		double initialSimulationTime = 0;
-		double timeStep = 1;
+		double timeStep = 2;
 		double maxCosimulationTime = 40;
 		int maxCosimulationAttemptsForStep = 3;
 		int maxCosimulationBacktraking = 3;
@@ -432,7 +432,9 @@ public class Cosimulator {
 		
 		// Remove shared variables
 		for (VariableAssignment v: memento.getParams()) {
-			sharedVariablesMultimap.remove(memento.getTime(), v);
+			if (v.getVariableDefinition().getScope() == Scope.ENVIRONMENT_SHARED) {
+				sharedVariablesMultimap.remove(memento.getTime(), v);
+			}
 		}
 	}
 	
@@ -447,10 +449,13 @@ public class Cosimulator {
 		// TODO(rax): assert is the right memento
 		
 		// Remove shared variables
+		Time t = clock.getCurrentTime();
 		Collection<VariableAssignment> variables = 
-				discardedMemento.get(clock.getCurrentTime());
+				discardedMemento.get(t);
 		for (VariableAssignment v: variables) {
-			sharedVariablesMultimap.remove(clock.getCurrentTime(), v);
+			if (v.getVariableDefinition().getScope() == Scope.SYSTEM_SHARED) {
+				sharedVariablesMultimap.remove(t, v);
+			}
 		}
 		
 		// Add the unsat configuration to the current memento

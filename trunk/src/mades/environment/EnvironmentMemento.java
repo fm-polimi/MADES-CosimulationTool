@@ -30,7 +30,7 @@ public class EnvironmentMemento {
 	public EnvironmentMemento(Time time, ArrayList<VariableAssignment> params, SignalMap signals) {
 		this.time = time;
 		this.params = params;
-		this.signals = signals;
+		this.signals = new SignalMap(signals);
 	}
 	
 	public EnvironmentMemento(EnvironmentMemento oldMemento) {
