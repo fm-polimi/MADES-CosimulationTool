@@ -95,8 +95,8 @@ public class Cosimulator {
 		cosimulator.setSystem(system);
 		
 		double initialSimulationTime = 0;
-		double timeStep = 2;
-		double maxCosimulationTime = 40;
+		double timeStep = 1;
+		double maxCosimulationTime = 20;
 		int maxCosimulationAttemptsForStep = 3;
 		int maxCosimulationBacktraking = 3;
 		
