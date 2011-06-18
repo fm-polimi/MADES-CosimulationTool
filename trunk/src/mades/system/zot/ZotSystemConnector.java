@@ -66,7 +66,7 @@ public class ZotSystemConnector implements SystemConnector {
 	@Override
 	public void load(SystemMemento systemMemento,
 			EnvironmentMemento environmentParams) {
-		this.systemMemento = systemMemento;
+		this.systemMemento = new SystemMemento(systemMemento);
 		this.systemMemento.update(environmentParams);
 	}
 

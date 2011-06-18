@@ -14,6 +14,15 @@ public class SignalMap {
 
 	HashMap<String, ArrayList<Double>> signals = new HashMap<String, ArrayList<Double>>();
 	
+	
+	public SignalMap() {}
+	
+	public SignalMap(SignalMap oldMap) {
+		for (String s: oldMap.signals.keySet()){
+			signals.put(s, (ArrayList<Double>)oldMap.signals.get(s).clone());
+		}
+	}
+	
 	/**
 	 * Checks if the system is nonberkeleyan.
 	 * For each signal the distance between two trigger times must be greated than

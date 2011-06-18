@@ -209,7 +209,8 @@ public class ZotWrapper {
 		for (VariableAssignment v: variables) {
 			VariableDefinition def = v.getVariableDefinition();
 			if (def.isBoolean()) {
-				if (v.getValue().equals("0")) {
+				double value = Double.parseDouble(v.getValue());
+				if (value == 0) {
 					builder.append("(!! (-P- " + def.getName() + "))");
 				} else {
 					builder.append("(-P- " + def.getName() + ")");

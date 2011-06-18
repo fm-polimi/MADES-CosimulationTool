@@ -3,7 +3,6 @@
  */
 package mades.system;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -36,13 +35,31 @@ public class SystemMemento {
 	private HashMultimap<Time, Collection<VariableAssignment>> rolledBackVariablesMultimap;
 	
 	/**
-	 * @param time
-	 * @param params
 	 */
 	public SystemMemento() {
 		variablesMultimap = TreeMultimap.create();
+		rolledBackVariablesMultimap = HashMultimap.create();
 	}
 
+	/**
+	 */
+	public SystemMemento(SystemMemento oldMemento) {
+		variablesMultimap = TreeMultimap.create();
+		SortedSet<Time> keys = oldMemento.variablesMultimap.keySet();
+		for (Time t: keys) {
+			SortedSet<VariableAssignment> variables = oldMemento.variablesMultimap.get(t);
+			for (VariableAssignment v: variables) {
+				VariableAssignment var = new VariableAssignment(v.getVariableDefinition(), v.getValue());
+				var.setAnnotation(v.getAnnotation());
+				variablesMultimap.put(t, var);
+			}
+		}
+		
+		// TODO fix me!
+		rolledBackVariablesMultimap = HashMultimap.create();
+	}
+
+	
 	/**
 	 * @param variablesMultimap
 	 */
@@ -186,15 +203,16 @@ public class SystemMemento {
 	
 	public void update(EnvironmentMemento memento) {
 		Time time = memento.getTime();
+		
 		SortedSet<VariableAssignment> variables = variablesMultimap.get(time);
-		if (variables == null) {
-			return;
+		if (variables.size() != 0) {
+			throw new RuntimeException("Uncompatible mementos: system mento should be empty at this time.");
 		}
 		
-		for (VariableAssignment systemVar: variables) {
-			VariableDefinition def = systemVar.getVariableDefinition();
+		for (VariableAssignment envVar: memento.getParams()) {
+			VariableDefinition def = envVar.getVariableDefinition();
 			if (def.getScope() == Scope.ENVIRONMENT_SHARED) {
-				systemVar.setValue(memento.getVariable(def).getValue());
+				variablesMultimap.put(time, new VariableAssignment(def, envVar.getValue()));
 			}
 		}
 	}

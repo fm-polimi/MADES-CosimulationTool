@@ -41,27 +41,33 @@ public class VariableAssignment implements Comparable<VariableAssignment>{
 	 * @param value
 	 * @throws AssertionError if a boolean variable is not assigned 0 or 1.
 	 */
+	/*
 	public void setValue(String value) {
-		if (getVariableDefinition().isBoolean() && !value.equals("0") && !value.equals("1")) {
-			throw new AssertionError("Boolean variable " + 
-					getVariableDefinition().getName() +
-					" can only be assigned with 0 or 1: found " + 
-					value +".");
+		if (getVariableDefinition().isBoolean()) {
+			double dval = Double.parseDouble(value);
+			if(dval != 0.0 && dval != 1.0) {
+				throw new AssertionError("Boolean variable " + 
+						getVariableDefinition().getName() +
+						" can only be assigned with 0 or 1: found " + 
+						value +".");
+			}
 		}
+		
 		this.value = value;
-	}
+	}*/
 	
 	/**
 	 * Reassign this value.
 	 * 
 	 * @param value
 	 */
+	/*
 	public void setValue(boolean value) {
 		if (!getVariableDefinition().isBoolean()) {
 			throw new AssertionError("This variable is not boolean.");
 		}
 		this.value = value?"1":"0";
-	}
+	}*/
 
 	/**
 	 * @return the variable definition of this assignment.
