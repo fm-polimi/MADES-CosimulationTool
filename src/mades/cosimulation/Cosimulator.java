@@ -96,7 +96,7 @@ public class Cosimulator {
 		
 		double initialSimulationTime = 0;
 		double timeStep = 1;
-		double maxCosimulationTime = 10;
+		double maxCosimulationTime = 20;
 		int maxCosimulationAttemptsForStep = 3;
 		int maxCosimulationBacktraking = 3;
 		

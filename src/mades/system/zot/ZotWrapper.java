@@ -183,7 +183,7 @@ public class ZotWrapper {
 							name, scope, isBoolean);
 					
 					definedVariables.add(def);
-					variables.add(new VariableAssignment(def, Double.parseDouble(value)));
+					variables.add(new VariableAssignment(def, value));
 				}
 			}
 			
@@ -209,7 +209,7 @@ public class ZotWrapper {
 		for (VariableAssignment v: variables) {
 			VariableDefinition def = v.getVariableDefinition();
 			if (def.isBoolean()) {
-				if (v.getValue() == 0) {
+				if (v.getValue().equals("0")) {
 					builder.append("(!! (-P- " + def.getName() + "))");
 				} else {
 					builder.append("(-P- " + def.getName() + ")");
