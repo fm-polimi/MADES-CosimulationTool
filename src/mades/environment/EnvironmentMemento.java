@@ -33,6 +33,17 @@ public class EnvironmentMemento {
 		this.signals = signals;
 	}
 	
+	public EnvironmentMemento(EnvironmentMemento oldMemento) {
+		this.time = oldMemento.getTime();
+		this.params = new ArrayList<VariableAssignment>();
+		for (VariableAssignment v: oldMemento.params) {
+			VariableAssignment var = new VariableAssignment(v.getVariableDefinition(), v.getValue());
+			var.setAnnotation(v.getAnnotation());
+			this.params.add(var);
+		}
+		this.signals = new SignalMap(oldMemento.signals);
+	}
+	
 	/**
 	 * @return the time
 	 */
@@ -74,11 +85,15 @@ public class EnvironmentMemento {
 	 * @param memento
 	 */
 	public void update(SystemMemento memento) {		
-		for (VariableAssignment envVar: params) {
+		for (int i = params.size() - 1; i > -1; i --) {
+			VariableAssignment envVar = params.get(i);
 			VariableDefinition def = envVar.getVariableDefinition();
 			if (def.getScope() == Scope.SYSTEM_SHARED) {
 				VariableAssignment var = memento.getVariable(def, getTime());
-				envVar.setValue(var.getValue());
+				if (var == null) {
+					throw new AssertionError("Missing variable from memento");
+				}
+				params.set(i, new VariableAssignment(def, var.getValue()));
 			}
 		}
 	}

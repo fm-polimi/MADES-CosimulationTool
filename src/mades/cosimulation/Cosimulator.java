@@ -381,6 +381,9 @@ public class Cosimulator {
 				simulateSystem();
 				systemStepApproved = true;
 			} catch(AssertionError err) {
+				logger.severe(err.getMessage());
+				err.printStackTrace();
+				
 				// Roll back the system and the simulation time
 				rollbackEnvironment();
 				clock.tickBackward();
@@ -478,7 +481,8 @@ public class Cosimulator {
 		{
 			if (var.getVariableDefinition().getScope() == Scope.ENVIRONMENT_SHARED) {
 				System.out.println("(" + environmentMemento.getTime() + "):" + var);
-				sharedVariablesMultimap.put(clock.getCurrentTime(), var);
+				sharedVariablesMultimap.put(clock.getCurrentTime(),
+						new VariableAssignment(var.getVariableDefinition(), var.getValue()));
 			}
 		}
 	}
@@ -488,7 +492,7 @@ public class Cosimulator {
 			throw new AssertionError("Simulation is not started");
 		}
 		logger.info("Simulating system at step: " + clock.getCurrentTime().getSimulationStep());
-		system.load( systemMementoStack.peek(), environmentMementoStack.peek());
+		system.load(systemMementoStack.peek(), environmentMementoStack.peek());
 		
 		SystemMemento systemMemento = system.simulateNext();
 		
@@ -511,7 +515,8 @@ public class Cosimulator {
 		{
 			if (var.getVariableDefinition().getScope() == Scope.SYSTEM_SHARED) {
 				System.out.println("(" + clock.getCurrentTime() + "):" + var);
-				sharedVariablesMultimap.put(clock.getCurrentTime(), var);
+				sharedVariablesMultimap.put(clock.getCurrentTime(),
+						new VariableAssignment(var.getVariableDefinition(), var.getValue()));
 			}
 		}
 	}

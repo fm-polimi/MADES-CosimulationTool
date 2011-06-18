@@ -50,7 +50,7 @@ public class ModelicaEnvironmentConnector implements EnvironmentConnector {
 	@Override
 	public void load(EnvironmentMemento environmentMemento,
 			SystemMemento systemParams) {
-		this.environmentMemento = environmentMemento;
+		this.environmentMemento = new EnvironmentMemento(environmentMemento);
 		this.environmentMemento.update(systemParams);
 	}
 
@@ -59,7 +59,8 @@ public class ModelicaEnvironmentConnector implements EnvironmentConnector {
 	 */
 	@Override
 	public EnvironmentMemento simulateNext() {
-		return wrapper.simulateNext(environmentMemento);
+		environmentMemento = wrapper.simulateNext(environmentMemento);
+		return environmentMemento;
 	}
 
 	/* (non-Javadoc)
