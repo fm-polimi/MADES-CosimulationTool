@@ -25,7 +25,7 @@ import com.google.common.collect.TreeMultimap;
  */
 public class ZotOutputParser {
 
-	private static String STEP0 = "------ time 0 ------";
+	private static String START_STEP = "------ time 1 ------";
 	private static String STEP = "^------ time (\\d+) ------$";
 	private static String END = "------ end ------";
 	private static String SIGNALS = "\\*\\*(\\w+)\\*\\*";
@@ -101,7 +101,7 @@ public class ZotOutputParser {
 		
 		switch(state) {
 			case HEADER: {
-				if (line.equals(STEP0)) {
+				if (line.equals(START_STEP)) {
 					state = State.VARIABLES;
 					currentTime = timeFactory.get(0);
 					falseVariablesAtStep = (ArrayList<VariableDefinition>) variables.clone();
@@ -124,7 +124,7 @@ public class ZotOutputParser {
 						}
 					}
 					
-					step = Integer.parseInt(lineMatcher.group(1));
+					step = Integer.parseInt(lineMatcher.group(1)) - 1;
 					if (step > simulationStep) {
 						simulationStepReached = true;
 						break;

@@ -219,6 +219,7 @@ public class ZotWrapper {
 				builder.append("([=] (-V- " + def.getName() + ") " + v.getValue() + ")");
 			}
 		}
+		
 		builder.append(")");
 	}
 
@@ -227,6 +228,24 @@ public class ZotWrapper {
 		builder.append("(!!");
 		composeVariableCollection(builder, variables);
 		builder.append(")");
+	}
+	
+	
+	protected void composeStepPredicate(StringBuilder builder,
+			Collection<VariableAssignment> variables,
+			Set<Collection<VariableAssignment>> unsat
+			) {
+		
+		if (unsat.size() != 0) {
+			builder.append("(&&");
+			for (Collection<VariableAssignment> set: unsat) {
+				composeUnsatConstrains(builder, set);
+			}
+			composeVariableCollection(builder, variables);
+			builder.append(")");
+		} else {
+			composeVariableCollection(builder, variables);
+		}
 	}
 	
 	/**
@@ -270,19 +289,14 @@ public class ZotWrapper {
 		Set<Time> keys = memento.keySet();
 		for (Time t: keys) {
 			Collection<VariableAssignment> variables = memento.get(t);
+			Set<Collection<VariableAssignment>> unsat = memento.getUnsatConfiguration(t);
 			int step = t.getSimulationStep();
 			if (step == 0) {
-				composeVariableCollection(builder, variables);
+				composeStepPredicate(builder, variables, unsat);
 				builder.append("\n");
 			} else {
 				builder.append("(futr ");
-				composeVariableCollection(builder, variables);
-				Set<Collection<VariableAssignment>> unsat = memento.getUnsatConfiguration(t);
-				if (unsat != null) {
-					for (Collection<VariableAssignment> set: memento.getUnsatConfiguration(t)) {
-						composeUnsatConstrains(builder, set);
-					}
-				}
+				composeStepPredicate(builder, variables, unsat);
 				builder.append(" " + step +")\n");
 			}
 		}

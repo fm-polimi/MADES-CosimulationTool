@@ -55,8 +55,8 @@ public class SystemMemento {
 			}
 		}
 		
-		// TODO fix me!
-		rolledBackVariablesMultimap = HashMultimap.create();
+		// TODO shall we make a deep copy?
+		rolledBackVariablesMultimap = HashMultimap.create(oldMemento.rolledBackVariablesMultimap);
 	}
 
 	
