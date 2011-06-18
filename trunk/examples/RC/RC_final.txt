@@ -1,23 +1,27 @@
-20.0 // start value
-10.0 // stop value
+28.0 // start value
+27.999999999999964 // stop value
 0.02 // step value
-1.0E-6 // tolerance
-1.0 // n states
-10.0 // n alg vars
-9.0 // n parameters
-0.0 // n int parameters
-0.0 // n int variables
-1.0 // n bool parameters
-0.0 // n bool variables
-0.0 // n string variables
-5.0002257931 //COND1
--0.000225793096264 //der(COND1)
--0.000225793096264 //der(C1.v)
--0.000225793096264 //R1.v
-5.09825223203e-09 //R1.LossPower
--2.25793096264e-05 //C1.p.i
-0.0 //G.p.i
-0.0 //s
+1e-06 // tolerance
+"dassl" // method
+"mat" // outputFormat
+".*" // variableFilter
+1 // n states
+10 // n alg vars
+9 // n parameters
+0 // n int parameters
+0 // n int variables
+1 // n bool parameters
+0 // n bool variables
+0 // n string-parameters
+0 // n string variables
+3.3867257807 //default //COND1
+-3.3867257807 //default //der(COND1)
+-3.3867257807 //default //der(C1.v)
+-3.3867257807 //default //R1.v
+1.14699115136 //default //R1.LossPower
+-0.33867257807 //default //C1.p.i
+0.0 //default //G.p.i
+0.0 //default //s
 0.0 //C1.n.v
 0.0 //G.p.v
 0.0 //E.n.v
@@ -28,7 +32,7 @@
 0.0 //R1.alpha
 0.1 //C1.C
 6.0 //SOGLIA
-5.0 //REACT1
+0.0 //REACT1
 10.0 //R
 0.1 //C
 0.0 //R1.useHeatPort
