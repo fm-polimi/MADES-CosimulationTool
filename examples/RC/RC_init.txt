@@ -1,5 +1,5 @@
-27.599999999999966 // start value
-27.999999999999964 // stop value
+19.0 // start value
+20.0 // stop value
 0.02 // step value
 1e-06 // tolerance
 "dassl" // method
@@ -14,12 +14,12 @@
 0 // n bool variables
 0 // n string-parameters
 0 // n string variables
-5.05245730267 //default //COND1
-4.07254269733 //default //der(COND1)
-4.07254269733 //default //der(C1.v)
-4.07254269733 //default //R1.v
-1.65856040216 //default //R1.LossPower
-0.407254269733 //default //C1.p.i
+5.70721755842 //default //COND1
+3.30840744158 //default //der(COND1)
+3.30840744158 //default //der(C1.v)
+3.30840744158 //default //R1.v
+1.09455597995 //default //R1.LossPower
+0.330840744158 //default //C1.p.i
 0.0 //default //G.p.i
 0.0 //default //s
 0.0 //C1.n.v
@@ -32,7 +32,7 @@
 0.0 //R1.alpha
 0.1 //C1.C
 6.0 //SOGLIA
-0 //REACT1
+9.0078125 //REACT1
 10.0 //R
 0.1 //C
 0.0 //R1.useHeatPort
