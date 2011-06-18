@@ -39,9 +39,10 @@ public class ModelicaWrapper {
 	private static String SIGNAL_FILE_NAME = "A_Transitions";
 	private static String RUN_FILE = "run.sh";
 	
-	private static final String VARIABLE_NAME = "[ ]*[\\w \\._\\(\\)]+";
+	private static final String VARIABLE_NAME = "[ ]*[\\w -\\._\\(\\)]+";
 	private static final String DOUBLE = "[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?";
-	private static final String VARIABLE_LINE = "^(" + DOUBLE + ")( //[ ]*default)? //(" + VARIABLE_NAME + ")$";
+	private static final String LABEL = "(\"[\\w\\W]+\")";
+	private static final String VARIABLE_LINE = "^("  + DOUBLE + "|" + LABEL + ")( //[ ]*default)? //(" + VARIABLE_NAME + ")$";
 	private Pattern variablePattern = Pattern.compile(VARIABLE_LINE);
 	
 	private static final String SIGNAL_LINE = "^(TRANSnp|TRANSpn):\\t(" + VARIABLE_NAME + ")\\t(" + DOUBLE + ")$";
@@ -60,6 +61,8 @@ public class ModelicaWrapper {
 	
 	private VariableFactory variableFactory;
 	private Clock clock;
+	
+	private int numVariables;
 	
 	/**
 	 * @param environmentPath
@@ -139,6 +142,7 @@ public class ModelicaWrapper {
 	public EnvironmentMemento initFromFile(VariableFactory variableFactory) {
 		this.variableFactory = variableFactory;
 		ArrayList<VariableAssignment> variables = new ArrayList<VariableAssignment>();
+		numVariables = 0;
 		
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(baseVariableFileName));
@@ -147,7 +151,7 @@ public class ModelicaWrapper {
 				Matcher matcher = variablePattern.matcher(line);
 				if (matcher.matches()) {
 					String value = matcher.group(1);
-					String name = matcher.group(4);
+					String name = matcher.group(5);
 					VariableDefinition def = null;
 					if (!variableFactory.isDefined(name)) {
 						// All modelica variables are double
@@ -157,16 +161,18 @@ public class ModelicaWrapper {
 						def = variableFactory.get(name);
 					}
 					
-					double doubleValue = Double.parseDouble(value);
 					if (name.equals(START_TIME_VAR_NAME)) {
-						doubleValue = 0;
+						value = "0";
 					} else if (name.equals(END_TIME_VAR_NAME)) {
-						doubleValue = clock.getTimeStep();
+						value = "" + clock.getTimeStep();
 					}
 					
 					variables.add(
-						    new VariableAssignment(def, doubleValue));
-				} 
+						    new VariableAssignment(def, value));
+				} else {
+					System.out.println("** Skipped line: " + line);
+				}
+				numVariables ++;
 			}
 			reader.close();
 		} catch (FileNotFoundException e1) {
@@ -198,12 +204,12 @@ public class ModelicaWrapper {
 			
 			for (VariableAssignment v: variables) {
 				String name = v.getVariableDefinition().getName();
-				double value = v.getValue();
+				String value = v.getValue();
 				// Update simulation time
 				if (name.equals(START_TIME_VAR_NAME)) {
-					value = clock.getCurrentTime().getSimulationTime() - clock.getTimeStep();
+					value = "" + (clock.getCurrentTime().getSimulationTime() - clock.getTimeStep());
 				} else if (name.equals(END_TIME_VAR_NAME)) {
-					value = clock.getCurrentTime().getSimulationTime();
+					value = "" + (clock.getCurrentTime().getSimulationTime());
 				}
 				writer.println(value + " //" + name);
 			}
@@ -243,24 +249,34 @@ public class ModelicaWrapper {
 	
 	protected EnvironmentMemento loadVariablesFromSimulation() {
 		ArrayList<VariableAssignment> variables = new ArrayList<VariableAssignment>();
+		
+		
+		double startTime = 0;
+		double endTime = 0;
+		
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(finalVariableFileName));
 			String line = null;
+
+			
 			while ((line = reader.readLine()) != null) {
 				Matcher matcher = variablePattern.matcher(line);
 				if (matcher.matches()) {
 					String value = matcher.group(1);
-					String name = matcher.group(4);
+					String name = matcher.group(5);
 					VariableDefinition def = variableFactory.get(name);
 					
-					double doubleValue = Double.parseDouble(value);
 					if (name.equals(START_TIME_VAR_NAME)) {
-						doubleValue = clock.getCurrentTime().getSimulationTime() - clock.getTimeStep();
+						startTime = Double.parseDouble(value);
+						value = "" + (clock.getCurrentTime().getSimulationTime() - clock.getTimeStep());
 					} else if (name.equals(END_TIME_VAR_NAME)) {
-						doubleValue = clock.getCurrentTime().getSimulationTime();
+						endTime = Double.parseDouble(value);
+						value = "" + clock.getCurrentTime().getSimulationTime();
 					}
 					
-					variables.add(new VariableAssignment(def, doubleValue));
+					variables.add(new VariableAssignment(def, value));
+				} else {
+					System.out.println("** Skipped line: " + line);
 				}
 			}
 			reader.close();
@@ -268,6 +284,17 @@ public class ModelicaWrapper {
 			e1.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+		
+		if (startTime != endTime) {
+			throw new AssertionError("Incomplete simulation");
+		}
+		
+		if (variables.size() != numVariables) {
+			throw new AssertionError(
+				    "Wrong number of loaded variables. Found: " + 
+				    variables.size() + " Expected: " + 
+				    numVariables);
 		}
 		
 		File signalsFile = new File(signalsFileName);

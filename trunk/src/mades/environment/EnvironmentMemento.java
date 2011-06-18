@@ -82,24 +82,4 @@ public class EnvironmentMemento {
 			}
 		}
 	}
-	
-	/**
-	 * @param params
-	 */
-	/*
-	public void update(ArrayList<VariableAssignment> params) {		
-		for (VariableAssignment envVar: params) {
-			VariableDefinition def = envVar.getVariableDefinition();
-			if (def.getScope() == Scope.SYSTEM_SHARED) {
-				for (VariableAssignment v: params) {
-					// Same instance
-					if (v.getVariableDefinition().equals(def))
-					{
-						envVar.setValue(v.getValue());
-						break;
-					}
-				}
-			}
-		}
-	}*/
 }

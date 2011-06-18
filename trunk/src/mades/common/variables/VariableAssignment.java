@@ -12,7 +12,7 @@ package mades.common.variables;
 public class VariableAssignment implements Comparable<VariableAssignment>{
 
 	private VariableDefinition definition;
-	private double value;
+	private String value;
 	
 	/**
 	 * @param name
@@ -20,7 +20,7 @@ public class VariableAssignment implements Comparable<VariableAssignment>{
 	 * @param visible
 	 */
 	public VariableAssignment(VariableDefinition definition, 
-			double value) {
+			String value) {
 		this.definition = definition;
 		this.value = value;
 	}
@@ -30,7 +30,7 @@ public class VariableAssignment implements Comparable<VariableAssignment>{
 	 * 
 	 * @return the value of this assignment.
 	 */
-	public double getValue() {
+	public String getValue() {
 		return value;
 	}
 
@@ -40,8 +40,8 @@ public class VariableAssignment implements Comparable<VariableAssignment>{
 	 * @param value
 	 * @throws AssertionError if a boolean variable is not assigned 0 or 1.
 	 */
-	public void setValue(double value) {
-		if (getVariableDefinition().isBoolean() && value != 0 && value != 1) {
+	public void setValue(String value) {
+		if (getVariableDefinition().isBoolean() && !value.equals("0") && !value.equals("1")) {
 			throw new AssertionError("Boolean variable " + 
 					getVariableDefinition().getName() +
 					" can only be assigned with 0 or 1: found " + 
@@ -59,7 +59,7 @@ public class VariableAssignment implements Comparable<VariableAssignment>{
 		if (!getVariableDefinition().isBoolean()) {
 			throw new AssertionError("This variable is not boolean.");
 		}
-		this.value = value?1:0;
+		this.value = value?"1":"0";
 	}
 
 	/**

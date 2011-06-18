@@ -120,7 +120,7 @@ public class ZotOutputParser {
 					// Set all the missing variables to false
 					for (VariableDefinition def: falseVariablesAtStep) {
 						if (def.isBoolean()) {
-							variablesMultimap.put(currentTime, new VariableAssignment(def, 0));
+							variablesMultimap.put(currentTime, new VariableAssignment(def, "0"));
 						}
 					}
 					
@@ -144,26 +144,25 @@ public class ZotOutputParser {
 					if (varMatcher.matches()) {
 						String name = varMatcher.group(1);
 						String value = varMatcher.group(3);
-						double dvalue = Double.parseDouble(value);
 						
 						VariableDefinition def = variableFactory.get(name);
 						falseVariablesAtStep.remove(def);
-						variablesMultimap.put(currentTime, new VariableAssignment(def, dvalue));
+						variablesMultimap.put(currentTime, new VariableAssignment(def, value));
 					} else {
 						Matcher fractMatcher = variableFractionPattern.matcher(varname);
 						if (fractMatcher.matches()) {
 							String name = fractMatcher.group(1);
 							String value1 = fractMatcher.group(3);
 							String value2 = fractMatcher.group(4);
-							double dvalue = Double.parseDouble(value1) /Double.parseDouble(value2);
+							String value = "" + (Double.parseDouble(value1) / Double.parseDouble(value2));
 							
 							VariableDefinition def = variableFactory.get(name);
 							falseVariablesAtStep.remove(def);
-							variablesMultimap.put(currentTime, new VariableAssignment(def, dvalue));
+							variablesMultimap.put(currentTime, new VariableAssignment(def, value));
 						}else {
 							VariableDefinition def = variableFactory.get(varname);
 							falseVariablesAtStep.remove(def);
-							variablesMultimap.put(currentTime, new VariableAssignment(def, 1));
+							variablesMultimap.put(currentTime, new VariableAssignment(def, "1"));
 						}
 					}
 
