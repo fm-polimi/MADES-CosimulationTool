@@ -31,6 +31,8 @@ import mades.environment.SignalMap;
  */
 public class ModelicaWrapper {
 
+	private final static double TOLERANCE = 0.00000001;
+	
 	public static final Object START_TIME_VAR_NAME = " start value";
 	public static final Object END_TIME_VAR_NAME = " stop value";
 	private static String INIT_FILE_POSTFIX = "_init.txt";
@@ -57,8 +59,6 @@ public class ModelicaWrapper {
 	private String finalVariableFileName;
 	private String signalsFileName;
 	
-	private SignalMap signals;
-	
 	private VariableFactory variableFactory;
 	private Clock clock;
 	
@@ -72,7 +72,6 @@ public class ModelicaWrapper {
 		this.environmentPath = environmentPath;
 		
 		this.clock = clock;
-		signals = new SignalMap();
 		
 		File folder = new File(environmentPath);
 		
@@ -183,20 +182,26 @@ public class ModelicaWrapper {
 			e.printStackTrace();
 		}
 		
+		deleteSignalFile();
+		
+		EnvironmentMemento memento = new EnvironmentMemento(clock.getCurrentTime(), variables, new SignalMap());
+		return memento;
+	}
+
+
+	private void deleteSignalFile() {
 		File signalFile = new File(signalsFileName);
 		if (signalFile.exists()) {
 			signalFile.delete();
 		}
-		
-		EnvironmentMemento memento = new EnvironmentMemento(clock.getCurrentTime(), variables, signals);
-		return memento;
 	}
 	
 	
 	public EnvironmentMemento simulateNext(EnvironmentMemento memento) {
 		writeVariablesFromMemento(memento);
-		runModelica();
-		return loadVariablesFromSimulation();
+		deleteSignalFile();
+		runModelica(memento);
+		return loadVariablesFromSimulation(memento);
 	}
 	
 	protected void writeVariablesFromMemento(EnvironmentMemento memento) {
@@ -229,7 +234,7 @@ public class ModelicaWrapper {
 		
 	}
 	
-	protected void runModelica() {
+	protected void runModelica(EnvironmentMemento memento) {
 		Runtime run = Runtime.getRuntime();
 		Process process = null;
 		try {
@@ -254,7 +259,7 @@ public class ModelicaWrapper {
 		} 
 	}
 	
-	protected EnvironmentMemento loadVariablesFromSimulation() {
+	protected EnvironmentMemento loadVariablesFromSimulation(EnvironmentMemento memento) {
 		ArrayList<VariableAssignment> variables = new ArrayList<VariableAssignment>();
 		
 		
@@ -296,7 +301,8 @@ public class ModelicaWrapper {
 			e.printStackTrace();
 		}
 		
-		if (startTime != endTime) {
+		// TODO(rax): use modelica variable " tolerance";
+		if (Math.abs(endTime - startTime) > TOLERANCE) {
 			throw new AssertionError("Incomplete simulation");
 		}
 		
@@ -307,13 +313,15 @@ public class ModelicaWrapper {
 				    numVariables);
 		}
 		
+		
+		EnvironmentMemento resultMemento = new EnvironmentMemento(clock.getCurrentTime(), variables, memento.getSignals());
 		File signalsFile = new File(signalsFileName);
 		if (signalsFile.isFile() && signalsFile.exists()) {
 			try {
 				BufferedReader reader = new BufferedReader(new FileReader(signalsFile));
 				String line = null;
 				while ((line = reader.readLine()) != null) {
-					parseSignalLine(line);
+					parseSignalLine(resultMemento.getSignals(), line);
 				}
 				reader.close();
 			} catch (FileNotFoundException e) {
@@ -323,12 +331,10 @@ public class ModelicaWrapper {
 			}
 			
 		}
-		
-		EnvironmentMemento memento = new EnvironmentMemento(clock.getCurrentTime(), variables, signals);
-		return memento;
+		return resultMemento;
 	}
 	
-	protected void parseSignalLine(String line) {
+	protected void parseSignalLine(SignalMap signals, String line) {
 		Matcher matcher = signalPattern.matcher(line);
 		if (matcher.matches()) {
 			String upDown = matcher.group(1);
