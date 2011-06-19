@@ -50,13 +50,13 @@ public class ModelicaWrapperTestCase {
 		for (VariableAssignment v: variables) {
 			if (ModelicaWrapper.START_TIME_VAR_NAME.equals(
 					v.getVariableDefinition().getName())) {
-				assertEquals(0, v.getValue(), 0.001);
+				assertEquals("0", v.getValue());
 			} else if(ModelicaWrapper.END_TIME_VAR_NAME.equals(
 					v.getVariableDefinition().getName())) {
 				assertEquals(
-						clock.getTimeStep(),
-						v.getValue(),
-						0.001);
+						"" + clock.getTimeStep(),
+						v.getValue()
+						);
 			}
 		}
 	}
@@ -67,14 +67,13 @@ public class ModelicaWrapperTestCase {
 			if (ModelicaWrapper.START_TIME_VAR_NAME.equals(
 					v.getVariableDefinition().getName())) {
 				assertEquals(
-						clock.getCurrentTime().getSimulationTime() - clock.getTimeStep(),
-						v.getValue(),
-						0.001);
+						"" + (clock.getCurrentTime().getSimulationTime() - clock.getTimeStep()),
+						v.getValue());
 			} else if(ModelicaWrapper.END_TIME_VAR_NAME.equals(
 					v.getVariableDefinition().getName())) {
 				assertEquals(
-						clock.getCurrentTime().getSimulationTime(),
-						v.getValue(), 0.001);
+						"" + clock.getCurrentTime().getSimulationTime(),
+						v.getValue());
 			}
 		}
 	}
