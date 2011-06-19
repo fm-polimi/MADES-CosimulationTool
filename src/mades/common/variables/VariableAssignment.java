@@ -37,6 +37,13 @@ public class VariableAssignment implements Comparable<VariableAssignment>{
 	}
 
 	/**
+	 * @return the variable definition of this assignment.
+	 */
+	public VariableDefinition getVariableDefinition() {
+		return definition;
+	}
+
+	/**
 	 * Gets the value of this assignment
 	 * 
 	 * @return the value of this assignment.
@@ -46,44 +53,10 @@ public class VariableAssignment implements Comparable<VariableAssignment>{
 	}
 
 	/**
-	 * Reassign this value.
-	 * 
-	 * @param value
-	 * @throws AssertionError if a boolean variable is not assigned 0 or 1.
+	 * @return the annotation
 	 */
-	/*
-	public void setValue(String value) {
-		if (getVariableDefinition().isBoolean()) {
-			double dval = Double.parseDouble(value);
-			if(dval != 0.0 && dval != 1.0) {
-				throw new AssertionError("Boolean variable " + 
-						getVariableDefinition().getName() +
-						" can only be assigned with 0 or 1: found " + 
-						value +".");
-			}
-		}
-		
-		this.value = value;
-	}*/
-	
-	/**
-	 * Reassign this value.
-	 * 
-	 * @param value
-	 */
-	/*
-	public void setValue(boolean value) {
-		if (!getVariableDefinition().isBoolean()) {
-			throw new AssertionError("This variable is not boolean.");
-		}
-		this.value = value?"1":"0";
-	}*/
-
-	/**
-	 * @return the variable definition of this assignment.
-	 */
-	public VariableDefinition getVariableDefinition() {
-		return definition;
+	public String getAnnotation() {
+		return annotation;
 	}
 
 	/* (non-Javadoc)
@@ -104,10 +77,12 @@ public class VariableAssignment implements Comparable<VariableAssignment>{
 				value;
 	}
 
-	/**
-	 * @return the annotation
+	/* (non-Javadoc)
+	 * @see java.lang.Object#clone()
 	 */
-	public String getAnnotation() {
-		return annotation;
+	@Override
+	public VariableAssignment clone() {
+		return new VariableAssignment(definition, value, annotation);
 	}
+
 }

@@ -214,9 +214,7 @@ public class SystemMemento {
 		for (VariableAssignment envVar: memento.getParams()) {
 			VariableDefinition def = envVar.getVariableDefinition();
 			if (def.getScope() == Scope.ENVIRONMENT_SHARED) {
-				variablesMultimap.put(time, new VariableAssignment(def,
-						envVar.getValue(),
-						envVar.getAnnotation()));
+				variablesMultimap.put(time, envVar.clone());
 			}
 		}
 	}
@@ -227,5 +225,9 @@ public class SystemMemento {
 	
 	public Set<Collection<VariableAssignment>> getUnsatConfiguration(Time time) {
 		return rolledBackVariablesMultimap.get(time);
+	}
+	
+	public Time getLatestSimulatedTime() {
+		return variablesMultimap.keySet().last();
 	}
 }
