@@ -21,9 +21,19 @@ public class VariableAssignment implements Comparable<VariableAssignment>{
 	 * @param visible
 	 */
 	public VariableAssignment(VariableDefinition definition, 
-			String value) {
+			String value, String annotation) {
+		if (definition == null) {
+			throw new AssertionError("Variable definition cannot be null.");
+		}
+		if (value == null) {
+			throw new AssertionError("Variable value cannot be null.");
+		}
+		if (annotation == null) {
+			throw new AssertionError("Variable annotation cannot be null.");
+		}
 		this.definition = definition;
 		this.value = value;
+		this.annotation = annotation;
 	}
 
 	/**
@@ -99,12 +109,5 @@ public class VariableAssignment implements Comparable<VariableAssignment>{
 	 */
 	public String getAnnotation() {
 		return annotation;
-	}
-
-	/**
-	 * @param annotation the annotation to set
-	 */
-	public void setAnnotation(String annotation) {
-		this.annotation = annotation;
 	}
 }

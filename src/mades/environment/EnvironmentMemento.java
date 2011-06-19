@@ -37,8 +37,10 @@ public class EnvironmentMemento {
 		this.time = oldMemento.getTime();
 		this.params = new ArrayList<VariableAssignment>();
 		for (VariableAssignment v: oldMemento.params) {
-			VariableAssignment var = new VariableAssignment(v.getVariableDefinition(), v.getValue());
-			var.setAnnotation(v.getAnnotation());
+			VariableAssignment var = new VariableAssignment(
+					v.getVariableDefinition(),
+					v.getValue(),
+					v.getAnnotation());
 			this.params.add(var);
 		}
 		this.signals = new SignalMap(oldMemento.signals);
@@ -93,7 +95,7 @@ public class EnvironmentMemento {
 				if (var == null) {
 					throw new AssertionError("Missing variable from memento");
 				}
-				params.set(i, new VariableAssignment(def, var.getValue()));
+				params.set(i, new VariableAssignment(def, var.getValue(), var.getAnnotation()));
 			}
 		}
 	}

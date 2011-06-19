@@ -183,7 +183,7 @@ public class ZotWrapper {
 							name, scope, isBoolean);
 					
 					definedVariables.add(def);
-					variables.add(new VariableAssignment(def, value));
+					variables.add(new VariableAssignment(def, value, ""));
 				}
 			}
 			

@@ -487,7 +487,10 @@ public class Cosimulator {
 			if (var.getVariableDefinition().getScope() == Scope.ENVIRONMENT_SHARED) {
 				System.out.println("(" + environmentMemento.getTime() + "):" + var);
 				sharedVariablesMultimap.put(clock.getCurrentTime(),
-						new VariableAssignment(var.getVariableDefinition(), var.getValue()));
+						new VariableAssignment(
+								var.getVariableDefinition(),
+								var.getValue(),
+								var.getAnnotation()));
 			}
 		}
 	}
@@ -521,7 +524,10 @@ public class Cosimulator {
 			if (var.getVariableDefinition().getScope() == Scope.SYSTEM_SHARED) {
 				System.out.println("(" + clock.getCurrentTime() + "):" + var);
 				sharedVariablesMultimap.put(clock.getCurrentTime(),
-						new VariableAssignment(var.getVariableDefinition(), var.getValue()));
+						new VariableAssignment(
+								var.getVariableDefinition(),
+								var.getValue(),
+								var.getAnnotation()));
 			}
 		}
 	}
