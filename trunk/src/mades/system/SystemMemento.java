@@ -49,8 +49,10 @@ public class SystemMemento {
 		for (Time t: keys) {
 			SortedSet<VariableAssignment> variables = oldMemento.variablesMultimap.get(t);
 			for (VariableAssignment v: variables) {
-				VariableAssignment var = new VariableAssignment(v.getVariableDefinition(), v.getValue());
-				var.setAnnotation(v.getAnnotation());
+				VariableAssignment var = new VariableAssignment(
+						v.getVariableDefinition(), 
+						v.getValue(), 
+						v.getAnnotation());
 				variablesMultimap.put(t, var);
 			}
 		}
@@ -212,7 +214,9 @@ public class SystemMemento {
 		for (VariableAssignment envVar: memento.getParams()) {
 			VariableDefinition def = envVar.getVariableDefinition();
 			if (def.getScope() == Scope.ENVIRONMENT_SHARED) {
-				variablesMultimap.put(time, new VariableAssignment(def, envVar.getValue()));
+				variablesMultimap.put(time, new VariableAssignment(def,
+						envVar.getValue(),
+						envVar.getAnnotation()));
 			}
 		}
 	}

@@ -167,8 +167,11 @@ public class ModelicaWrapper {
 						value = "" + clock.getTimeStep();
 					}
 					
-					VariableAssignment var = new VariableAssignment(def, value);
-					var.setAnnotation(annotation);
+					if (annotation == null) {
+						annotation = "";
+					}
+					
+					VariableAssignment var = new VariableAssignment(def, value, annotation);
 					variables.add(var);
 				} else {
 					System.out.println("** Skipped line: " + line);
@@ -219,7 +222,7 @@ public class ModelicaWrapper {
 				} else if (name.equals(END_TIME_VAR_NAME)) {
 					value = "" + (clock.getCurrentTime().getSimulationTime());
 				}
-				if (annotation != null) {
+				if (!annotation.equals("")) {
 					writer.println(value + " //" + annotation +" //" +name);
 				}else {
 					writer.println(value + " //" + name);
@@ -287,8 +290,11 @@ public class ModelicaWrapper {
 						value = "" + clock.getCurrentTime().getSimulationTime();
 					}
 					
-					VariableAssignment var = new VariableAssignment(def, value);
-					var.setAnnotation(annotation);
+					if (annotation == null) {
+						annotation = "";
+					}
+					
+					VariableAssignment var = new VariableAssignment(def, value, annotation);
 					variables.add(var);
 				} else {
 					System.out.println("** Skipped line: " + line);
