@@ -55,12 +55,12 @@ public class CosimulatorTestCase {
 
 
 		environmentParams = new ArrayList<VariableAssignment>();
-		environmentParams.add(new VariableAssignment(sharedVar1, val));
-		environmentParams.add(new VariableAssignment(privateVar1, val));
+		environmentParams.add(new VariableAssignment(sharedVar1, val, ""));
+		environmentParams.add(new VariableAssignment(privateVar1, val, ""));
 		
 		systemParams = new ArrayList<VariableAssignment>();
-		systemParams.add(new VariableAssignment(sharedVar2, val));
-		systemParams.add(new VariableAssignment(privateVar2, val));
+		systemParams.add(new VariableAssignment(sharedVar2, val, ""));
+		systemParams.add(new VariableAssignment(privateVar2, val, ""));
 		
 		
 		cosimulator = new Cosimulator(
