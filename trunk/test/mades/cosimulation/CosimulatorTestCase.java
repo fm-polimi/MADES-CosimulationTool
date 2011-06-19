@@ -46,7 +46,7 @@ public class CosimulatorTestCase {
 	 */
 	@Before
 	public void setUp() throws Exception {
-		int val= 15;
+		String val= "15";
 		
 		sharedVar1 = variableFactory.define("sharedVar1", Scope.ENVIRONMENT_SHARED, true);
 		sharedVar2 = variableFactory.define("sharedVar2", Scope.SYSTEM_SHARED, true);
@@ -95,7 +95,7 @@ public class CosimulatorTestCase {
 				maxCosimulationBacktraking);
 		
 		TreeMultimap<Time, VariableAssignment> results = cosimulator.getSharedVariablesMultimap();
-		int steps = (int)maxCosimulationTime;
+		int steps = (int)maxCosimulationTime + 1;
 		Set<Time> keys = results.keySet();
 		assertEquals(steps, keys.size());
 		for (Time key: keys) {

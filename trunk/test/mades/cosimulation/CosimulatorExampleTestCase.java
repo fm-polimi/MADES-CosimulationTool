@@ -62,7 +62,7 @@ public class CosimulatorExampleTestCase {
 				maxCosimulationBacktraking);
 		
 		TreeMultimap<Time, VariableAssignment> results = cosimulator.getSharedVariablesMultimap();
-		int steps = (int)(maxCosimulationTime / timeStep);
+		int steps = (int)(maxCosimulationTime / timeStep) + 1; // the number of steps plus the initial state at time 0
 		Set<Time> keys = results.keySet();
 		assertEquals(steps, keys.size());
 		for (Time key: keys) {

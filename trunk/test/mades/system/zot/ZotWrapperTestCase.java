@@ -73,24 +73,27 @@ public class ZotWrapperTestCase {
 	public void testParseInit() {
 		ArrayList<VariableAssignment> variables = wrapper.parseInit();
 		assertEquals(4, variables.size());
-		assertVariableExists("COND1", Scope.ENVIRONMENT_SHARED, true, 1, variables);
-		assertVariableExists("REACT1", Scope.SYSTEM_SHARED, true, 0, variables);
-		assertVariableExists("NUM_REACT1", Scope.SYSTEM_SHARED, false, 0, variables);
-		assertVariableExists("ACT1", Scope.SYSTEM_INTERNAL, true, 0, variables);
+		assertVariableExists("s", Scope.ENVIRONMENT_SHARED, true, "1", variables);
+		assertVariableExists("REACT1", Scope.SYSTEM_SHARED, false, "0", variables);
+		assertVariableExists("SIGREACT1", Scope.SYSTEM_SHARED, true, "0", variables);
+		assertVariableExists("ACT1", Scope.SYSTEM_INTERNAL, true, "0", variables);
 	}
 	
 	private void assertVariableExists(String name, Scope scope, boolean isBool,
-			double value, ArrayList<VariableAssignment> variables) {
+			String value, ArrayList<VariableAssignment> variables) {
 		VariableDefinition def;
-		assertTrue(factory.isDefined(name));
+		assertTrue("Variable " + name + " was not defined. Please check init file.",
+				factory.isDefined(name));
 		def = factory.get(name);
 		assertEquals(scope, def.getScope());
-		assertEquals(isBool, def.isBoolean());
+		assertEquals("Wrong type for variable " + name + ". Expected: " + 
+				isBool + ", found: " + def.isBoolean(), 
+				isBool, def.isBoolean());
 		boolean found = false;
 		for (VariableAssignment v: variables) {
 			if (v.getVariableDefinition().equals(def)) {
 				found = true;
-				assertEquals(value, v.getValue(), 0.01);
+				assertEquals(value, v.getValue());
 				break;
 			}
 		}
