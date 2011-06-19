@@ -95,7 +95,7 @@ public class EnvironmentMemento {
 				if (var == null) {
 					throw new AssertionError("Missing variable from memento");
 				}
-				params.set(i, new VariableAssignment(def, var.getValue(), var.getAnnotation()));
+				params.set(i, var.clone());
 			}
 		}
 	}

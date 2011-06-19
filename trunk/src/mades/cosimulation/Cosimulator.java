@@ -231,15 +231,18 @@ public class Cosimulator {
 		simulationStarted = true;
 		logger.info("Starting simulation at time: " + initialSimulationTime);
 		
-		//try {
+		try {
 			// Runs the co-simulation
 			while(!clock.hasReachCosimulationEnd()) {
 				performCosimulationStep();
 			}
-		//} finally {
-			simulationStarted = false;
 			logger.info("Simulation ended at time: " + clock.getCurrentTime().getSimulationTime());
-		//}
+		}  catch (Error err) {
+			logger.severe("Simulation ended with error: " + err.getMessage() + " at time: " + clock.getCurrentTime().getSimulationTime());
+			throw err;
+		} finally {
+			simulationStarted = false;
+		}
 	}
 	
 	
@@ -404,23 +407,35 @@ public class Cosimulator {
 	protected void deleteObsoleteData() {
 		int elementsToremove = environmentMementoStack.size() -
 				maxCosimulationBacktraking;
+		int currentStep = clock.getCurrentTime().getSimulationStep();
 		for (int i = elementsToremove; i > 0; i--) {
-			environmentMementoStack.remove(0);
+			EnvironmentMemento memento = environmentMementoStack.remove(0);
+			int deltaSteps = currentStep - memento.getTime().getSimulationStep();
+			if (deltaSteps < maxCosimulationBacktraking) {
+				throw new AssertionError("EnvironmentMemento at time " + 
+						memento.getTime() + " is not obsolete.");
+			}
 		}
-		logger.info("Obsolete environment state deleted.");
-		
 		elementsToremove = systemMementoStack.size() -
 				maxCosimulationBacktraking;
 		for (int i = elementsToremove; i > 0; i--) {
 			SystemMemento memento = systemMementoStack.remove(0);
-			// TODO(rax): assert is the right memento
+			
+			int deltaSteps = currentStep - memento.getLatestSimulatedTime().getSimulationStep();
+			if (deltaSteps < maxCosimulationBacktraking) {
+				throw new AssertionError("EnvironmentMemento at time " + 
+						memento.getLatestSimulatedTime() + " is not obsolete.");
+			}
+			
 			memento.deleteRelatedFiles();
+			
 		}
-		logger.info("Obsolete system state deleted.");
 	}
 	
 	protected void rollbackEnvironment() {
-		assert(simulationStarted);
+		if (!simulationStarted) {
+			throw new AssertionError("Simulation is not started.");
+		}
 		logger.info("Rolling back environment state.");
 		if (environmentMementoStack.size() == 1) {
 			logger.severe("End of environment state stack reached.");
@@ -439,7 +454,9 @@ public class Cosimulator {
 	}
 	
 	protected void rollbackSystem() {
-		assert(simulationStarted);
+		if (!simulationStarted) {
+			throw new AssertionError("Simulation is not started.");
+		}
 		logger.info("Rolling back system state.");
 		if (systemMementoStack.size() == 1) {
 			logger.severe("End of system state stack reached.");
@@ -486,11 +503,7 @@ public class Cosimulator {
 		{
 			if (var.getVariableDefinition().getScope() == Scope.ENVIRONMENT_SHARED) {
 				System.out.println("(" + environmentMemento.getTime() + "):" + var);
-				sharedVariablesMultimap.put(clock.getCurrentTime(),
-						new VariableAssignment(
-								var.getVariableDefinition(),
-								var.getValue(),
-								var.getAnnotation()));
+				sharedVariablesMultimap.put(clock.getCurrentTime(), var.clone());
 			}
 		}
 	}
@@ -524,10 +537,7 @@ public class Cosimulator {
 			if (var.getVariableDefinition().getScope() == Scope.SYSTEM_SHARED) {
 				System.out.println("(" + clock.getCurrentTime() + "):" + var);
 				sharedVariablesMultimap.put(clock.getCurrentTime(),
-						new VariableAssignment(
-								var.getVariableDefinition(),
-								var.getValue(),
-								var.getAnnotation()));
+						var.clone());
 			}
 		}
 	}
