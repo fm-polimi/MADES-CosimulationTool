@@ -83,7 +83,12 @@ public class Cosimulator {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		String ENVIRONMENT_PATH = "./examples/RC";
+		String ENVIRONMENT_PATH;
+		if (args.length < 0) {
+			ENVIRONMENT_PATH = args[0];
+		} else {
+			ENVIRONMENT_PATH = "./examples/RC";
+		}
 		Logger logger = Logger.getLogger(Cosimulator.class.getName());
 		logger.setLevel(Level.ALL);
 		logger.info("Starting co-simulation");

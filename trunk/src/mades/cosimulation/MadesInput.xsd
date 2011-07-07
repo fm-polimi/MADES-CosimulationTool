@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.org/MadesInput" elementFormDefault="qualified" xmlns:Mades="http://www.example.org/MadesInput">
+
+
+    <complexType name="Cosimulation">
+    	<sequence>
+    		<sequence minOccurs="1" maxOccurs="unbounded">
+    			<element name="variable" type="Mades:Variable"></element>
+    		</sequence>
+    		<sequence minOccurs="0" maxOccurs="unbounded">
+    			<element name="signals" type="IDREFS"></element>
+    		</sequence>
+    	</sequence>
+    	<attribute name="name" type="string"></attribute>
+    </complexType>
+
+    <complexType name="Variable">
+    	<attribute name="id" type="ID"></attribute>
+    	<attribute name="systemName" type="string" use="required"></attribute>
+    	<attribute name="environmentName" type="string"
+    		use="required">
+    	</attribute>
+    	<attribute name="scope" use="required">
+    		<simpleType>
+    			<restriction base="string">
+    				<enumeration value="system_private"></enumeration>
+    				<enumeration value="system_shared"></enumeration>
+    				<enumeration value="environment_shared"></enumeration>
+    				<enumeration value="environment_private"></enumeration>
+    			</restriction>
+    		</simpleType>
+    	</attribute>
+    	<attribute name="type" use="required">
+    		<simpleType>
+    			<restriction base="string">
+    				<enumeration value="boolean"></enumeration>
+    				<enumeration value="real"></enumeration>
+    				<enumeration value="string"></enumeration>
+    			</restriction>
+    		</simpleType>
+    	</attribute>
+    	<attribute name="value" type="string"></attribute>
+    	<attribute name="extra" type="string"></attribute>
+    </complexType>
+
+
+
+    <element name="cosimulation" type="Mades:Cosimulation"></element>
+
+</schema>
