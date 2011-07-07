@@ -1,20 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project default="create_run_jar" name="Create Runnable Jar for Project mades with Jar-in-Jar Loader">
+<project default="create_run_jar" name="Create Runnable Jar for Project mades">
     <!--this file was created by Eclipse Runnable JAR Export Wizard-->
     <!--ANT 1.7 is required                                        -->
     <target name="create_run_jar">
-        <jar destfile="/home/rax/workspace-mades/mades/deploy/Mades.jar">
+        <jar destfile="/home/rax/workspace-mades/mades/deploy/Mades.jar" filesetmanifest="mergewithoutmain">
             <manifest>
-                <attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader"/>
-                <attribute name="Rsrc-Main-Class" value="mades.cosimulation.Cosimulator"/>
+                <attribute name="Main-Class" value="mades.cosimulation.Cosimulator"/>
                 <attribute name="Class-Path" value="."/>
-                <attribute name="Rsrc-Class-Path" value="./ junit.jar org.hamcrest.core_1.1.0.v20090501071000.jar guava-r09.jar"/>
             </manifest>
-            <zipfileset src="jar-in-jar-loader.zip"/>
             <fileset dir="/home/rax/workspace-mades/mades/bin"/>
-            <zipfileset dir="/home/rax/eclipse/plugins/org.junit_4.8.1.v4_8_1_v20100427-1100" includes="junit.jar"/>
-            <zipfileset dir="/home/rax/eclipse/plugins" includes="org.hamcrest.core_1.1.0.v20090501071000.jar"/>
-            <zipfileset dir="/home/rax/workspace-mades/mades/libs" includes="guava-r09.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/rax/eclipse/plugins/org.junit_4.8.1.v4_8_1_v20100427-1100/junit.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/rax/eclipse/plugins/org.hamcrest.core_1.1.0.v20090501071000.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/rax/workspace-mades/mades/libs/guava-r09.jar"/>
         </jar>
     </target>
 </project>
