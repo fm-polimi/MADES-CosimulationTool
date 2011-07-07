@@ -15,6 +15,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import mades.common.timing.Clock;
+import mades.common.variables.Type;
 import mades.common.variables.VariableAssignment;
 import mades.common.variables.VariableDefinition;
 import mades.common.variables.VariableFactory;
@@ -88,6 +89,7 @@ public class ModelicaWrapper {
 	
 	public EnvironmentMemento initialize(
 			EnvironmentMemento environmentMemento) {
+		numVariables = environmentMemento.getParams().size();
 		// TODO(rax): check initial variables
 		/*
 		ArrayList<VariableAssignment> variables = environmentMemento.getParams();
@@ -240,6 +242,25 @@ public class ModelicaWrapper {
 				} else if (name.equals(END_TIME_VAR_NAME)) {
 					value = "" + (clock.getCurrentTime().getSimulationTime());
 				}
+				// Format output values
+				switch (v.getVariableDefinition().getType()) {
+					case STRING: {
+						break;
+					}
+					case INTEGER: {
+						value = Integer.parseInt(value) + "";
+						break;
+					}
+					case DOUBLE: {
+						value = Double.parseDouble(value) + "";
+						break;
+					}
+					case BOOLEAN: {
+						break;
+					}
+				
+				}
+				
 				if (!annotation.equals("")) {
 					writer.println(value + " //" + annotation +" //" +name);
 				}else {

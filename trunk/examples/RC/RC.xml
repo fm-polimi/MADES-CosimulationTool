@@ -5,27 +5,6 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.example.org/MadesInput ../../src/mades/cosimulation/MadesInput.xsd ">
   <Mades:variable
-    environmentName="s"
-    id="var0"
-    scope="environment_shared"
-    systemName="S"
-    type="boolean"
-    value="1.0"/>
-  <Mades:variable
-    environmentName="REACT1"
-    id="var1"
-    scope="system_shared"
-    systemName="REACT1"
-    type="double"
-    value="0.0"/>
-  <Mades:variable
-    environmentName="SIGREACT1"
-    id="var2"
-    scope="system_shared"
-    systemName="SIGREACT1"
-    type="boolean"
-    value="0.0"/>
-  <Mades:variable
     environmentName="ACT1"
     id="var3"
     scope="system_private"
@@ -45,7 +24,7 @@
     scope="environment_private"
     systemName=" stop value"
     type="double"
-    value="10.0"/> 
+    value="1.0"/> 
   <Mades:variable
     environmentName=" step value"
     id="var6"
@@ -177,14 +156,6 @@
     value="0.000424959748287"
     annotation="default"/>
   <Mades:variable
-    environmentName="R1.v"
-    id="var24"
-    scope="environment_private"
-    systemName="R1.v"
-    type="double"
-    value="0.000424959748287"
-    annotation="default"/>
-  <Mades:variable
     environmentName="R1.LossPower"
     id="var25"
     scope="environment_private"
@@ -207,6 +178,14 @@
     systemName="G.p.i"
     type="double"
     value="0"
+    annotation="default"/>
+  <Mades:variable
+    environmentName="s"
+    id="var0"
+    scope="environment_shared"
+    systemName="S"
+    type="boolean"
+    value="1.0"
     annotation="default"/>
   <Mades:variable
     environmentName="C1.n.v"
@@ -278,6 +257,20 @@
     systemName="SOGLIA"
     type="double"
     value="6.0"/>
+  <Mades:variable
+    environmentName="REACT1"
+    id="var1"
+    scope="system_shared"
+    systemName="REACT1"
+    type="double"
+    value="0.0"/>
+  <Mades:variable
+    environmentName="SIGREACT1"
+    id="var2"
+    scope="system_private"
+    systemName="SIGREACT1"
+    type="boolean"
+    value="0.0"/>
   <Mades:variable
     environmentName="R"
     id="var38"
