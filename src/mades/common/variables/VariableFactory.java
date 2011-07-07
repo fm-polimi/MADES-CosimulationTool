@@ -28,7 +28,7 @@ public class VariableFactory {
 	 *         not exist.
 	 */
 	public VariableDefinition getSystemVar(String name) {
-		VariableDefinition var =  systemDefinedVariables.get(name.toUpperCase());
+		VariableDefinition var =  systemDefinedVariables.get(name);
 		if (var == null) {
 			throw new AssertionError(
 					"A variable named: " + 
@@ -47,7 +47,7 @@ public class VariableFactory {
 	 *         not exist.
 	 */
 	public VariableDefinition getEnvironmentVar(String name) {
-		VariableDefinition var =  environmentDefinedVariables.get(name.toUpperCase());
+		VariableDefinition var =  environmentDefinedVariables.get(name);
 		if (var == null) {
 			throw new AssertionError(
 					"A variable named: " + 

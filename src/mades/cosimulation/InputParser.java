@@ -35,7 +35,7 @@ import com.google.common.collect.TreeMultimap;
  */
 public class InputParser extends DefaultHandler {
 
-	private static final String SIGNALS = "signals";
+	private static final String SIGNALS = "mades:signals";
 	private static final String VARIABLE_ID = "id";
 	private static final String VARIABLE_ANNOTATION = "annotation";
 	private static final String VARIABLE_VALUE = "value";
@@ -43,7 +43,7 @@ public class InputParser extends DefaultHandler {
 	private static final String VARIABLE_SCOPE = "scope";
 	private static final String VARIABLE_SYSTEM_NAME = "systemName";
 	private static final String VARIABLE_ENVIRONMENT_NAME = "environmentName";
-	private static final String VARIABLE = "variable";
+	private static final String VARIABLE = "mades:variable";
 	
 	private Logger logger;
 	private String filename;
@@ -154,7 +154,14 @@ public class InputParser extends DefaultHandler {
 			definedVariablesMap.put(id, def);
 			
 			String value = attributes.getValue(VARIABLE_VALUE);
+			if (type == Type.STRING) {
+				value = "\"" + value + "\"";
+			}
+			
 			String annotation = attributes.getValue(VARIABLE_ANNOTATION);
+			if (annotation == null) {
+				annotation = "";
+			}
 			
 			VariableAssignment var = new VariableAssignment(def, value, annotation);
 			switch(scope) {
