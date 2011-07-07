@@ -19,6 +19,7 @@ import java.util.regex.Pattern;
 import mades.common.timing.Clock;
 import mades.common.timing.Time;
 import mades.common.variables.Scope;
+import mades.common.variables.Type;
 import mades.common.variables.VariableAssignment;
 import mades.common.variables.VariableDefinition;
 import mades.common.variables.VariableFactory;
@@ -74,6 +75,7 @@ public class ZotWrapper {
 	private VariableFactory variableFactory;
 	private ArrayList<VariableDefinition> definedVariables;
 	
+	/*
 	private static final String DOUBLE = "[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?";
 	private static final String SYSTEM_DEF = "sys";
 	private static final String SHARED_DEF = "shared";
@@ -81,6 +83,7 @@ public class ZotWrapper {
 	private static final String REAL = "real";
 	private static final String INIT_VARIABLE = "^([\\w]+) (env|sys) (private|shared) (" + BOOLEAN +"|" + REAL + ") (" + DOUBLE + ")$";
 	private Pattern stepPattern = Pattern.compile(INIT_VARIABLE);
+	*/
 	
 	private static final String CONSTRAINS_BEGIN = "\\Q(defvar history\\E[\\n]+";
 	private static final String CONSTRAINS_END = "\\Q)\\E[\\n]+\\Q(defvar constraints\\E";
@@ -148,6 +151,15 @@ public class ZotWrapper {
 		// TODO(rax): update file
 	}
 	
+	public void initialize(SystemMemento systemMemento) {
+		Collection<VariableAssignment> variables = systemMemento.get(clock.getCurrentTime());
+		definedVariables = new ArrayList<VariableDefinition>();
+		for (VariableAssignment v: variables) {
+			definedVariables.add(v.getVariableDefinition());
+		}
+	}
+	
+	/*
 	public ArrayList<VariableAssignment> parseInit() {
 		definedVariables = new ArrayList<VariableDefinition>();
 		ArrayList<VariableAssignment> variables = new ArrayList<VariableAssignment>();
@@ -195,7 +207,7 @@ public class ZotWrapper {
 		
 		return variables;
 	}
-
+*/
 	
 	/**
 	 * Adds to the string builder a collection of variables.
@@ -208,15 +220,15 @@ public class ZotWrapper {
 		builder.append("(&&");
 		for (VariableAssignment v: variables) {
 			VariableDefinition def = v.getVariableDefinition();
-			if (def.isBoolean()) {
+			if (def.getType() == Type.BOOLEAN) {
 				double value = Double.parseDouble(v.getValue());
 				if (value == 0) {
-					builder.append("(!! (-P- " + def.getName() + "))");
+					builder.append("(!! (-P- " + def.getSystemName() + "))");
 				} else {
-					builder.append("(-P- " + def.getName() + ")");
+					builder.append("(-P- " + def.getSystemName() + ")");
 				}	
 			} else {
-				builder.append("([=] (-V- " + def.getName() + ") " + v.getValue() + ")");
+				builder.append("([=] (-V- " + def.getSystemName() + ") " + v.getValue() + ")");
 			}
 		}
 		

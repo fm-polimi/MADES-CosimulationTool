@@ -73,7 +73,7 @@ public class VariableAssignment implements Comparable<VariableAssignment>{
 	@Override
 	public String toString() {
 		return definition.getScope() + " " + 
-				definition.getName() + ": " +
+				definition.getSystemName() + ": " +
 				value;
 	}
 

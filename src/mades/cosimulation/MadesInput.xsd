@@ -34,13 +34,14 @@
     		<simpleType>
     			<restriction base="string">
     				<enumeration value="boolean"></enumeration>
-    				<enumeration value="real"></enumeration>
+    				<enumeration value="double"></enumeration>
     				<enumeration value="string"></enumeration>
+    				<enumeration value="integer"></enumeration>
     			</restriction>
     		</simpleType>
     	</attribute>
     	<attribute name="value" type="string"></attribute>
-    	<attribute name="extra" type="string"></attribute>
+    	<attribute name="annotation" type="string"></attribute>
     </complexType>
 
 

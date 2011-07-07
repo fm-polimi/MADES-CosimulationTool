@@ -3,14 +3,9 @@
  */
 package mades.system.zot;
 
-import java.util.ArrayList;
 import java.util.logging.Logger;
 
-import com.google.common.collect.TreeMultimap;
-
 import mades.common.timing.Clock;
-import mades.common.timing.Time;
-import mades.common.variables.VariableAssignment;
 import mades.common.variables.VariableFactory;
 import mades.environment.EnvironmentMemento;
 import mades.system.SystemConnector;
@@ -44,12 +39,14 @@ public class ZotSystemConnector implements SystemConnector {
 	 */
 	@Override
 	public SystemMemento initialize(Clock clock,
-			VariableFactory variableFactory) {
+			VariableFactory variableFactory, SystemMemento systemMemento) {
 		this.clock = clock;
 		wrapper = new ZotWrapper(path, 
 				maxSimulationStep, clock, variableFactory,
 				logger);
-		
+		wrapper.initialize(systemMemento);
+		// TODO(rax) shall we do other initialization steps?
+		/*
 		ArrayList<VariableAssignment> variables = wrapper.parseInit();
 		TreeMultimap<Time, VariableAssignment> variablesMultimap = TreeMultimap.create();
 		for (VariableAssignment v: variables) {
@@ -57,6 +54,7 @@ public class ZotSystemConnector implements SystemConnector {
 		}
 		systemMemento = new SystemMemento(variablesMultimap);
 		//systemMemento = wrapper.executeSimulationStep(clock.getCurrentTime(), systemMemento);
+		*/
 		return systemMemento;
 	}
 
