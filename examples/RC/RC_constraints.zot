@@ -26,9 +26,7 @@
 (futr (&&(!! (-P- ACT1))([=] (-V- REACT1) 0)(!! (-P- SIGREACT1))(!! (-P- s))) 15)
 (futr (&&(-P- ACT1)([=] (-V- REACT1) 0)(!! (-P- SIGREACT1))(!! (-P- s))) 16)
 (futr (&&(-P- ACT1)([=] (-V- REACT1) 0)(!! (-P- SIGREACT1))(!! (-P- s))) 17)
-(futr (&&(-P- ACT1)([=] (-V- REACT1) 9.015625)(-P- SIGREACT1)(!! (-P- s))) 18)
-(futr (&&(-P- ACT1)([=] (-V- REACT1) 9.0078125)(-P- SIGREACT1)(!! (-P- s))) 19)
-(futr (&&(-P- s)) 20)
+(futr (&&(!! (-P- s))) 18)
 
 ))
 
