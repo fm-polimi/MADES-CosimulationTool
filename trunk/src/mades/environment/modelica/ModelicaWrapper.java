@@ -15,7 +15,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import mades.common.timing.Clock;
-import mades.common.variables.Scope;
 import mades.common.variables.VariableAssignment;
 import mades.common.variables.VariableDefinition;
 import mades.common.variables.VariableFactory;
@@ -36,7 +35,7 @@ public class ModelicaWrapper {
 	public static final Object START_TIME_VAR_NAME = " start value";
 	public static final Object END_TIME_VAR_NAME = " stop value";
 	private static String INIT_FILE_POSTFIX = "_init.txt";
-	private static String BASE_FILE_POSTFIX = "_variables.txt";
+	//private static String BASE_FILE_POSTFIX = "_variables.txt";
 	private static String FINAL_FILE_POSTFIX = "_final.txt";
 	private static String SIGNAL_FILE_NAME = "A_Transitions";
 	private static String RUN_FILE = "run.sh";
@@ -55,7 +54,7 @@ public class ModelicaWrapper {
 	private String environmentFileName;
 	private String runFileName;
 	private String initialVariableFileName;
-	private String baseVariableFileName;
+	//private String baseVariableFileName;
 	private String finalVariableFileName;
 	private String signalsFileName;
 	
@@ -68,25 +67,42 @@ public class ModelicaWrapper {
 	 * @param environmentPath
 	 * @param environmentName
 	 */
-	protected ModelicaWrapper(String environmentPath, Clock clock) {
+	protected ModelicaWrapper(String environmentPath, Clock clock,
+			VariableFactory variableFactory) {
 		this.environmentPath = environmentPath;
-		
+		this.variableFactory = variableFactory;
 		this.clock = clock;
 		
 		File folder = new File(environmentPath);
 		
 		environmentFileName = environmentPath + File.separator + folder.getName();
-		baseVariableFileName = environmentFileName + BASE_FILE_POSTFIX;
+		//baseVariableFileName = environmentFileName + BASE_FILE_POSTFIX;
 		initialVariableFileName = environmentFileName + INIT_FILE_POSTFIX;
 		// Copy the base variables in the initial file
-		copy(baseVariableFileName, initialVariableFileName);
+		//copy(baseVariableFileName, initialVariableFileName);
 		
 		finalVariableFileName = environmentFileName + FINAL_FILE_POSTFIX;
 		signalsFileName = environmentPath + File.separator + SIGNAL_FILE_NAME;
 		runFileName = environmentPath + File.separator + RUN_FILE;
 	}
 	
+	public EnvironmentMemento initialize(
+			EnvironmentMemento environmentMemento) {
+		// TODO(rax): check initial variables
+		/*
+		ArrayList<VariableAssignment> variables = environmentMemento.getParams();
+		for (VariableAssignment v: variables) {
+			String name = v.getVariableDefinition().getEnvironmentName();
+			if (name.equals(START_TIME_VAR_NAME)) {
+				v. = "0";
+			} else if (name.equals(END_TIME_VAR_NAME)) {
+				value = "" + clock.getTimeStep();
+			}
+		}*/
+		return environmentMemento;
+	} 
 	
+	/*
 	protected void copy(String fileSource, String fileDest) {
 		File source = new File(fileSource);
 		if (!source.isFile()) {
@@ -126,7 +142,7 @@ public class ModelicaWrapper {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-	}
+	}*/
 	
 	/**
 	 * Initialize this wrapper by reading the init file.
@@ -138,6 +154,7 @@ public class ModelicaWrapper {
 	 *         already defined.
 	 * @return the initial state of this environment.
 	 */
+	/*
 	public EnvironmentMemento initFromFile(VariableFactory variableFactory) {
 		this.variableFactory = variableFactory;
 		ArrayList<VariableAssignment> variables = new ArrayList<VariableAssignment>();
@@ -190,6 +207,7 @@ public class ModelicaWrapper {
 		EnvironmentMemento memento = new EnvironmentMemento(clock.getCurrentTime(), variables, new SignalMap());
 		return memento;
 	}
+	*/
 
 
 	private void deleteSignalFile() {
@@ -213,7 +231,7 @@ public class ModelicaWrapper {
 			PrintWriter writer = new PrintWriter(initialVariableFileName);
 			
 			for (VariableAssignment v: variables) {
-				String name = v.getVariableDefinition().getName();
+				String name = v.getVariableDefinition().getEnvironmentName();
 				String annotation = v.getAnnotation();
 				String value = v.getValue();
 				// Update simulation time
@@ -280,7 +298,7 @@ public class ModelicaWrapper {
 					String value = matcher.group(1);
 					String annotation = matcher.group(5);
 					String name = matcher.group(6);
-					VariableDefinition def = variableFactory.get(name);
+					VariableDefinition def = variableFactory.getEnvironmentVar(name);
 					
 					if (name.equals(START_TIME_VAR_NAME)) {
 						startTime = Double.parseDouble(value);

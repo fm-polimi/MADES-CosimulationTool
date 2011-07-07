@@ -16,7 +16,7 @@
     id="var1"
     scope="system_shared"
     systemName="REACT1"
-    type="real"
+    type="double"
     value="0.0"/>
   <Mades:variable
     environmentName="SIGREACT1"
@@ -37,28 +37,28 @@
     id="var4"
     scope="environment_private"
     systemName=" start value"
-    type="real"
+    type="double"
     value="0.0"/>
   <Mades:variable
     environmentName=" stop value"
     id="var5"
     scope="environment_private"
     systemName=" stop value"
-    type="real"
+    type="double"
     value="10.0"/> 
   <Mades:variable
     environmentName=" step value"
     id="var6"
     scope="environment_private"
     systemName=" step value"
-    type="real"
+    type="double"
     value="0.02"/> 
    <Mades:variable
     environmentName=" tolerance"
     id="var7"
     scope="environment_private"
     systemName=" tolerance"
-    type="real"
+    type="double"
     value="1e-06"/> 
    <Mades:variable
     environmentName=" method"
@@ -86,218 +86,218 @@
     id="var11"
     scope="environment_private"
     systemName=" n states"
-    type="real"
+    type="integer"
     value="1"/>
   <Mades:variable
     environmentName=" n alg vars"
     id="var12"
     scope="environment_private"
     systemName=" n alg vars"
-    type="real"
+    type="integer"
     value="10"/>
   <Mades:variable
     environmentName=" n parameters"
     id="var13"
     scope="environment_private"
     systemName=" n parameters"
-    type="real"
+    type="integer"
     value="9"/>
   <Mades:variable
     environmentName=" n int parameters"
     id="var14"
     scope="environment_private"
     systemName=" n int parameters"
-    type="real"
+    type="integer"
     value="0"/>
   <Mades:variable
     environmentName=" n int variables"
     id="var15"
     scope="environment_private"
     systemName=" n int variables"
-    type="real"
+    type="integer"
     value="0"/>
   <Mades:variable
     environmentName=" n bool parameters"
     id="var16"
     scope="environment_private"
     systemName=" n bool parameters"
-    type="real"
+    type="integer"
     value="1"/>
   <Mades:variable
     environmentName=" n bool variables"
     id="var17"
     scope="environment_private"
     systemName=" n bool variables"
-    type="real"
+    type="integer"
     value="0"/>
   <Mades:variable
     environmentName=" n string-parameters"
     id="var18"
     scope="environment_private"
     systemName=" n string-parameters"
-    type="real"
+    type="integer"
     value="0"/>
 <Mades:variable
     environmentName=" n string variables"
     id="var19"
     scope="environment_private"
     systemName=" n string variables"
-    type="real"
+    type="integer"
     value="0"/>
 <Mades:variable
     environmentName="COND1"
     id="var20"
     scope="environment_private"
     systemName="COND1"
-    type="real"
+    type="double"
     value="9.99957504025"
-    extra="default"/>  
+    annotation="default"/>  
   <Mades:variable
     environmentName="der(COND1)"
     id="var21"
     scope="environment_private"
     systemName="der(COND1)"
-    type="real"
+    type="double"
     value="0.000424959748287"
-    extra="default"/>
+    annotation="default"/>
   <Mades:variable
     environmentName="der(C1.v)"
     id="var22"
     scope="environment_private"
     systemName="der(C1.v)"
-    type="real"
+    type="double"
     value="0.000424959748287"
-    extra="default"/>
+    annotation="default"/>
   <Mades:variable
     environmentName="R1.v"
     id="var23"
     scope="environment_private"
     systemName="R1.v"
-    type="real"
+    type="double"
     value="0.000424959748287"
-    extra="default"/>
+    annotation="default"/>
   <Mades:variable
     environmentName="R1.v"
     id="var24"
     scope="environment_private"
     systemName="R1.v"
-    type="real"
+    type="double"
     value="0.000424959748287"
-    extra="default"/>
+    annotation="default"/>
   <Mades:variable
     environmentName="R1.LossPower"
     id="var25"
     scope="environment_private"
     systemName="R1.LossPower"
-    type="real"
+    type="double"
     value="1.80590787664e-08"
-    extra="default"/>
+    annotation="default"/>
   <Mades:variable
     environmentName="C1.p.i"
     id="var26"
     scope="environment_private"
     systemName="C1.p.i"
-    type="real"
+    type="double"
     value="4.24959748287e-05"
-    extra="default"/>
+    annotation="default"/>
   <Mades:variable
     environmentName="G.p.i"
     id="var27"
     scope="environment_private"
     systemName="G.p.i"
-    type="real"
+    type="double"
     value="0"
-    extra="default"/>
+    annotation="default"/>
   <Mades:variable
     environmentName="C1.n.v"
     id="var28"
     scope="environment_private"
     systemName="C1.n.v"
-    type="real"
+    type="double"
     value="0"/>
   <Mades:variable
     environmentName="G.p.v"
     id="var29"
     scope="environment_private"
     systemName="G.p.v"
-    type="real"
+    type="double"
     value="0"/>
   <Mades:variable
     environmentName="E.n.v"
     id="var30"
     scope="environment_private"
     systemName="E.n.v"
-    type="real"
+    type="double"
     value="0"/>
   <Mades:variable
     environmentName="R1.R_actual"
     id="var31"
     scope="environment_private"
     systemName="R1.R_actual"
-    type="real"
+    type="double"
     value="10"/>
   <Mades:variable
     environmentName="R1.T"
     id="var32"
     scope="environment_private"
     systemName="R1.T"
-    type="real"
+    type="double"
     value="300.15"/>
   <Mades:variable
     environmentName="R1.R"
     id="var33"
     scope="environment_private"
     systemName="R1.R"
-    type="real"
+    type="double"
     value="10.0"/>
   <Mades:variable
     environmentName="R1.T_ref"
     id="var34"
     scope="environment_private"
     systemName="R1.T_ref"
-    type="real"
+    type="double"
     value="300.15"/>
   <Mades:variable
     environmentName="R1.alpha"
     id="var35"
     scope="environment_private"
     systemName="R1.alpha"
-    type="real"
+    type="double"
     value="0.0"/>
   <Mades:variable
     environmentName="C1.C"
     id="var36"
     scope="environment_private"
     systemName="C1.C"
-    type="real"
+    type="double"
     value="0.1"/>
   <Mades:variable
     environmentName="SOGLIA"
     id="var37"
     scope="environment_private"
     systemName="SOGLIA"
-    type="real"
+    type="double"
     value="6.0"/>
   <Mades:variable
     environmentName="R"
     id="var38"
     scope="environment_private"
     systemName="R"
-    type="real"
+    type="double"
     value="10.0"/>
   <Mades:variable
     environmentName="C"
     id="var39"
     scope="environment_private"
     systemName="C"
-    type="real"
+    type="double"
     value="0.1"/>
   <Mades:variable
     environmentName="R1.useHeatPort"
     id="var40"
     scope="environment_private"
     systemName="R1.useHeatPort"
-    type="real"
+    type="double"
     value="0.0"/>
   <Mades:signals>var0</Mades:signals>
 </Mades:cosimulation>

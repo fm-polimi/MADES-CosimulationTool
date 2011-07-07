@@ -13,40 +13,11 @@ import java.util.HashMap;
  */
 public class VariableFactory {
 
-	private HashMap<String, VariableDefinition> definedVariables =
+	private HashMap<String, VariableDefinition> systemDefinedVariables =
 			new HashMap<String, VariableDefinition>();
 	
-	/**
-	 * Get an already defined variable by name or defines a new one if
-	 * it does not exists.
-	 * 
-	 * @param name the variable name.
-	 * @param scope the variable scope.
-	 * @return a variable with the given name.
-	 * @throws AssertionError if a variable with the given name already
-	 *         exists but with a different scope.
-	 */
-	public VariableDefinition getOrDefine(String name, Scope scope, boolean bool) {
-		VariableDefinition var = definedVariables.get(name.toUpperCase());
-		if (var == null) {
-			var = new VariableDefinition(name, scope, bool);
-			definedVariables.put(name.toUpperCase(), var);
-		} else {
-			if (var.getScope() != scope) {
-				throw new AssertionError(
-						"A variable named: " + 
-						name + 
-						" already exists but with a different scope.");
-			}
-			if (var.isBoolean() != bool) {
-				throw new AssertionError(
-						"A variable named: " + 
-						name + 
-						" already exists but with a different type.");
-			}
-		}
-		return var;
-	}
+	private HashMap<String, VariableDefinition> environmentDefinedVariables =
+		new HashMap<String, VariableDefinition>();
 	
 	/**
 	 * Get a variable by name.
@@ -56,8 +27,27 @@ public class VariableFactory {
 	 * @throws AssertionError if a variable with the given name does
 	 *         not exist.
 	 */
-	public VariableDefinition get(String name) {
-		VariableDefinition var =  definedVariables.get(name.toUpperCase());
+	public VariableDefinition getSystemVar(String name) {
+		VariableDefinition var =  systemDefinedVariables.get(name.toUpperCase());
+		if (var == null) {
+			throw new AssertionError(
+					"A variable named: " + 
+					name + 
+					" does not exist.");
+		}
+		return var;
+	} 
+	
+	/**
+	 * Get a variable by name.
+	 * 
+	 * @param name the variable name
+	 * @return a variable with the given name.
+	 * @throws AssertionError if a variable with the given name does
+	 *         not exist.
+	 */
+	public VariableDefinition getEnvironmentVar(String name) {
+		VariableDefinition var =  environmentDefinedVariables.get(name.toUpperCase());
 		if (var == null) {
 			throw new AssertionError(
 					"A variable named: " + 
@@ -70,22 +60,33 @@ public class VariableFactory {
 	/**
 	 * Defines a new variable.
 	 * 
-	 * @param name the desired variable's name.
+	 * @param systemName the variable's name in the system scope.
+	 * @param environmentName the variable's name in the environment scope.
 	 * @param scope the desired variable's scope.
 	 * @return the new instance of variable.
 	 * @throws AssertionError if a variable with the same name
 	 *         already exists.
 	 */
-	public VariableDefinition define(String name, Scope scope, boolean bool) {
-		if (definedVariables.containsKey(name.toUpperCase())) {
+	public VariableDefinition define(String systemName, String environmentName,
+			Scope scope, Type type) {
+		if (systemDefinedVariables.containsKey(systemName)) {
 			throw new AssertionError(
 					"A variable named: " + 
-					name + 
+					systemName + 
+					" already exist.");
+		}
+		if (environmentDefinedVariables.containsKey(environmentName)) {
+			throw new AssertionError(
+					"A variable named: " + 
+					environmentName + 
 					" already exist.");
 		} 
 		
-		VariableDefinition var = new VariableDefinition(name, scope, bool);
-		definedVariables.put(name.toUpperCase(), var);
+		VariableDefinition var = new VariableDefinition(
+				systemName, environmentName,
+				scope, type);
+		systemDefinedVariables.put(systemName, var);
+		environmentDefinedVariables.put(environmentName, var);
 		return var;
 	}
 	
@@ -96,8 +97,18 @@ public class VariableFactory {
 	 * @return <code>true</code> if a variable with the given name already
 	 *        exists <code>false</code> otherwise.
 	 */
-	public boolean isDefined(String name) {
-		return definedVariables.containsKey(name.toUpperCase());
+	public boolean isDefinedInSystem(String name) {
+		return systemDefinedVariables.containsKey(name.toUpperCase());
 	}
 	
+	/**
+	 * Check if a variable with a given name has been defined.
+	 * 
+	 * @param name the name to check.
+	 * @return <code>true</code> if a variable with the given name already
+	 *        exists <code>false</code> otherwise.
+	 */
+	public boolean isDefinedInEnvironment(String name) {
+		return environmentDefinedVariables.containsKey(name.toUpperCase());
+	}
 }

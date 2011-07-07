@@ -23,13 +23,14 @@ public interface SystemConnector {
 	 * parameters given by the Cosimulator. This initialization has to be done
 	 * once and only once.
 	 * 
-	 * @param params: A collection of key,value initialization parameters.
 	 * @param clock the timer for this co-simulation.
-	 * @param variableFactory the variable factory
+	 * @param variableFactory the variable factory.
+	 * @param systemMemento a memento representing the initial state.
 	 * @return an instance representing the configuration of
 	 *         this connector at the initial state.
 	 */
-	public SystemMemento initialize(Clock clock, VariableFactory variableFactory);
+	public SystemMemento initialize(Clock clock, VariableFactory variableFactory,
+			SystemMemento systemMemento);
 	
 	/**
 	 * Loads a given initial state to the system. This method is supposed

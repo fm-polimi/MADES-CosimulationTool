@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 import mades.common.timing.Clock;
 import mades.common.timing.Time;
 import mades.common.timing.TimeFactory;
+import mades.common.variables.Type;
 import mades.common.variables.VariableAssignment;
 import mades.common.variables.VariableDefinition;
 import mades.common.variables.VariableFactory;
@@ -119,7 +120,7 @@ public class ZotOutputParser {
 				if (lineMatcher.matches()) {
 					// Set all the missing variables to false
 					for (VariableDefinition def: falseVariablesAtStep) {
-						if (def.isBoolean()) {
+						if (def.getType() == Type.BOOLEAN) {
 							variablesMultimap.put(currentTime, new VariableAssignment(def, "0", ""));
 						}
 					}
@@ -145,7 +146,7 @@ public class ZotOutputParser {
 						String name = varMatcher.group(1);
 						String value = varMatcher.group(3);
 						
-						VariableDefinition def = variableFactory.get(name);
+						VariableDefinition def = variableFactory.getSystemVar(name);
 						falseVariablesAtStep.remove(def);
 						variablesMultimap.put(currentTime, new VariableAssignment(def, value, ""));
 					} else {
@@ -156,11 +157,11 @@ public class ZotOutputParser {
 							String value2 = fractMatcher.group(4);
 							String value = "" + (Double.parseDouble(value1) / Double.parseDouble(value2));
 							
-							VariableDefinition def = variableFactory.get(name);
+							VariableDefinition def = variableFactory.getSystemVar(name);
 							falseVariablesAtStep.remove(def);
 							variablesMultimap.put(currentTime, new VariableAssignment(def, value, ""));
 						}else {
-							VariableDefinition def = variableFactory.get(varname);
+							VariableDefinition def = variableFactory.getSystemVar(varname);
 							falseVariablesAtStep.remove(def);
 							variablesMultimap.put(currentTime, new VariableAssignment(def, "1", ""));
 						}

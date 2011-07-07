@@ -8,25 +8,6 @@
 
 (defvar history
 (&&
-(&&(!! (-P- ACT1))([=] (-V- REACT1) 0)(!! (-P- SIGREACT1))(-P- s))
-(futr (&&(!! (-P- ACT1))([=] (-V- REACT1) 0)(!! (-P- SIGREACT1))(!! (-P- s))) 1)
-(futr (&&(-P- ACT1)([=] (-V- REACT1) 0)(!! (-P- SIGREACT1))(!! (-P- s))) 2)
-(futr (&&(!! (-P- ACT1))([=] (-V- REACT1) 0)(!! (-P- SIGREACT1))(!! (-P- s))) 3)
-(futr (&&(-P- ACT1)([=] (-V- REACT1) 10)(-P- SIGREACT1)(!! (-P- s))) 4)
-(futr (&&(-P- ACT1)([=] (-V- REACT1) 9.5)(-P- SIGREACT1)(-P- s)) 5)
-(futr (&&(-P- ACT1)([=] (-V- REACT1) 9.25)(-P- SIGREACT1)(-P- s)) 6)
-(futr (&&(-P- ACT1)([=] (-V- REACT1) 9)(-P- SIGREACT1)(-P- s)) 7)
-(futr (&&(!! (-P- ACT1))([=] (-V- REACT1) 9.125)(-P- SIGREACT1)(-P- s)) 8)
-(futr (&&(!! (-P- ACT1))([=] (-V- REACT1) 9.0625)(-P- SIGREACT1)(-P- s)) 9)
-(futr (&&(!! (-P- ACT1))([=] (-V- REACT1) 9)(-P- SIGREACT1)(-P- s)) 10)
-(futr (&&(!! (-P- ACT1))([=] (-V- REACT1) 9.03125)(-P- SIGREACT1)(-P- s)) 11)
-(futr (&&(!! (-P- ACT1))([=] (-V- REACT1) 0)(!! (-P- SIGREACT1))(-P- s)) 12)
-(futr (&&(!! (-P- ACT1))([=] (-V- REACT1) 0)(!! (-P- SIGREACT1))(!! (-P- s))) 13)
-(futr (&&(!! (-P- ACT1))([=] (-V- REACT1) 0)(!! (-P- SIGREACT1))(!! (-P- s))) 14)
-(futr (&&(!! (-P- ACT1))([=] (-V- REACT1) 0)(!! (-P- SIGREACT1))(!! (-P- s))) 15)
-(futr (&&(-P- ACT1)([=] (-V- REACT1) 0)(!! (-P- SIGREACT1))(!! (-P- s))) 16)
-(futr (&&(-P- ACT1)([=] (-V- REACT1) 0)(!! (-P- SIGREACT1))(!! (-P- s))) 17)
-(futr (&&(!! (-P- s))) 18)
 
 ))
 

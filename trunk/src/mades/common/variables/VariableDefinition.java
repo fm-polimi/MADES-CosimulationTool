@@ -13,9 +13,10 @@ package mades.common.variables;
  * 
  */
 public class VariableDefinition implements Comparable<VariableDefinition>{
-	private String name;
+	private String systemName;
+	private String environmentName;
 	private Scope scope;
-	private boolean bool;
+	private Type type;
 	
 	/**
 	 * Defines a new variable. 
@@ -23,10 +24,12 @@ public class VariableDefinition implements Comparable<VariableDefinition>{
 	 * @param name
 	 * @param scope
 	 */
-	protected VariableDefinition(String name, Scope scope, boolean bool) {
-		this.name = name;
+	protected VariableDefinition(String systemName, String environmentName,
+			Scope scope, Type type) {
+		this.systemName = systemName;
+		this.environmentName = environmentName;
 		this.scope = scope;
-		this.bool = bool;
+		this.type = type;
 	}
 
 	/* (non-Javadoc)
@@ -34,14 +37,7 @@ public class VariableDefinition implements Comparable<VariableDefinition>{
 	 */
 	@Override
 	public int compareTo(VariableDefinition arg0) {
-		return this.name.compareTo(arg0.name);
-	}
-
-	/**
-	 * @return the variable's name.
-	 */
-	public String getName() {
-		return name;
+		return this.systemName.compareTo(arg0.systemName);
 	}
 
 	/**
@@ -51,8 +47,8 @@ public class VariableDefinition implements Comparable<VariableDefinition>{
 		return scope;
 	}
 
-	public boolean isBoolean() {
-		return bool;
+	public Type getType() {
+		return type;
 	}
 	
 	/* (non-Javadoc)
@@ -60,6 +56,20 @@ public class VariableDefinition implements Comparable<VariableDefinition>{
 	 */
 	@Override
 	public String toString() {
-		return name;
+		return systemName;
+	}
+
+	/**
+	 * @return the systemName
+	 */
+	public String getSystemName() {
+		return systemName;
+	}
+
+	/**
+	 * @return the environmentName
+	 */
+	public String getEnvironmentName() {
+		return environmentName;
 	}
 }

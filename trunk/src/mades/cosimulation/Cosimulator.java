@@ -3,6 +3,7 @@
  */
 package mades.cosimulation;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.Set;
 import java.util.Stack;
@@ -71,31 +72,46 @@ public class Cosimulator {
 	 * at the end of the co-simulation. It only contains shared variables.
 	 */
 	private TreeMultimap<Time, VariableAssignment> sharedVariablesMultimap;
+
+	private String cosimulationPath;
+
+	private String environmentFileName;
+
+	private String initFileName;
+
+	private String systemFileName;
 	
 	/**
 	 * Default constructor.
 	 */
-	public Cosimulator(Logger logger) {
+	public Cosimulator(Logger logger, String cosimulationPath) {
 		this.logger = logger;
+		
+		this.cosimulationPath = cosimulationPath;
+		File folder = new File(cosimulationPath);
+		
+		environmentFileName = cosimulationPath + File.separator + folder.getName();
+		initFileName = environmentFileName + ".xml";
+		systemFileName = environmentFileName + "_system.zot";
 	}
 	
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		String ENVIRONMENT_PATH;
+		String path;
 		if (args.length < 0) {
-			ENVIRONMENT_PATH = args[0];
+			path = args[0];
 		} else {
-			ENVIRONMENT_PATH = "./examples/RC";
+			path = "./examples/RC";
 		}
 		Logger logger = Logger.getLogger(Cosimulator.class.getName());
 		logger.setLevel(Level.ALL);
 		logger.info("Starting co-simulation");
 		
-		SystemConnector system = new ZotSystemConnector(ENVIRONMENT_PATH, 30, logger);
-		EnvironmentConnector environment = new ModelicaEnvironmentConnector(ENVIRONMENT_PATH, logger);
-		Cosimulator cosimulator = new Cosimulator(logger);
+		SystemConnector system = new ZotSystemConnector(path, 30, logger);
+		EnvironmentConnector environment = new ModelicaEnvironmentConnector(path, logger);
+		Cosimulator cosimulator = new Cosimulator(logger, path);
 		cosimulator.setEnvironment(environment);
 		cosimulator.setSystem(system);
 		
@@ -121,7 +137,9 @@ public class Cosimulator {
 			builder.append("\n" + key.toString() + "\n");
 			Set<VariableAssignment> vars = results.get(key);
 			for(VariableAssignment v: vars) {
-				builder.append(v.getVariableDefinition().getName() + " = " + v.getValue() + "\n");
+				builder.append(
+					    v.getVariableDefinition().getSystemName() + 
+					    " = " + v.getValue() + "\n");
 			}
 		}
 		logger.info(builder.toString());
@@ -282,10 +300,14 @@ public class Cosimulator {
 		
 		sharedVariablesMultimap = TreeMultimap.create();
 		
+		InputParser inputParser = new InputParser(logger, clock, variableFactory,
+				initFileName);
+		inputParser.parseDocument();
 	
 		// Add the initial states to the bottom of the stack
 		// The system must be initialized first
-		SystemMemento systemMemento = system.initialize(clock, variableFactory);
+		SystemMemento systemMemento = system.initialize(clock, variableFactory,
+				inputParser.getSystemMemento());
 		if (systemMemento == null) {
 			String msg = "Unsatisfiable initial configuration: aborting...";
 			logger.severe(msg);
@@ -295,7 +317,7 @@ public class Cosimulator {
 		storeSharedVariables(systemMemento);
 		
 		EnvironmentMemento environmentMemento = environment.initialize(clock,
-				variableFactory);
+				variableFactory, inputParser.getEnvironmentMemento());
 		
 		environmentMementoStack.push(environmentMemento);
 		storeSharedVariables(environmentMemento);

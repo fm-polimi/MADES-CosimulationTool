@@ -28,10 +28,12 @@ public interface EnvironmentConnector {
 	 * 
 	 * @param clock the timer for this co-simulation.
 	 * @param variableFactory the variable factory
+	 * @param environmentMemento a memento representing the initial state.
 	 * @return an instance representing the configuration of
 	 *         this connector at the initial state.
 	 */
-	public EnvironmentMemento initialize(Clock clock, VariableFactory variableFactory);
+	public EnvironmentMemento initialize(Clock clock, VariableFactory variableFactory,
+			EnvironmentMemento environmentMemento);
 	
 	/**
 	 * Loads a given initial state to the environment. This method is supposed

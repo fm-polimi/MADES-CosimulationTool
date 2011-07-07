@@ -38,9 +38,10 @@ public class ModelicaEnvironmentConnector implements EnvironmentConnector {
 	 * @see mades.environment.EnvironmentConnector#initialize(java.util.ArrayList, mades.common.timing.Clock)
 	 */
 	@Override
-	public EnvironmentMemento initialize(Clock clock, VariableFactory variableFactory) {
-		wrapper = new ModelicaWrapper(environmentPath, clock);
-		environmentMemento = wrapper.initFromFile(variableFactory);
+	public EnvironmentMemento initialize(Clock clock,
+			VariableFactory variableFactory, EnvironmentMemento environmentMemento) {
+		wrapper = new ModelicaWrapper(environmentPath, clock, variableFactory);
+		environmentMemento = wrapper.initialize(environmentMemento);
 		return environmentMemento;
 	}
 
