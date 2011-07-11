@@ -19,7 +19,6 @@ import java.util.regex.Pattern;
 
 import mades.common.timing.Clock;
 import mades.common.timing.Time;
-import mades.common.variables.Scope;
 import mades.common.variables.Type;
 import mades.common.variables.VariableAssignment;
 import mades.common.variables.VariableDefinition;
@@ -48,7 +47,8 @@ public class ZotWrapper {
 	public static final String LISP_INTERPRETER = "clisp";
 	
 	public static final String SYSTEM = "_system.zot";
-	public static final String VARIABLES = "_constraints.zot";
+	public static final String HISTORY = "_history.zot";
+	public static final String CONSTRAINTS = "_constraints.zot";
 	
 	
 	/**
@@ -57,10 +57,7 @@ public class ZotWrapper {
 	 */
 	private String systemFileName;
 	
-	/**
-	 * The name of the lisp file containing the simulation variables.
-	 * A new file will be used for each step of the simulation.
-	 */
+	private String historyFileName;
 	private String constraintsFileName;
 	
 	private Logger logger;
@@ -111,7 +108,8 @@ public class ZotWrapper {
 		systemFileName = path + File.separator + projectName + SYSTEM;
 		checkFileExist(systemFileName);
 		
-		constraintsFileName = path + File.separator + projectName + VARIABLES;
+		historyFileName = path + File.separator + projectName + HISTORY;
+		constraintsFileName = path + File.separator + projectName + CONSTRAINTS;
 		checkFileExist(constraintsFileName);
 		
 		checkAndUpdateEngine(maxSimulationStep);
@@ -139,10 +137,12 @@ public class ZotWrapper {
 		 */
 		String tSpace = "\\Q(\\Edefvar TSPACE ([\\d])+\\Q)\\E";
 		String system = "\\Q(\\Eload TSPACE \"([\\w]/\\.)+_system.zot\"\\Q)\\E";
+		String history = "\\Q(\\Eload TSPACE \"([\\w]/\\.)+_history.zot\"\\Q)\\E";
 		String constraints = "\\Q(\\Eload TSPACE \"([\\w]/\\.)+_constraints.zot\"\\Q)\\E";
 		
 		Pattern tSpacePattern = Pattern.compile(tSpace);
 		Pattern systemPattern = Pattern.compile(system);
+		Pattern historyPattern = Pattern.compile(history);
 		Pattern constraintsPattern = Pattern.compile(constraints);
 		
 		try {
@@ -159,9 +159,14 @@ public class ZotWrapper {
 					if (matcher.matches()) {
 						line = "(load \"" + systemFileName + "\")";
 					} else {
-						matcher = constraintsPattern.matcher(line);
+						matcher = historyPattern.matcher(line);
 						if (matcher.matches()) {
-							line = "(load \"" + constraintsFileName + "\")";
+							line = "(load \"" + historyFileName + "\")";
+						} else {
+							matcher = constraintsPattern.matcher(line);
+							if (matcher.matches()) {
+								line = "(load \"" + constraintsFileName + "\")";
+							}
 						}
 					}
 				}
@@ -234,7 +239,7 @@ public class ZotWrapper {
 			) {
 		
 		if (unsat.size() != 0) {
-			builder.append("(&&");
+			builder.append("(&& ");
 			for (Collection<VariableAssignment> set: unsat) {
 				composeUnsatConstrains(builder, set);
 			}
@@ -282,7 +287,7 @@ public class ZotWrapper {
 		int end = matcherEnd.start();
 		*/
 		builder = new StringBuilder();
-		builder.append("(defvar constraints (&&\n");
+		builder.append("(defvar history (&&\n");
 		Set<Time> keys = memento.keySet();
 		for (Time t: keys) {
 			Collection<VariableAssignment> variables = memento.get(t);
@@ -305,7 +310,7 @@ public class ZotWrapper {
 		PrintWriter variableswriter;
 		try {
 			variableswriter = new PrintWriter(
-					constraintsFileName);
+					historyFileName);
 			variableswriter.write(builder.toString());
 			variableswriter.flush();
 			variableswriter.close();

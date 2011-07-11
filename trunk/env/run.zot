@@ -3,6 +3,7 @@
 
 (defvar TSPACE 30)
 (load "./examples/RC/RC_system.zot")
+(load "./examples/RC/RC_history.zot")
 (load "./examples/RC/RC_constraints.zot")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

@@ -36,7 +36,6 @@ public class ModelicaWrapper {
 	public static final Object START_TIME_VAR_NAME = " start value";
 	public static final Object END_TIME_VAR_NAME = " stop value";
 	private static String INIT_FILE_POSTFIX = "_init.txt";
-	//private static String BASE_FILE_POSTFIX = "_variables.txt";
 	private static String FINAL_FILE_POSTFIX = "_final.txt";
 	private static String SIGNAL_FILE_NAME = "A_Transitions";
 	private static String RUN_FILE = "./env/modelica.sh";
@@ -50,12 +49,10 @@ public class ModelicaWrapper {
 	private static final String SIGNAL_LINE = "^(TRANSnp|TRANSpn):\\t(" + VARIABLE_NAME + ")\\t(" + DOUBLE + ")$";
 	private Pattern signalPattern = Pattern.compile(SIGNAL_LINE);
 	
-	private String environmentPath;
+	private String environmentFolder;
+	private String environmentName;
 	
-	private String environmentFileName;
-	private String runFileName;
 	private String initialVariableFileName;
-	//private String baseVariableFileName;
 	private String finalVariableFileName;
 	private String signalsFileName;
 	
@@ -70,20 +67,21 @@ public class ModelicaWrapper {
 	 */
 	protected ModelicaWrapper(String environmentPath, Clock clock,
 			VariableFactory variableFactory) {
-		this.environmentPath = environmentPath;
 		this.variableFactory = variableFactory;
 		this.clock = clock;
 		
 		File folder = new File(environmentPath);
 		
-		environmentFileName = environmentPath + File.separator + folder.getName();
-		//baseVariableFileName = environmentFileName + BASE_FILE_POSTFIX;
-		initialVariableFileName = environmentFileName + INIT_FILE_POSTFIX;
-		// Copy the base variables in the initial file
-		//copy(baseVariableFileName, initialVariableFileName);
+		environmentFolder = environmentPath ;
+		environmentName = folder.getName();
 		
-		finalVariableFileName = environmentFileName + FINAL_FILE_POSTFIX;
+		
+		initialVariableFileName = environmentFolder + 
+				File.separator + environmentName + INIT_FILE_POSTFIX;
+		finalVariableFileName = environmentFolder +
+				File.separator + environmentName + FINAL_FILE_POSTFIX;
 		signalsFileName = environmentPath + File.separator + SIGNAL_FILE_NAME;
+		
 	}
 	
 	public EnvironmentMemento initialize(
@@ -103,114 +101,6 @@ public class ModelicaWrapper {
 		return environmentMemento;
 	} 
 	
-	/*
-	protected void copy(String fileSource, String fileDest) {
-		File source = new File(fileSource);
-		if (!source.isFile()) {
-			throw new AssertionError("Source file is not a file: " + fileSource);
-		}
-		if (!source.canRead()) {
-			throw new AssertionError("Cannot read source file: " + fileSource);
-		}
-		
-		File dest = new File(fileDest);
-		if (!dest.exists()) {
-			try {
-				dest.createNewFile();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		if (!dest.canWrite()) {
-			throw new AssertionError("Cannot write destintion file: " + fileDest);
-		}
-		try {
-			BufferedReader reader = new BufferedReader(new FileReader(source));
-			PrintWriter writer = new PrintWriter(dest);
-			String line;
-			try {
-				while ((line = reader.readLine()) != null) {
-					writer.println(line);
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			} finally {
-				writer.flush();
-				writer.close();
-			}
-		
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-	}*/
-	
-	/**
-	 * Initialize this wrapper by reading the init file.
-	 * The init file contains variables and their initial value but not
-	 * their scope. All the variable defined in the init file but not
-	 * already defined in the co-simulation are considered internal.
-	 * 
-	 * @param variableFactory A factory containing all the variables 
-	 *         already defined.
-	 * @return the initial state of this environment.
-	 */
-	/*
-	public EnvironmentMemento initFromFile(VariableFactory variableFactory) {
-		this.variableFactory = variableFactory;
-		ArrayList<VariableAssignment> variables = new ArrayList<VariableAssignment>();
-		numVariables = 0;
-		
-		try {
-			BufferedReader reader = new BufferedReader(new FileReader(baseVariableFileName));
-			String line = null;
-			while ((line = reader.readLine()) != null) {
-				Matcher matcher = variablePattern.matcher(line);
-				if (matcher.matches()) {
-					String value = matcher.group(1);
-					String annotation = matcher.group(5);
-					String name = matcher.group(6);
-					VariableDefinition def = null;
-					if (!variableFactory.isDefined(name)) {
-						// All modelica variables are double
-						def = variableFactory.define(name, Scope.ENVIRONMENT_INTERNAL, false);
-					}
-					else {
-						def = variableFactory.get(name);
-					}
-					
-					if (name.equals(START_TIME_VAR_NAME)) {
-						value = "0";
-					} else if (name.equals(END_TIME_VAR_NAME)) {
-						value = "" + clock.getTimeStep();
-					}
-					
-					if (annotation == null) {
-						annotation = "";
-					}
-					
-					VariableAssignment var = new VariableAssignment(def, value, annotation);
-					variables.add(var);
-				} else {
-					System.out.println("** Skipped line: " + line);
-				}
-				numVariables ++;
-			}
-			reader.close();
-		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		deleteSignalFile();
-		
-		EnvironmentMemento memento = new EnvironmentMemento(clock.getCurrentTime(), variables, new SignalMap());
-		return memento;
-	}
-	*/
-
-
 	private void deleteSignalFile() {
 		File signalFile = new File(signalsFileName);
 		if (signalFile.exists()) {
@@ -279,7 +169,7 @@ public class ModelicaWrapper {
 		Runtime run = Runtime.getRuntime();
 		Process process = null;
 		try {
-			process = run.exec(runFileName + " " + environmentPath);
+			process = run.exec(RUN_FILE + " " + environmentFolder + " " + environmentName);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

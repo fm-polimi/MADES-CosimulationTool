@@ -93,7 +93,7 @@ public class EnvironmentMemento {
 			if (def.getScope() == Scope.SYSTEM_SHARED) {
 				VariableAssignment var = memento.getVariable(def, getTime());
 				if (var == null) {
-					throw new AssertionError("Missing variable from memento");
+					throw new AssertionError("Missing variable from memento: " + def.getSystemName());
 				}
 				params.set(i, var.clone());
 			}
