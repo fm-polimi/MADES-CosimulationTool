@@ -39,7 +39,7 @@ public class ModelicaWrapper {
 	//private static String BASE_FILE_POSTFIX = "_variables.txt";
 	private static String FINAL_FILE_POSTFIX = "_final.txt";
 	private static String SIGNAL_FILE_NAME = "A_Transitions";
-	private static String RUN_FILE = "run.sh";
+	private static String RUN_FILE = "./env/modelica.sh";
 	
 	private static final String VARIABLE_NAME = "[ ]*[\\w -\\._\\(\\)]+";
 	private static final String DOUBLE = "[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?";
@@ -84,7 +84,6 @@ public class ModelicaWrapper {
 		
 		finalVariableFileName = environmentFileName + FINAL_FILE_POSTFIX;
 		signalsFileName = environmentPath + File.separator + SIGNAL_FILE_NAME;
-		runFileName = environmentPath + File.separator + RUN_FILE;
 	}
 	
 	public EnvironmentMemento initialize(

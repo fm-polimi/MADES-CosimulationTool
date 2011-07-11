@@ -1,0 +1,32 @@
+Detto in due parole le cose che mancano sono:
+1. Includere un controllo ad ogni step sulla validità dei valori di
+gruppi di segnali dipendenti fra loro
+2. Infiocchettare input ed output
+3. Deployare il cosimulatore creando un jar ed uno script di installazione
+4. Creare qualche esempio più significativo
+
+Più in dettaglio sono da effettuare i segue ti interventi:
+
+A. L'input del sistema si dovrà comporre di: un file XML contenente
+tutte le variabili comprensive di loro valore iniziale e nome sia in
+Modelica che in Zot, nonché una descrizione di quali segnali
+monitorare e con quale criterio; un file <nomesistema>.mo contenente
+il modello Modelica in cui a runtime verranno injettati i controlli
+sui segnali e che verrà ricompilato alla prima esecuzione; un file
+<nomesistema>.zot contenente il sistema zot. Tutti gli altri file
+necessari saranno o contenuti nel cosimulatore o creati in fase di
+inizializzazione.
+
+B. Verrà creata una semplice interfaccia grafica che consentirà
+all'utente di selezionare i due modelli ed il file di output.
+
+C. Il sistema creerà in output un file XML contenente la traccia
+prodotta dalla simulazione.
+
+D. Bisogna impacchettare il codice Java in un jar file eseguibile
+corredato dai vari file Zot, Modelica e Python necessari alla
+ricompilazione/esecuzione della cosimulazione.
+
+Io partirei implementando le modifiche sopra citate e provandole nel
+modello corrente mentre Matteo ed Antonio potrebbero iniziare a
+guardare i nuovi modelli. Dopodiché proveremo il tutto.

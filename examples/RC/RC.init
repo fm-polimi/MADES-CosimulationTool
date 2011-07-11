@@ -1,4 +1,0 @@
-s env shared boolean 1
-REACT1 sys shared real 0
-SIGREACT1 sys shared boolean 0
-ACT1 sys private boolean 0
