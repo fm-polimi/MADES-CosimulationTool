@@ -35,7 +35,7 @@ algorithm
 	end when;
 	 
   	when change(s) then
-  	  	FilePrint(s,pre(S),time);
+  	  	FilePrint(s,pre(s),time);
   	end when;
   	
   	
