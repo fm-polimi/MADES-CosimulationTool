@@ -6,6 +6,7 @@ package mades.system.zot;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -43,18 +44,12 @@ import mades.system.SystemMemento;
  */
 public class ZotWrapper {
 
+	public static final String ENGINE = "./env/run.zot";
 	public static final String LISP_INTERPRETER = "clisp";
-	public static final String ENGINE = "_run.zot";
+	
 	public static final String SYSTEM = "_system.zot";
 	public static final String VARIABLES = "_constraints.zot";
-	public static final String INIT = ".init";
 	
-	
-	/**
-	 * The name of the lisp file containing the engine to run the
-	 * simulation with Zot.
-	 */
-	private String engineFileName;
 	
 	/**
 	 * The name of the lisp file containing the system that has to
@@ -68,27 +63,17 @@ public class ZotWrapper {
 	 */
 	private String constraintsFileName;
 	
-	private String initFileName;
-	
 	private Logger logger;
 	private Clock clock;
 	private VariableFactory variableFactory;
 	private ArrayList<VariableDefinition> definedVariables;
 	
 	/*
-	private static final String DOUBLE = "[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?";
-	private static final String SYSTEM_DEF = "sys";
-	private static final String SHARED_DEF = "shared";
-	private static final String BOOLEAN = "boolean";
-	private static final String REAL = "real";
-	private static final String INIT_VARIABLE = "^([\\w]+) (env|sys) (private|shared) (" + BOOLEAN +"|" + REAL + ") (" + DOUBLE + ")$";
-	private Pattern stepPattern = Pattern.compile(INIT_VARIABLE);
-	*/
-	
 	private static final String CONSTRAINS_BEGIN = "\\Q(defvar history\\E[\\n]+";
 	private static final String CONSTRAINS_END = "\\Q)\\E[\\n]+\\Q(defvar constraints\\E";
 	private Pattern constrainsBeginPattern = Pattern.compile(CONSTRAINS_BEGIN);
 	private Pattern constrainsEndPattern = Pattern.compile(CONSTRAINS_END);
+	*/
 	
 	/**
 	 * Initializes this instance with the engine and the given system.
@@ -129,11 +114,8 @@ public class ZotWrapper {
 		constraintsFileName = path + File.separator + projectName + VARIABLES;
 		checkFileExist(constraintsFileName);
 		
-		engineFileName = path + File.separator + projectName + ENGINE;
 		checkAndUpdateEngine(maxSimulationStep);
 		
-		initFileName = path + File.separator + projectName + INIT;
-		checkFileExist(initFileName);
 	}
 	
 	private void checkFileExist(String filename) {
@@ -147,8 +129,59 @@ public class ZotWrapper {
 	}
 	
 	private void checkAndUpdateEngine(int maxSimulationStep) {
-		checkFileExist(this.engineFileName);
-		// TODO(rax): update file
+		checkFileExist(ENGINE);
+		
+		/*
+		 * Looks for the following lines and updates them
+         * (defvar TSPACE 70)
+		 * (load "./examples/RC/RC_system.zot")
+		 * (load "./examples/RC/RC_constraints.zot")
+		 */
+		String tSpace = "\\Q(\\Edefvar TSPACE ([\\d])+\\Q)\\E";
+		String system = "\\Q(\\Eload TSPACE \"([\\w]/\\.)+_system.zot\"\\Q)\\E";
+		String constraints = "\\Q(\\Eload TSPACE \"([\\w]/\\.)+_constraints.zot\"\\Q)\\E";
+		
+		Pattern tSpacePattern = Pattern.compile(tSpace);
+		Pattern systemPattern = Pattern.compile(system);
+		Pattern constraintsPattern = Pattern.compile(constraints);
+		
+		try {
+			StringBuilder builder = new StringBuilder();
+			BufferedReader reader = new BufferedReader(new FileReader(ENGINE));
+			
+			String line;
+			while ((line = reader.readLine()) != null) {
+				Matcher matcher = tSpacePattern.matcher(line);
+				if (matcher.matches()) {
+					line = "(defvar TSPACE " + maxSimulationStep + ")";
+				} else {
+					matcher = systemPattern.matcher(line);
+					if (matcher.matches()) {
+						line = "(load \"" + systemFileName + "\")";
+					} else {
+						matcher = constraintsPattern.matcher(line);
+						if (matcher.matches()) {
+							line = "(load \"" + constraintsFileName + "\")";
+						}
+					}
+				}
+				builder.append(line + "\n");
+			}
+			reader.close();
+			
+			PrintWriter pw = new PrintWriter(new FileOutputStream(ENGINE));
+			pw.print(builder.toString());
+			pw.flush();
+			pw.close();
+			
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	
 	public void initialize(SystemMemento systemMemento) {
@@ -159,55 +192,7 @@ public class ZotWrapper {
 		}
 	}
 	
-	/*
-	public ArrayList<VariableAssignment> parseInit() {
-		definedVariables = new ArrayList<VariableDefinition>();
-		ArrayList<VariableAssignment> variables = new ArrayList<VariableAssignment>();
-		try {
-			BufferedReader reader = new BufferedReader(
-					new FileReader(initFileName));
-			
-			String line;
-			while ((line = reader.readLine()) != null) {
-				Matcher matcher = stepPattern.matcher(line);
-				if (matcher.matches()) {
-					String name = matcher.group(1);
-					String sysOrEnv = matcher.group(2);
-					String privateOrShared = matcher.group(3);
-					String bool = matcher.group(4);
-					String value = matcher.group(5);
-					Scope scope;
-					if (sysOrEnv.equals(SYSTEM_DEF)) {
-						if (privateOrShared.equals(SHARED_DEF)) {
-							scope = Scope.SYSTEM_SHARED;
-						} else {
-							scope = Scope.SYSTEM_INTERNAL;
-						}
-					} else {
-						if (privateOrShared.equals(SHARED_DEF)) {
-							scope = Scope.ENVIRONMENT_SHARED;
-						} else {
-							scope = Scope.SYSTEM_SHARED;
-						}
-					}
-					boolean isBoolean = bool.equals(BOOLEAN);
-					VariableDefinition def = variableFactory.define(
-							name, scope, isBoolean);
-					
-					definedVariables.add(def);
-					variables.add(new VariableAssignment(def, value, ""));
-				}
-			}
-			
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		return variables;
-	}
-*/
+	
 	
 	/**
 	 * Adds to the string builder a collection of variables.
@@ -267,7 +252,7 @@ public class ZotWrapper {
 	 */
 	protected void overrideVariables(SystemMemento memento) {
 		
-		StringBuilder builder = new StringBuilder();
+		StringBuilder builder;/* = new StringBuilder();
 		BufferedReader br = null;
 		try {
 			br = new BufferedReader(new FileReader(constraintsFileName));
@@ -295,9 +280,9 @@ public class ZotWrapper {
 		
 		int start = matcherBegin.end();
 		int end = matcherEnd.start();
-		
+		*/
 		builder = new StringBuilder();
-		builder.append("(&&\n");
+		builder.append("(defvar constraints (&&\n");
 		Set<Time> keys = memento.keySet();
 		for (Time t: keys) {
 			Collection<VariableAssignment> variables = memento.get(t);
@@ -312,16 +297,16 @@ public class ZotWrapper {
 				builder.append(" " + step +")\n");
 			}
 		}
-		builder.append("\n)");
+		builder.append("\n))");
 		
-		CharSequence toReplace = constrains.subSequence(start, end);
+		/*CharSequence toReplace = constrains.subSequence(start, end);
 		constrains =  constrains.replace(toReplace, builder.toString());
-		
+		*/
 		PrintWriter variableswriter;
 		try {
 			variableswriter = new PrintWriter(
 					constraintsFileName);
-			variableswriter.write(constrains);
+			variableswriter.write(builder.toString());
 			variableswriter.flush();
 			variableswriter.close();
 		} catch (FileNotFoundException e) {
@@ -331,7 +316,7 @@ public class ZotWrapper {
 	}
 	
 	protected SystemMemento runZot(Time time) {
-		String cmd = LISP_INTERPRETER + " " + engineFileName;
+		String cmd = LISP_INTERPRETER + " " + ENGINE;
 		Runtime run = Runtime.getRuntime();
 		Process process = null;
 		try {

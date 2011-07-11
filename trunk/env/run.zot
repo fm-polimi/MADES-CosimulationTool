@@ -1,23 +1,15 @@
-;; To use the SMT plugin:
-;; (asdf:operate 'asdf:load-op 'smteezot)
-;; (asdf:operate 'asdf:load-op 'ae2zot)
 (asdf:operate 'asdf:load-op 'ae2zot-r)
 (use-package :trio-utils)
-(defvar TSPACE 70)
 
+(defvar TSPACE 30)
 (load "./examples/RC/RC_system.zot")
 (load "./examples/RC/RC_constraints.zot")
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; RUNNING THE SYSTEM
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-
-;; (ae2zot:zot TSPACE (&& the-system constraints))
-;; (ae2zot:zot TSPACE (&& the-system constraints)
 (ae2zot-r:zot TSPACE (&& the-system constraints)
-             :smt-solver :z3
+      :smt-solver :z3
       :logic :QF_UFLRA
 )
 

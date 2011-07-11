@@ -1,11 +1,3 @@
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; CONSTRAINTS FOR TESTING
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; These are constraints just for testing, to produce meaningful sequences
-(defvar cond1_holds (somf (lasted (-P- cond1) C1)))
-(defvar cond1_ev_stops (somf (alwf (!! (-P- cond1)))))
-
 (defvar history
 (&&
 (&&(!! (-P- ACT1))([=] (-V- REACT1) 0)(-P- S)(!! (-P- SIGREACT1)))
@@ -31,12 +23,3 @@
 (futr (&&(-P- S)) 20)
 
 ))
-
-(defvar constraints
-  (&&
-;;    cond1_holds
-;;    cond1_ev_stops
-    history
-    (somf ([>] (-V- react1) LB))
-  ))
-
