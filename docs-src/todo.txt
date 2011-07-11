@@ -5,7 +5,7 @@ gruppi di segnali dipendenti fra loro
 3. Deployare il cosimulatore creando un jar ed uno script di installazione
 4. Creare qualche esempio più significativo
 
-Più in dettaglio sono da effettuare i segue ti interventi:
+Più in dettaglio sono da effettuare i seguenti interventi:
 
 A. L'input del sistema si dovrà comporre di: un file XML contenente
 tutte le variabili comprensive di loro valore iniziale e nome sia in
