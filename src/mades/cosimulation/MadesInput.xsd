@@ -42,6 +42,7 @@
     	</attribute>
     	<attribute name="value" type="string"></attribute>
     	<attribute name="annotation" type="string" use="optional"></attribute>
+    	<attribute name="threshold" type="double" use="optional"></attribute>
     </complexType>
 
 

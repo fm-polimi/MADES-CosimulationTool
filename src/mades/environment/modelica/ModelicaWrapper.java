@@ -3,9 +3,12 @@
  */
 package mades.environment.modelica;
 
+import static mades.common.utils.Files.checkFileExistsOrThrow;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -100,6 +103,196 @@ public class ModelicaWrapper {
 		}*/
 		return environmentMemento;
 	} 
+	
+	private String composeThresholdString() {
+		StringBuilder builder = new StringBuilder();
+		for (VariableAssignment v: thresholds) {
+			builder.append("parameter Real " +
+					v.getVariableDefinition().getEnvironmentName() + 
+					" = " + v.getValue() + ";\n");
+		}
+		return builder.toString();
+	}
+
+	private String composeSignalsString() {
+		StringBuilder builder = new StringBuilder();
+		for (VariableAssignment v: signals) {
+			builder.append("discrete Real " +
+					v.getVariableDefinition().getEnvironmentName() + ";\n");
+		}
+		return builder.toString();
+	}
+	
+	private void addThresholdAndSignalVariablesToMo(StringBuilder builder) {
+		String equation = "^equation$";
+		Pattern equationPattern = Pattern.compile(equation);
+		
+		String thresholdsBegin = "/\\*\\*thresholds begin\\*\\*/";
+		String thresholdsEnd = "\\*\\*thresholds end\\*\\*";
+		String signalsBegin = "/\\*\\*signals begin\\*\\*/";
+		String signalsEnd = "/\\*\\*signals end\\*\\*";
+		
+		Pattern thresholdBeginPattern = Pattern.compile(thresholdsBegin);
+		Pattern thresholdEndPattern = Pattern.compile(thresholdsEnd);
+		
+		Pattern signalsBeginPattern = Pattern.compile(signalsBegin);
+		Pattern signalsEndPattern = Pattern.compile(signalsEnd);
+		
+		String model = builder.toString();
+		Matcher matcher;
+		
+		matcher = equationPattern.matcher(model);
+		int equationIndex = -1;
+		if (matcher.matches()) {
+			equationIndex = matcher.start();
+		} else {
+			throw new AssertionError("Equation section not found in .mo file.");
+		}
+		
+		int beginIndex = -1;
+		int endIndex = -1;
+		
+		matcher = thresholdBeginPattern.matcher(model);
+		if (matcher.matches()) {
+			beginIndex = matcher.end();
+			matcher = thresholdEndPattern.matcher(model);
+			if (matcher.matches()) {
+				endIndex = matcher.start();
+				// Remove the previous thresholds and add the new one
+				builder.delete(beginIndex, endIndex);
+				builder.insert(beginIndex, composeThresholdString());
+			} else {
+				throw new AssertionError("Thresholds end not found in .mo file.");
+			}
+			
+			
+		} else {
+			// Insert the threshold before "equation"
+			builder.insert(equationIndex, "/**thresholds begin**/" + 
+					composeThresholdString() + "/**thresholds end**/");
+		}
+		
+		// Update the model
+		model = builder.toString();
+		
+		matcher = signalsBeginPattern.matcher(model);
+		if (matcher.matches()) {
+			beginIndex = matcher.end();
+			matcher = signalsEndPattern.matcher(model);
+			if (matcher.matches()) {
+				endIndex = matcher.start();
+				// Remove the previous thresholds and add the new one
+				builder.delete(beginIndex, endIndex);
+				builder.insert(beginIndex, composeSignalsString());
+			} else {
+				throw new AssertionError("Signals end not found in .mo file.");
+			}
+			
+			
+		} else {
+			// Insert the threshold before "equation"
+			builder.insert(equationIndex, "/**signals begin**/" + 
+					composeSignalsString() + "/**signals end**/");
+		}
+				
+		
+	}
+	
+	private String composeChangesString() {
+		StringBuilder builder = new StringBuilder();
+
+		for (VariableAssignment v: signals) {
+			/*
+			 * when C1.v > threshold_C1_v then
+			 *     trigger_C1_v := 1.0;
+	         * elsewhen C1.v <= threshold_C1_v then
+             *     trigger_C1_v := 0.0;
+	         * end when;
+	         * 
+  	         * when change(trigger_C1_v) then
+  	  	     *     FilePrint(trigger_C1_v, pre(trigger_C1_v), time);
+  	         * end when;
+  	         */
+		}
+		return builder.toString();
+	}
+	
+	private void addSignalChangesToMo(StringBuilder builder) {
+		
+		String algorithm = "^algorithm$";
+		String changesBegin = "/\\*\\*changes begin\\*\\*/";
+		String changesEnd = "\\*\\*changes end\\*\\*";
+		
+		Pattern algorithmPattern = Pattern.compile(algorithm);
+		Pattern changesBeginPattern = Pattern.compile(changesBegin);
+		Pattern changesEndPattern = Pattern.compile(changesEnd);
+		
+		String model = builder.toString();
+		Matcher matcher;
+		
+		matcher = algorithmPattern.matcher(model);
+		int algorithmIndex = -1;
+		if (matcher.matches()) {
+			algorithmIndex = matcher.end();
+		} else {
+			throw new AssertionError("Algorithm section not found in .mo file.");
+		}
+		
+		int beginIndex = -1;
+		int endIndex = -1;
+		
+		matcher = changesBeginPattern.matcher(model);
+		if (matcher.matches()) {
+			beginIndex = matcher.end();
+			matcher = changesEndPattern.matcher(model);
+			if (matcher.matches()) {
+				endIndex = matcher.start();
+				// Remove the previous thresholds and add the new one
+				builder.delete(beginIndex, endIndex);
+				builder.insert(beginIndex, composeChangesString());
+			} else {
+				throw new AssertionError("Thresholds end not found in .mo file.");
+			}
+			
+			
+		} else {
+			// Insert the threshold before "equation"
+			builder.insert(algorithmIndex, "/**changes begin**/" + 
+					composeChangesString() + "/**changes end**/");
+		}
+		
+	}
+	
+	private void checkAndUpdateMo() {
+		checkFileExistsOrThrow(MO_FILE, logger);
+		
+		try {
+			StringBuilder builder = new StringBuilder();
+			BufferedReader reader = new BufferedReader(new FileReader(MO_FILE));
+			
+			String line;
+			while ((line = reader.readLine()) != null) {
+				builder.append(line + "\n");
+			}
+			reader.close();
+			
+			addThresholdAndSignalVariablesToMo(builder);
+			addSignalChangesToMo(builder);
+			
+			PrintWriter pw = new PrintWriter(new FileOutputStream(MO_FILE));
+			pw.print(builder.toString());
+			pw.flush();
+			pw.close();
+			
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
 	
 	private void deleteSignalFile() {
 		File signalFile = new File(signalsFileName);

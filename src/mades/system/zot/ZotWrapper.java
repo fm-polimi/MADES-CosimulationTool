@@ -24,6 +24,7 @@ import mades.common.variables.VariableAssignment;
 import mades.common.variables.VariableDefinition;
 import mades.common.variables.VariableFactory;
 import mades.system.SystemMemento;
+import static mades.common.utils.Files.*;
 
 /**
  * @author Michele Sama (m.sama@puzzledev.com)
@@ -91,43 +92,24 @@ public class ZotWrapper {
 		this.logger = logger;
 		
 		// Check project directory
+		checkFolderExistAndIsWritableOrThrow(path, logger);
 		File folder = new File(path);
-		if (!folder.exists() || !folder.isDirectory()) {
-			String errorMsg = "Path " + path + " must be a folder: aborting...";
-			logger.severe(errorMsg);
-			throw new AssertionError(errorMsg);
-		}
-		if (!folder.canWrite()) {
-			String errorMsg = "Path " + path + " must have write permission: aborting...";
-			logger.severe(errorMsg);
-			throw new AssertionError(errorMsg);
-		}
 		
 		String projectName = folder.getName();
 		
 		systemFileName = path + File.separator + projectName + SYSTEM;
-		checkFileExist(systemFileName);
+		checkFileExistsOrThrow(systemFileName, logger);
 		
 		historyFileName = path + File.separator + projectName + HISTORY;
 		constraintsFileName = path + File.separator + projectName + CONSTRAINTS;
-		checkFileExist(constraintsFileName);
+		checkFileExistsOrThrow(constraintsFileName, logger);
 		
 		checkAndUpdateEngine(maxSimulationStep);
 		
 	}
 	
-	private void checkFileExist(String filename) {
-		File file = new File(filename);
-		if (!file.exists() || !file.isFile()) {
-			String errorMsg = "File not found or is a directory: " + 
-					filename;
-			logger.severe(errorMsg);
-			throw new AssertionError(errorMsg);
-		}
-	}
-	
 	private void checkAndUpdateEngine(int maxSimulationStep) {
-		checkFileExist(ENGINE);
+		checkFileExistsOrThrow(ENGINE, logger);
 		
 		/*
 		 * Looks for the following lines and updates them
