@@ -1,0 +1,6 @@
+loadFile("ReteRC.mo");
+loadModel(Modelica);
+system("gcc -c -o libPrintExt.o PrintExt.c");
+system("gcc -c -o libInitExt.o InitExt.c");
+simulate(RC,startTime=0.0,stopTime=10,outputFormat="mat");
+
