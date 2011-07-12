@@ -3,12 +3,16 @@
  */
 package mades.system.zot;
 
+import static mades.common.utils.Files.*;
+import static mades.common.utils.Runtimes.runCommand;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,7 +28,7 @@ import mades.common.variables.VariableAssignment;
 import mades.common.variables.VariableDefinition;
 import mades.common.variables.VariableFactory;
 import mades.system.SystemMemento;
-import static mades.common.utils.Files.*;
+
 
 /**
  * @author Michele Sama (m.sama@puzzledev.com)
@@ -303,23 +307,11 @@ public class ZotWrapper {
 	}
 	
 	protected SystemMemento runZot(Time time) {
-		String cmd = LISP_INTERPRETER + " " + ENGINE;
-		Runtime run = Runtime.getRuntime();
-		Process process = null;
-		try {
-			process = run.exec(cmd);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		try {
-			process.waitFor();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		InputStream inputStream = runCommand(LISP_INTERPRETER + " " + ENGINE);
 		
 		ZotOutputParser parser = new ZotOutputParser(clock, 
 				variableFactory, definedVariables, time.getSimulationStep(), 
-				process.getInputStream());
+				inputStream);
 		SystemMemento memento = new SystemMemento(parser.parse());
 		if (parser.isUnsat()) {
 			return null;
