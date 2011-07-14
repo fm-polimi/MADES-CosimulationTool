@@ -12,32 +12,37 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import mades.common.variables.Scope;
+import mades.common.variables.Trigger;
 import mades.common.variables.VariableAssignment;
 
 /**
  * @author Michele Sama (m.sama@puzzledev.com)
  * 
- * Updates the model at the first execution.
+ * Instrument the given model at the first execution.
  *
  */
-public class ModelUpdater {
+public class ModelInstrumentor {
 
 	private static final String OMC = "omc";
 	
 	private String fileName;
 	private Logger logger;
+	private ArrayList<Trigger> triggers;
 	
-	public ModelUpdater(String fileName) {
+	public ModelInstrumentor(String fileName) {
 		this.fileName = fileName;
 	} 
 	
 	private String composeThresholdString() {
 		StringBuilder builder = new StringBuilder();
-		for (VariableAssignment v: thresholds) {
+		for (Trigger t: triggers) {
+			VariableAssignment v = t.getThreshold();
 			builder.append("parameter Real " +
 					v.getVariableDefinition().getEnvironmentName() + 
 					" = " + v.getValue() + ";\n");
@@ -47,7 +52,8 @@ public class ModelUpdater {
 
 	private String composeSignalsString() {
 		StringBuilder builder = new StringBuilder();
-		for (VariableAssignment v: signals) {
+		for (Trigger t: triggers) {
+			VariableAssignment v = t.getSignal();
 			builder.append("discrete Real " +
 					v.getVariableDefinition().getEnvironmentName() + ";\n");
 		}
@@ -55,16 +61,16 @@ public class ModelUpdater {
 	}
 	
 	private void addThresholdAndSignalVariablesToMo(StringBuilder builder) {
-		updateModel(builder, "/**thresholds begin**/", 
+		instrument(builder, "/**thresholds begin**/", 
 				"/**thresholds end**/", "equation", composeThresholdString());
-		updateModel(builder, "/**signals begin**/", 
+		instrument(builder, "/**signals begin**/", 
 				"/**signals end**/", "equation", composeSignalsString());
 	}
 	
 	private String composeChangesString() {
 		StringBuilder builder = new StringBuilder();
 
-		for (VariableAssignment v: signals) {
+		for (Trigger t: triggers) {
 			/*
 			 * when C1.v > threshold_C1_v then
 			 *     trigger_C1_v := 1.0;
@@ -76,16 +82,39 @@ public class ModelUpdater {
   	  	     *     FilePrint(trigger_C1_v, pre(trigger_C1_v), time);
   	         * end when;
   	         */
+			String var = t.getVariable().getVariableDefinition().getEnvironmentName();
+			String threshold = t.getThreshold().getVariableDefinition().getEnvironmentName();
+			String signal = t.getSignal().getVariableDefinition().getEnvironmentName();
+			
+			builder.append("when " + 
+					var + 
+					" > " + 
+					threshold + 
+					" then\n");
+			builder.append("    " + signal + " := 1.0;\n");
+			builder.append("elsewhen " + 
+					var + 
+					" <= " + 
+					threshold + 
+					" then\n");
+			builder.append("    " + signal + " := 0.0;\n");
+			builder.append("end when;\n");
+			builder.append("\n");
+			
+			builder.append("when change(" + signal + ") then");
+			builder.append("    FilePrint(" + signal + ", pre(" + signal + "), time);\n");
+			builder.append("end when;\n");
+			builder.append("\n");
 		}
 		return builder.toString();
 	}
 	
-	private void addSignalChangesToMo(StringBuilder builder) {		
-		updateModel(builder, "/**changes begin**/", "/**changes end**/",
+	private void addTriggersToMo(StringBuilder builder) {		
+		instrument(builder, "/**triggers begin**/", "/**triggers end**/",
 				"algorithm", composeChangesString());
 	}
 	
-	private void updateModel(StringBuilder builder, String begin,
+	private void instrument(StringBuilder builder, String begin,
 			String end, String alternative, String substitution) {
 		
 		Pattern alternativePattern = Pattern.compile("\\Q" + alternative + "\\E");
@@ -127,7 +156,14 @@ public class ModelUpdater {
 		}
 	}
 	
-	public void checkAndUpdateModel() {
+	public void checkAndUpdateModel(ArrayList<Trigger> triggers) {
+		this.triggers = new ArrayList<Trigger>();
+		for (Trigger t: triggers) {
+			Scope s = t.getVariable().getVariableDefinition().getScope();
+			if (s == Scope.ENVIRONMENT_INTERNAL || s == Scope.ENVIRONMENT_SHARED) {
+				this.triggers.add(t);
+			}
+		}
 		checkFileExistsOrThrow(fileName, logger);
 		
 		try {
@@ -141,7 +177,7 @@ public class ModelUpdater {
 			reader.close();
 			
 			addThresholdAndSignalVariablesToMo(builder);
-			addSignalChangesToMo(builder);
+			addTriggersToMo(builder);
 			
 			PrintWriter pw = new PrintWriter(new FileOutputStream(fileName));
 			pw.print(builder.toString());

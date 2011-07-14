@@ -17,6 +17,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import mades.common.timing.Clock;
+import mades.common.variables.Trigger;
 import mades.common.variables.VariableAssignment;
 import mades.common.variables.VariableDefinition;
 import mades.common.variables.VariableFactory;
@@ -67,7 +68,7 @@ public class ModelicaWrapper {
 	 * @param environmentName
 	 */
 	protected ModelicaWrapper(String environmentPath, Clock clock,
-			VariableFactory variableFactory) {
+			VariableFactory variableFactory, ArrayList<Trigger> triggers) {
 		this.variableFactory = variableFactory;
 		this.clock = clock;
 		
@@ -83,10 +84,10 @@ public class ModelicaWrapper {
 				File.separator + environmentName + FINAL_FILE_POSTFIX;
 		signalsFileName = environmentPath + File.separator + SIGNAL_FILE_NAME;
 		
-		ModelUpdater updater = new ModelUpdater(environmentPath + File.separator +
+		ModelInstrumentor instrumentor = new ModelInstrumentor(environmentPath + File.separator +
 				"sources" + File.separator + environmentName + ".mo");
-		updater.checkAndUpdateModel();
-		updater.compile();
+		instrumentor.checkAndUpdateModel(triggers);
+		instrumentor.compile();
 	}
 	
 	public EnvironmentMemento initialize(
