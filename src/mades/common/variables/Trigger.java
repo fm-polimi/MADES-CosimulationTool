@@ -8,41 +8,52 @@ package mades.common.variables;
  *
  */
 public class Trigger {
-
-	VariableAssignment variable;
-	VariableAssignment threshold;
-	VariableAssignment signal;
-
+	String variable;
+	String signal;
+	String threshold;
+	double value;
+	
 	/**
 	 * @param variable
+	 * @param signal
 	 * @param threshold
-	 * @param trigger
+	 * @param value
 	 */
-	public Trigger(VariableAssignment variable,
-			VariableAssignment threshold, VariableAssignment trigger) {
+	public Trigger(String variable, String signal, String threshold,
+			double value) {
+		super();
 		this.variable = variable;
+		this.signal = signal;
 		this.threshold = threshold;
-		this.signal = trigger;
+		this.value = value;
 	}
 
 	/**
 	 * @return the variable
 	 */
-	public VariableAssignment getVariable() {
+	public String getVariable() {
 		return variable;
-	}
-
-	/**
-	 * @return the threshold
-	 */
-	public VariableAssignment getThreshold() {
-		return threshold;
 	}
 
 	/**
 	 * @return the trigger
 	 */
-	public VariableAssignment getSignal() {
+	public String getSignal() {
 		return signal;
 	}
+
+	/**
+	 * @return the threshold
+	 */
+	public String getThreshold() {
+		return threshold;
+	}
+
+	/**
+	 * @return the value
+	 */
+	public Double getValue() {
+		return value;
+	}
+	
 }

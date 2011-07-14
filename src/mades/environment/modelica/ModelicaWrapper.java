@@ -85,7 +85,7 @@ public class ModelicaWrapper {
 		signalsFileName = environmentPath + File.separator + SIGNAL_FILE_NAME;
 		
 		ModelInstrumentor instrumentor = new ModelInstrumentor(environmentPath + File.separator +
-				"sources" + File.separator + environmentName + ".mo");
+				"sources" + File.separator + environmentName + ".mo", environmentName);
 		instrumentor.checkAndUpdateModel(triggers);
 		instrumentor.compile();
 	}

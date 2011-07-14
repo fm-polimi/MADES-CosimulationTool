@@ -32,20 +32,21 @@ public class ModelInstrumentor {
 	private static final String OMC = "omc";
 	
 	private String fileName;
+	private String modelName;
 	private Logger logger;
 	private ArrayList<Trigger> triggers;
 	
-	public ModelInstrumentor(String fileName) {
+	public ModelInstrumentor(String fileName, String modelName) {
 		this.fileName = fileName;
+		this.modelName = modelName;
 	} 
 	
 	private String composeThresholdString() {
 		StringBuilder builder = new StringBuilder();
 		for (Trigger t: triggers) {
-			VariableAssignment v = t.getThreshold();
-			builder.append("parameter Real " +
-					v.getVariableDefinition().getEnvironmentName() + 
-					" = " + v.getValue() + ";\n");
+			builder.append("\tparameter Real " +
+					t.getThreshold() + 
+					" = " + t.getValue() + ";\n");
 		}
 		return builder.toString();
 	}
@@ -53,18 +54,17 @@ public class ModelInstrumentor {
 	private String composeSignalsString() {
 		StringBuilder builder = new StringBuilder();
 		for (Trigger t: triggers) {
-			VariableAssignment v = t.getSignal();
-			builder.append("discrete Real " +
-					v.getVariableDefinition().getEnvironmentName() + ";\n");
+			builder.append("\tdiscrete Real " +
+					t.getSignal() + ";\n");
 		}
 		return builder.toString();
 	}
 	
 	private void addThresholdAndSignalVariablesToMo(StringBuilder builder) {
-		instrument(builder, "/**thresholds begin**/", 
-				"/**thresholds end**/", "equation", composeThresholdString());
-		instrument(builder, "/**signals begin**/", 
-				"/**signals end**/", "equation", composeSignalsString());
+		instrument(builder, "\n\t/**thresholds begin**/\n", 
+				"\t/**thresholds end**/\n", "model " + modelName, composeThresholdString());
+		instrument(builder, "\n\t/**signals begin**/\n", 
+				"\t/**signals end**/\n", "model " + modelName, composeSignalsString());
 	}
 	
 	private String composeChangesString() {
@@ -82,41 +82,40 @@ public class ModelInstrumentor {
   	  	     *     FilePrint(trigger_C1_v, pre(trigger_C1_v), time);
   	         * end when;
   	         */
-			String var = t.getVariable().getVariableDefinition().getEnvironmentName();
-			String threshold = t.getThreshold().getVariableDefinition().getEnvironmentName();
-			String signal = t.getSignal().getVariableDefinition().getEnvironmentName();
+			String var = t.getVariable();
+			String threshold = t.getThreshold();
+			String signal = t.getSignal();
 			
-			builder.append("when " + 
+			builder.append("\twhen " + 
 					var + 
 					" > " + 
 					threshold + 
 					" then\n");
-			builder.append("    " + signal + " := 1.0;\n");
-			builder.append("elsewhen " + 
+			builder.append("\t\t" + signal + " := 1.0;\n");
+			builder.append("\telsewhen " + 
 					var + 
 					" <= " + 
 					threshold + 
 					" then\n");
-			builder.append("    " + signal + " := 0.0;\n");
-			builder.append("end when;\n");
+			builder.append("\t\t" + signal + " := 0.0;\n");
+			builder.append("\tend when;\n");
 			builder.append("\n");
 			
-			builder.append("when change(" + signal + ") then");
-			builder.append("    FilePrint(" + signal + ", pre(" + signal + "), time);\n");
-			builder.append("end when;\n");
+			builder.append("\twhen change(" + signal + ") then\n");
+			builder.append("\tFilePrint(" + signal + ", pre(" + signal + "), time);\n");
+			builder.append("\tend when;\n");
 			builder.append("\n");
 		}
 		return builder.toString();
 	}
 	
 	private void addTriggersToMo(StringBuilder builder) {		
-		instrument(builder, "/**triggers begin**/", "/**triggers end**/",
+		instrument(builder, "\n\t/**triggers begin**/\n", "\t/**triggers end**/\n",
 				"algorithm", composeChangesString());
 	}
 	
 	private void instrument(StringBuilder builder, String begin,
 			String end, String alternative, String substitution) {
-		
 		Pattern alternativePattern = Pattern.compile("\\Q" + alternative + "\\E");
 		Pattern beginPattern = Pattern.compile("\\Q" + begin + "\\E");
 		Pattern endPattern = Pattern.compile("\\Q" + end + "\\E");
@@ -127,7 +126,7 @@ public class ModelInstrumentor {
 		
 		Matcher matcher = alternativePattern.matcher(model);
 		int algorithmIndex = -1;
-		if (matcher.matches()) {
+		if (matcher.find()) {
 			algorithmIndex = matcher.end();
 		} else {
 			throw new AssertionError("Expected string " + alternative +
@@ -135,10 +134,10 @@ public class ModelInstrumentor {
 		}
 		
 		matcher = beginPattern.matcher(model);
-		if (matcher.matches()) {
+		if (matcher.find()) {
 			beginIndex = matcher.end();
 			matcher = endPattern.matcher(model);
-			if (matcher.matches()) {
+			if (matcher.find()) {
 				endIndex = matcher.start();
 				// Remove the previous thresholds and add the new one
 				builder.delete(beginIndex, endIndex);
@@ -157,13 +156,7 @@ public class ModelInstrumentor {
 	}
 	
 	public void checkAndUpdateModel(ArrayList<Trigger> triggers) {
-		this.triggers = new ArrayList<Trigger>();
-		for (Trigger t: triggers) {
-			Scope s = t.getVariable().getVariableDefinition().getScope();
-			if (s == Scope.ENVIRONMENT_INTERNAL || s == Scope.ENVIRONMENT_SHARED) {
-				this.triggers.add(t);
-			}
-		}
+		this.triggers = triggers;
 		checkFileExistsOrThrow(fileName, logger);
 		
 		try {

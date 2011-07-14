@@ -292,11 +292,5 @@
     systemName="R1.useHeatPort"
     type="double"
     value="0.0"/>
-  <Mades:trigger
-  	scope="environment"
-  	threshold="SOGLIA1"
-  	signal="s"
-  	variable="C1.v"
-  	value="6.0"/>
   <Mades:signals>var0</Mades:signals>
 </Mades:cosimulation>
