@@ -15,6 +15,7 @@ import javax.xml.parsers.SAXParserFactory;
 import mades.common.timing.Clock;
 import mades.common.timing.Time;
 import mades.common.variables.Scope;
+import mades.common.variables.Trigger;
 import mades.common.variables.Type;
 import mades.common.variables.VariableAssignment;
 import mades.common.variables.VariableDefinition;
@@ -43,6 +44,7 @@ public class InputParser extends DefaultHandler {
 	private static final String VARIABLE_SCOPE = "scope";
 	private static final String VARIABLE_SYSTEM_NAME = "systemName";
 	private static final String VARIABLE_ENVIRONMENT_NAME = "environmentName";
+	private static final String VARIABLE_THRESHOLD = "threshold";
 	private static final String VARIABLE = "mades:variable";
 	
 	private Logger logger;
@@ -54,7 +56,18 @@ public class InputParser extends DefaultHandler {
 	private ArrayList<VariableAssignment> systemVariables;
 	private EnvironmentMemento environmentMemento;
 	private ArrayList<VariableAssignment> environmentVariables;
+	
+	/**
+	 * Stores all the defined variables by id as they are defined
+	 * in the xml file.
+	 */
 	private HashMap<String, VariableDefinition> definedVariablesMap;
+	
+	/**
+	 * Stores all the triggers defined in the xml file. 
+	 */
+	private ArrayList<Trigger> triggers;
+	
 	
 	private String currentStringData;
 	private String currentQName;
@@ -128,6 +141,7 @@ public class InputParser extends DefaultHandler {
 		systemVariables = new ArrayList<VariableAssignment>();
 		environmentVariables = new ArrayList<VariableAssignment>();
 		definedVariablesMap = new HashMap<String, VariableDefinition>();
+		triggers = new ArrayList<Trigger>();
 	}
 
 	/* (non-Javadoc)
@@ -185,6 +199,39 @@ public class InputParser extends DefaultHandler {
 				}
 
 			}
+			
+			String threshold = attributes.getValue(VARIABLE_THRESHOLD);
+			if (threshold != null) {
+				// Add threshold
+				String thresholdName = "threshold_" + environmentName.replace('.', '_')
+						.replace('(', '_')
+						.replace(')', '_');
+				VariableDefinition thresholdDef = variableFactory.define(
+						thresholdName, thresholdName,
+						Scope.ENVIRONMENT_INTERNAL,
+						Type.DOUBLE);
+				VariableAssignment thresholdVar = new VariableAssignment(
+						thresholdDef, threshold, "");
+				environmentVariables.add(thresholdVar);
+				
+				// Add trigger
+				String signalName = "signal_" + environmentName.replace('.', '_')
+						.replace('(', '_')
+						.replace(')', '_');
+				VariableDefinition signalDef = variableFactory.define(
+						signalName, signalName,
+						Scope.ENVIRONMENT_INTERNAL,
+						Type.BOOLEAN);
+				String signalValue = 
+					    Double.parseDouble(value) < Double.parseDouble(threshold) ? 
+					    		"0" : "1";
+				VariableAssignment signalVar = new VariableAssignment(
+						signalDef, signalValue, "");
+				environmentVariables.add(signalVar);
+				
+				triggers.add(new Trigger(var, thresholdVar, signalVar));
+			}
+			
 		} //else if () {}
 	}
 	
@@ -249,6 +296,13 @@ public class InputParser extends DefaultHandler {
 	 */
 	public EnvironmentMemento getEnvironmentMemento() {
 		return environmentMemento;
+	}
+
+	/**
+	 * @return the triggers
+	 */
+	public ArrayList<Trigger> getTriggers() {
+		return triggers;
 	}
 	
 	

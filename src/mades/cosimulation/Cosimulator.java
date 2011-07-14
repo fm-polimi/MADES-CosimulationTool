@@ -317,7 +317,8 @@ public class Cosimulator {
 		storeSharedVariables(systemMemento);
 		
 		EnvironmentMemento environmentMemento = environment.initialize(clock,
-				variableFactory, inputParser.getEnvironmentMemento());
+				variableFactory, inputParser.getEnvironmentMemento(),
+				inputParser.getTriggers());
 		
 		environmentMementoStack.push(environmentMemento);
 		storeSharedVariables(environmentMemento);

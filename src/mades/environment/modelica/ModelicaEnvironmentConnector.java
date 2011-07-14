@@ -3,9 +3,11 @@
  */
 package mades.environment.modelica;
 
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import mades.common.timing.Clock;
+import mades.common.variables.Trigger;
 import mades.common.variables.VariableFactory;
 import mades.environment.EnvironmentConnector;
 import mades.environment.EnvironmentMemento;
@@ -39,8 +41,10 @@ public class ModelicaEnvironmentConnector implements EnvironmentConnector {
 	 */
 	@Override
 	public EnvironmentMemento initialize(Clock clock,
-			VariableFactory variableFactory, EnvironmentMemento environmentMemento) {
-		wrapper = new ModelicaWrapper(environmentPath, clock, variableFactory);
+			VariableFactory variableFactory, EnvironmentMemento environmentMemento,
+			ArrayList<Trigger> triggers) {
+		wrapper = new ModelicaWrapper(
+				environmentPath, clock, variableFactory, triggers);
 		environmentMemento = wrapper.initialize(environmentMemento);
 		return environmentMemento;
 	}
