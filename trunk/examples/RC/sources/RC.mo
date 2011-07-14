@@ -1,4 +1,12 @@
 model RC
+/**signals begin**/
+	discrete Real s;
+	/**signals end**/
+
+	/**thresholds begin**/
+	parameter Real SOGLIA1 = 6.0;
+	/**thresholds end**/
+
 	Modelica.Electrical.Analog.Basic.Resistor R1(R = R);
 	Modelica.Electrical.Analog.Basic.Capacitor C1(C = C);
 	Modelica.Electrical.Analog.Basic.Ground G;
@@ -23,7 +31,19 @@ equation
 	COND1 = C1.v;
 	
 algorithm
-	
+	/**triggers begin**/
+	when C1.v > SOGLIA1 then
+		s := 1.0;
+	elsewhen C1.v <= SOGLIA1 then
+		s := 0.0;
+	end when;
+
+	when change(s) then
+	FilePrint(s, pre(s), time);
+	end when;
+
+	/**triggers end**/
+
 	when initial() then
 		Init();
 	end when;

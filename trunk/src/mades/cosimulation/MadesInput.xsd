@@ -8,6 +8,9 @@
     			<element name="variable" type="Mades:Variable"></element>
     		</sequence>
     		<sequence minOccurs="0" maxOccurs="unbounded">
+    			<element name="trigger" type="Mades:Trigger"></element>
+    		</sequence>
+    		<sequence minOccurs="0" maxOccurs="unbounded">
     			<element name="signals" type="IDREFS"></element>
     		</sequence>
     	</sequence>
@@ -42,11 +45,25 @@
     	</attribute>
     	<attribute name="value" type="string"></attribute>
     	<attribute name="annotation" type="string" use="optional"></attribute>
-    	<attribute name="threshold" type="double" use="optional"></attribute>
     </complexType>
 
 
 
     <element name="cosimulation" type="Mades:Cosimulation"></element>
 
+
+    <complexType name="Trigger">
+        <attribute name="scope">
+        	<simpleType>
+        		<restriction base="string">
+        			<enumeration value="system"></enumeration>
+        			<enumeration value="environment"></enumeration>
+        		</restriction>
+        	</simpleType>
+        </attribute>
+        <attribute name="variable" type="string"></attribute>
+    	<attribute name="threshold" type="string"></attribute>
+    	<attribute name="signal" type="string"></attribute>
+    	<attribute name="value" type="double"></attribute>
+    </complexType>
 </schema>

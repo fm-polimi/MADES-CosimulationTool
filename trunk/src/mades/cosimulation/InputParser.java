@@ -46,6 +46,7 @@ public class InputParser extends DefaultHandler {
 	private static final String VARIABLE_ENVIRONMENT_NAME = "environmentName";
 	private static final String VARIABLE_THRESHOLD = "threshold";
 	private static final String VARIABLE = "mades:variable";
+	private static final String TRIGGER = "mades:trigger";
 	
 	private Logger logger;
 	private String filename;
@@ -64,10 +65,14 @@ public class InputParser extends DefaultHandler {
 	private HashMap<String, VariableDefinition> definedVariablesMap;
 	
 	/**
-	 * Stores all the triggers defined in the xml file. 
+	 * Stores all the environment triggers defined in the xml file. 
 	 */
-	private ArrayList<Trigger> triggers;
+	private ArrayList<Trigger> environmentTriggers;
 	
+	/**
+	 * Stores all the system triggers defined in the xml file. 
+	 */
+	private ArrayList<Trigger> systemTriggers;
 	
 	private String currentStringData;
 	private String currentQName;
@@ -141,9 +146,73 @@ public class InputParser extends DefaultHandler {
 		systemVariables = new ArrayList<VariableAssignment>();
 		environmentVariables = new ArrayList<VariableAssignment>();
 		definedVariablesMap = new HashMap<String, VariableDefinition>();
-		triggers = new ArrayList<Trigger>();
+		environmentTriggers = new ArrayList<Trigger>();
+		systemTriggers = new ArrayList<Trigger>();
 	}
 
+	private void parseTrigger(String uri, String localName, String qName,
+			Attributes attributes) {
+		String scope = attributes.getValue("scope");
+		String variable = attributes.getValue("variable");
+		String signal = attributes.getValue("signal");
+		String threshold = attributes.getValue("threshold");
+		double value = Double.parseDouble(attributes.getValue("value"));
+		
+		Trigger trigger = new Trigger(variable, signal, threshold, value);
+		if ("system".equalsIgnoreCase(scope)) {
+			systemTriggers.add(trigger);
+		} else {
+			environmentTriggers.add(trigger);
+		}
+	}
+	
+	private void parseVariable(String uri, String localName, String qName,
+			Attributes attributes) {
+		String environmentName = attributes.getValue(VARIABLE_ENVIRONMENT_NAME);
+		String systemName = attributes.getValue(VARIABLE_SYSTEM_NAME);
+		Scope scope = parseScope(attributes.getValue(VARIABLE_SCOPE));
+		Type type = parseType(attributes.getValue(VARIABLE_TYPE));
+		
+		VariableDefinition def = variableFactory.define(
+				systemName, environmentName, scope, type);
+		
+		String id = attributes.getValue(VARIABLE_ID);
+		definedVariablesMap.put(id, def);
+		
+		String value = attributes.getValue(VARIABLE_VALUE);
+		if (type == Type.STRING) {
+			value = "\"" + value + "\"";
+		}
+		
+		String annotation = attributes.getValue(VARIABLE_ANNOTATION);
+		if (annotation == null) {
+			annotation = "";
+		}
+		
+		VariableAssignment var = new VariableAssignment(def, value, annotation);
+		switch(scope) {
+			case ENVIRONMENT_INTERNAL: {
+				environmentVariables.add(var);
+				break;
+			}
+			case ENVIRONMENT_SHARED: {
+				environmentVariables.add(var);
+				systemVariables.add(var);
+				break;
+			}
+			case SYSTEM_INTERNAL: {
+				systemVariables.add(var);
+				break;
+			}
+			case SYSTEM_SHARED: {
+				environmentVariables.add(var);
+				systemVariables.add(var);
+				break;
+			}
+
+		}
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.xml.sax.helpers.DefaultHandler#startElement(java.lang.String, java.lang.String, java.lang.String, org.xml.sax.Attributes)
 	 */
@@ -156,83 +225,10 @@ public class InputParser extends DefaultHandler {
 		currentQName = qName;
 		
 		if (VARIABLE.equalsIgnoreCase(qName)) {
-			String environmentName = attributes.getValue(VARIABLE_ENVIRONMENT_NAME);
-			String systemName = attributes.getValue(VARIABLE_SYSTEM_NAME);
-			Scope scope = parseScope(attributes.getValue(VARIABLE_SCOPE));
-			Type type = parseType(attributes.getValue(VARIABLE_TYPE));
-			
-			VariableDefinition def = variableFactory.define(
-					systemName, environmentName, scope, type);
-			
-			String id = attributes.getValue(VARIABLE_ID);
-			definedVariablesMap.put(id, def);
-			
-			String value = attributes.getValue(VARIABLE_VALUE);
-			if (type == Type.STRING) {
-				value = "\"" + value + "\"";
-			}
-			
-			String annotation = attributes.getValue(VARIABLE_ANNOTATION);
-			if (annotation == null) {
-				annotation = "";
-			}
-			
-			VariableAssignment var = new VariableAssignment(def, value, annotation);
-			switch(scope) {
-				case ENVIRONMENT_INTERNAL: {
-					environmentVariables.add(var);
-					break;
-				}
-				case ENVIRONMENT_SHARED: {
-					environmentVariables.add(var);
-					systemVariables.add(var);
-					break;
-				}
-				case SYSTEM_INTERNAL: {
-					systemVariables.add(var);
-					break;
-				}
-				case SYSTEM_SHARED: {
-					environmentVariables.add(var);
-					systemVariables.add(var);
-					break;
-				}
-
-			}
-			
-			String threshold = attributes.getValue(VARIABLE_THRESHOLD);
-			if (threshold != null) {
-				// Add threshold
-				String thresholdName = "threshold_" + environmentName.replace('.', '_')
-						.replace('(', '_')
-						.replace(')', '_');
-				VariableDefinition thresholdDef = variableFactory.define(
-						thresholdName, thresholdName,
-						Scope.ENVIRONMENT_INTERNAL,
-						Type.DOUBLE);
-				VariableAssignment thresholdVar = new VariableAssignment(
-						thresholdDef, threshold, "");
-				environmentVariables.add(thresholdVar);
-				
-				// Add trigger
-				String signalName = "signal_" + environmentName.replace('.', '_')
-						.replace('(', '_')
-						.replace(')', '_');
-				VariableDefinition signalDef = variableFactory.define(
-						signalName, signalName,
-						Scope.ENVIRONMENT_INTERNAL,
-						Type.BOOLEAN);
-				String signalValue = 
-					    Double.parseDouble(value) < Double.parseDouble(threshold) ? 
-					    		"0" : "1";
-				VariableAssignment signalVar = new VariableAssignment(
-						signalDef, signalValue, "");
-				environmentVariables.add(signalVar);
-				
-				triggers.add(new Trigger(var, thresholdVar, signalVar));
-			}
-			
-		} //else if () {}
+			parseVariable(uri, localName, qName, attributes);	
+		} else if (TRIGGER.equalsIgnoreCase(qName)) {
+			parseTrigger(uri, localName, qName, attributes);
+		}
 	}
 	
 	private Type parseType(String type) {
@@ -299,11 +295,17 @@ public class InputParser extends DefaultHandler {
 	}
 
 	/**
-	 * @return the triggers
+	 * @return the environmentTriggers
 	 */
-	public ArrayList<Trigger> getTriggers() {
-		return triggers;
+	public ArrayList<Trigger> getEnvironmentTriggers() {
+		return environmentTriggers;
 	}
-	
+
+	/**
+	 * @return the systemTriggers
+	 */
+	public ArrayList<Trigger> getSystemTriggers() {
+		return systemTriggers;
+	}	
 	
 }
