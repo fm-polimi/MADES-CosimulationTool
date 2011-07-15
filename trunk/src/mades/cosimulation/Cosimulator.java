@@ -4,6 +4,7 @@
 package mades.cosimulation;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
 import java.util.Stack;
@@ -15,6 +16,7 @@ import com.google.common.collect.TreeMultimap;
 import mades.common.timing.Clock;
 import mades.common.timing.Time;
 import mades.common.variables.Scope;
+import mades.common.variables.TriggerGroup;
 import mades.common.variables.VariableAssignment;
 import mades.common.variables.VariableFactory;
 import mades.environment.EnvironmentConnector;
@@ -73,13 +75,11 @@ public class Cosimulator {
 	 */
 	private TreeMultimap<Time, VariableAssignment> sharedVariablesMultimap;
 
-	private String cosimulationPath;
-
 	private String environmentFileName;
 
 	private String initFileName;
 
-	private String systemFileName;
+	private ArrayList<TriggerGroup> triggerGroups;
 	
 	/**
 	 * Default constructor.
@@ -87,12 +87,10 @@ public class Cosimulator {
 	public Cosimulator(Logger logger, String cosimulationPath) {
 		this.logger = logger;
 		
-		this.cosimulationPath = cosimulationPath;
 		File folder = new File(cosimulationPath);
 		
 		environmentFileName = cosimulationPath + File.separator + folder.getName();
 		initFileName = environmentFileName + ".xml";
-		systemFileName = environmentFileName + "_system.zot";
 	}
 	
 	/**
@@ -303,6 +301,7 @@ public class Cosimulator {
 		InputParser inputParser = new InputParser(logger, clock, variableFactory,
 				initFileName);
 		inputParser.parseDocument();
+		triggerGroups = inputParser.getTriggerGroups();
 	
 		// Add the initial states to the bottom of the stack
 		// The system must be initialized first

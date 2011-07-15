@@ -8,9 +8,15 @@ package mades.common.variables;
  *
  */
 public class Trigger {
-	String variable;
-	String signal;
-	String threshold;
+	String variableName;
+	VariableDefinition variable;
+	
+	String signalName;
+	VariableDefinition signal; 
+	
+	String thresholdName;
+	VariableDefinition threshold;
+	
 	Scope scope;
 	double value;
 	
@@ -22,9 +28,9 @@ public class Trigger {
 	 */
 	public Trigger(String variable, String signal, String threshold,
 			Scope scope, double value) {
-		this.variable = variable;
-		this.signal = signal;
-		this.threshold = threshold;
+		this.variableName = variable;
+		this.signalName = signal;
+		this.thresholdName = threshold;
 		this.value = value;
 		if (scope == Scope.ENVIRONMENT_INTERNAL ||
 				scope == Scope.SYSTEM_INTERNAL) {
@@ -35,22 +41,22 @@ public class Trigger {
 	/**
 	 * @return the variable
 	 */
-	public String getVariable() {
-		return variable;
+	public String getVariableName() {
+		return variableName;
 	}
 
 	/**
 	 * @return the trigger
 	 */
-	public String getSignal() {
-		return signal;
+	public String getSignalName() {
+		return signalName;
 	}
 
 	/**
 	 * @return the threshold
 	 */
-	public String getThreshold() {
-		return threshold;
+	public String getThresholdName() {
+		return thresholdName;
 	}
 
 	/**
@@ -58,6 +64,48 @@ public class Trigger {
 	 */
 	public Double getValue() {
 		return value;
+	}
+
+	/**
+	 * @return the variable
+	 */
+	public VariableDefinition getVariable() {
+		return variable;
+	}
+
+	/**
+	 * @param variable the variable to set
+	 */
+	public void setVariable(VariableDefinition variable) {
+		this.variable = variable;
+	}
+
+	/**
+	 * @return the signal
+	 */
+	public VariableDefinition getSignal() {
+		return signal;
+	}
+
+	/**
+	 * @param signal the signal to set
+	 */
+	public void setSignal(VariableDefinition signal) {
+		this.signal = signal;
+	}
+
+	/**
+	 * @return the threshold
+	 */
+	public VariableDefinition getThreshold() {
+		return threshold;
+	}
+
+	/**
+	 * @param threshold the threshold to set
+	 */
+	public void setThreshold(VariableDefinition threshold) {
+		this.threshold = threshold;
 	}
 	
 }

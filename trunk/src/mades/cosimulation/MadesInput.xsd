@@ -8,17 +8,13 @@
     			<element name="variable" type="Mades:Variable"></element>
     		</sequence>
     		<sequence minOccurs="0" maxOccurs="unbounded">
-    			<element name="trigger" type="Mades:Trigger"></element>
-    		</sequence>
-    		<sequence minOccurs="0" maxOccurs="unbounded">
-    			<element name="signals" type="IDREFS"></element>
+    			<element name="triggerGroup" type="Mades:TriggerGroup"></element>
     		</sequence>
     	</sequence>
     	<attribute name="name" type="string"></attribute>
     </complexType>
 
     <complexType name="Variable">
-    	<attribute name="id" type="ID"></attribute>
     	<attribute name="systemName" type="string" use="required"></attribute>
     	<attribute name="environmentName" type="string"
     		use="required">
@@ -65,5 +61,11 @@
     	<attribute name="threshold" type="string"></attribute>
     	<attribute name="signal" type="string"></attribute>
     	<attribute name="value" type="double"></attribute>
+    </complexType>
+
+    <complexType name="TriggerGroup">
+    	<sequence>
+    		<element name="trigger" type="Mades:Trigger" minOccurs="1" maxOccurs="unbounded"></element>
+    	</sequence>
     </complexType>
 </schema>
