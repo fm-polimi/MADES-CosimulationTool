@@ -11,6 +11,7 @@ public class Trigger {
 	String variable;
 	String signal;
 	String threshold;
+	Scope scope;
 	double value;
 	
 	/**
@@ -20,12 +21,15 @@ public class Trigger {
 	 * @param value
 	 */
 	public Trigger(String variable, String signal, String threshold,
-			double value) {
-		super();
+			Scope scope, double value) {
 		this.variable = variable;
 		this.signal = signal;
 		this.threshold = threshold;
 		this.value = value;
+		if (scope == Scope.ENVIRONMENT_INTERNAL ||
+				scope == Scope.SYSTEM_INTERNAL) {
+			this.scope = scope;
+		}
 	}
 
 	/**
