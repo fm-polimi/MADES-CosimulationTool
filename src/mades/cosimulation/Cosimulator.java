@@ -128,9 +128,13 @@ public class Cosimulator {
 		
 		TreeMultimap<Time, VariableAssignment> results = cosimulator.getSharedVariablesMultimap();
 		
+		OutputWriter writer = new OutputWriter(results);
+		writer.writeXmlFile(path + File.separator + "cosimulation.xml");
+		
+		
 		StringBuilder builder = new StringBuilder();
 		builder.append("Simulation output:\n");
-		Set<Time> keys = results.keySet();
+		/*Set<Time> keys = results.keySet();
 		for (Time key: keys) {
 			builder.append("\n" + key.toString() + "\n");
 			Set<VariableAssignment> vars = results.get(key);
@@ -139,7 +143,7 @@ public class Cosimulator {
 					    v.getVariableDefinition().getSystemName() + 
 					    " = " + v.getValue() + "\n");
 			}
-		}
+		}*/
 		logger.info(builder.toString());
 	}
 	
