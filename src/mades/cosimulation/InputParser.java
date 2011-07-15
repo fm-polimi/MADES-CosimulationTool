@@ -158,10 +158,13 @@ public class InputParser extends DefaultHandler {
 		String threshold = attributes.getValue("threshold");
 		double value = Double.parseDouble(attributes.getValue("value"));
 		
-		Trigger trigger = new Trigger(variable, signal, threshold, value);
 		if ("system".equalsIgnoreCase(scope)) {
+			Trigger trigger = new Trigger(variable, signal, threshold,
+					Scope.SYSTEM_SHARED, value);
 			systemTriggers.add(trigger);
 		} else {
+			Trigger trigger = new Trigger(variable, signal, threshold,
+					Scope.ENVIRONMENT_SHARED, value);
 			environmentTriggers.add(trigger);
 		}
 	}
