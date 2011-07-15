@@ -16,6 +16,7 @@ import mades.common.timing.Clock;
 import mades.common.timing.Time;
 import mades.common.variables.Scope;
 import mades.common.variables.Trigger;
+import mades.common.variables.TriggerGroup;
 import mades.common.variables.Type;
 import mades.common.variables.VariableAssignment;
 import mades.common.variables.VariableDefinition;
@@ -36,15 +37,13 @@ import com.google.common.collect.TreeMultimap;
  */
 public class InputParser extends DefaultHandler {
 
-	private static final String SIGNALS = "mades:signals";
-	private static final String VARIABLE_ID = "id";
+	private static final String TRIGGER_GROUP = "mades:triggergroup";
 	private static final String VARIABLE_ANNOTATION = "annotation";
 	private static final String VARIABLE_VALUE = "value";
 	private static final String VARIABLE_TYPE = "type";
 	private static final String VARIABLE_SCOPE = "scope";
 	private static final String VARIABLE_SYSTEM_NAME = "systemName";
 	private static final String VARIABLE_ENVIRONMENT_NAME = "environmentName";
-	private static final String VARIABLE_THRESHOLD = "threshold";
 	private static final String VARIABLE = "mades:variable";
 	private static final String TRIGGER = "mades:trigger";
 	
@@ -58,11 +57,7 @@ public class InputParser extends DefaultHandler {
 	private EnvironmentMemento environmentMemento;
 	private ArrayList<VariableAssignment> environmentVariables;
 	
-	/**
-	 * Stores all the defined variables by id as they are defined
-	 * in the xml file.
-	 */
-	private HashMap<String, VariableDefinition> definedVariablesMap;
+	private ArrayList<TriggerGroup> triggerGroups;
 	
 	/**
 	 * Stores all the environment triggers defined in the xml file. 
@@ -74,8 +69,7 @@ public class InputParser extends DefaultHandler {
 	 */
 	private ArrayList<Trigger> systemTriggers;
 	
-	private String currentStringData;
-	private String currentQName;
+	private TriggerGroup currentTriggerGroup;
 	
 	/**
 	 * @param logger
@@ -111,15 +105,6 @@ public class InputParser extends DefaultHandler {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see org.xml.sax.helpers.DefaultHandler#characters(char[], int, int)
-	 */
-	@Override
-	public void characters(char[] ch, int start, int length)
-			throws SAXException {
-		super.characters(ch, start, length);
-		currentStringData = new String(ch,start,length);
-	}
 
 	/* (non-Javadoc)
 	 * @see org.xml.sax.helpers.DefaultHandler#endElement(java.lang.String, java.lang.String, java.lang.String)
@@ -129,12 +114,10 @@ public class InputParser extends DefaultHandler {
 			throws SAXException {
 		super.endElement(uri, localName, qName);
 		
-		if (SIGNALS.equalsIgnoreCase(qName)) {
-			String[] ids = currentStringData.split(",");
-			// TODO(rax): collect the signal groups
+		if (TRIGGER_GROUP.equalsIgnoreCase(qName)) {
+			triggerGroups.add(currentTriggerGroup);
+			currentTriggerGroup = null;
 		}
-		
-		currentQName = null;
 	}
 
 	/* (non-Javadoc)
@@ -145,9 +128,9 @@ public class InputParser extends DefaultHandler {
 		super.startDocument();
 		systemVariables = new ArrayList<VariableAssignment>();
 		environmentVariables = new ArrayList<VariableAssignment>();
-		definedVariablesMap = new HashMap<String, VariableDefinition>();
 		environmentTriggers = new ArrayList<Trigger>();
 		systemTriggers = new ArrayList<Trigger>();
+		triggerGroups = new ArrayList<TriggerGroup>();
 	}
 
 	private void parseTrigger(String uri, String localName, String qName,
@@ -158,15 +141,37 @@ public class InputParser extends DefaultHandler {
 		String threshold = attributes.getValue("threshold");
 		double value = Double.parseDouble(attributes.getValue("value"));
 		
+		
+		Trigger trigger;
 		if ("system".equalsIgnoreCase(scope)) {
-			Trigger trigger = new Trigger(variable, signal, threshold,
+			trigger = new Trigger(variable, signal, threshold,
 					Scope.SYSTEM_SHARED, value);
+			if (variableFactory.isDefinedInSystem(variable)) {
+				trigger.setVariable(variableFactory.getSystemVar(variable));
+			}
+			if (variableFactory.isDefinedInSystem(threshold)) {
+				trigger.setThreshold(variableFactory.getSystemVar(threshold));
+			}
+			if (variableFactory.isDefinedInSystem(signal)) {
+				trigger.setSignal(variableFactory.getSystemVar(signal));
+			}
 			systemTriggers.add(trigger);
 		} else {
-			Trigger trigger = new Trigger(variable, signal, threshold,
+			trigger = new Trigger(variable, signal, threshold,
 					Scope.ENVIRONMENT_SHARED, value);
+			if (variableFactory.isDefinedInEnvironment(variable)) {
+				trigger.setVariable(variableFactory.getEnvironmentVar(variable));
+			}
+			if (variableFactory.isDefinedInEnvironment(threshold)) {
+				trigger.setThreshold(variableFactory.getEnvironmentVar(threshold));
+			}
+			if (variableFactory.isDefinedInEnvironment(signal)) {
+				trigger.setSignal(variableFactory.getEnvironmentVar(signal));
+			}
 			environmentTriggers.add(trigger);
 		}
+				
+		currentTriggerGroup.add(trigger);
 	}
 	
 	private void parseVariable(String uri, String localName, String qName,
@@ -178,9 +183,6 @@ public class InputParser extends DefaultHandler {
 		
 		VariableDefinition def = variableFactory.define(
 				systemName, environmentName, scope, type);
-		
-		String id = attributes.getValue(VARIABLE_ID);
-		definedVariablesMap.put(id, def);
 		
 		String value = attributes.getValue(VARIABLE_VALUE);
 		if (type == Type.STRING) {
@@ -224,13 +226,12 @@ public class InputParser extends DefaultHandler {
 			Attributes attributes) throws SAXException {
 		super.startElement(uri, localName, qName, attributes);
 		
-		currentStringData = null;
-		currentQName = qName;
-		
 		if (VARIABLE.equalsIgnoreCase(qName)) {
 			parseVariable(uri, localName, qName, attributes);	
 		} else if (TRIGGER.equalsIgnoreCase(qName)) {
 			parseTrigger(uri, localName, qName, attributes);
+		} else if (TRIGGER_GROUP.equalsIgnoreCase(qName)) {
+			currentTriggerGroup = new TriggerGroup();
 		}
 	}
 	
@@ -309,6 +310,13 @@ public class InputParser extends DefaultHandler {
 	 */
 	public ArrayList<Trigger> getSystemTriggers() {
 		return systemTriggers;
+	}
+
+	/**
+	 * @return the triggerGroups
+	 */
+	public ArrayList<TriggerGroup> getTriggerGroups() {
+		return triggerGroups;
 	}	
 	
 }

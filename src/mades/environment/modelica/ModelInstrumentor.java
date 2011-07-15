@@ -45,7 +45,7 @@ public class ModelInstrumentor {
 		StringBuilder builder = new StringBuilder();
 		for (Trigger t: triggers) {
 			builder.append("\tparameter Real " +
-					t.getThreshold() + 
+					t.getThresholdName() + 
 					" = " + t.getValue() + ";\n");
 		}
 		return builder.toString();
@@ -55,7 +55,7 @@ public class ModelInstrumentor {
 		StringBuilder builder = new StringBuilder();
 		for (Trigger t: triggers) {
 			builder.append("\tdiscrete Real " +
-					t.getSignal() + ";\n");
+					t.getSignalName() + ";\n");
 		}
 		return builder.toString();
 	}
@@ -82,9 +82,9 @@ public class ModelInstrumentor {
   	  	     *     FilePrint(trigger_C1_v, pre(trigger_C1_v), time);
   	         * end when;
   	         */
-			String var = t.getVariable();
-			String threshold = t.getThreshold();
-			String signal = t.getSignal();
+			String var = t.getVariableName();
+			String threshold = t.getThresholdName();
+			String signal = t.getSignalName();
 			
 			builder.append("\twhen " + 
 					var + 
