@@ -51,7 +51,7 @@ public class ModelicaWrapper {
 	private static final String SIGNAL_LINE = "^(TRANSnp|TRANSpn):\\t(" + VARIABLE_NAME + ")\\t(" + DOUBLE + ")$";
 	private Pattern signalPattern = Pattern.compile(SIGNAL_LINE);
 	
-	private String environmentFolder;
+	private String environmentPath;
 	private String environmentName;
 	
 	private String initialVariableFileName;
@@ -67,25 +67,23 @@ public class ModelicaWrapper {
 	 * @param environmentPath
 	 * @param environmentName
 	 */
-	protected ModelicaWrapper(String environmentPath, Clock clock,
+	protected ModelicaWrapper(String environmentPath, 
+			String environmentName, Clock clock,
 			VariableFactory variableFactory, ArrayList<Trigger> triggers) {
 		this.variableFactory = variableFactory;
 		this.clock = clock;
 		
-		File folder = new File(environmentPath);
-		
-		environmentFolder = environmentPath ;
-		environmentName = folder.getName();
+		this.environmentPath = environmentPath ;
+		this.environmentName = environmentName;
 		
 		
-		initialVariableFileName = environmentFolder + 
+		initialVariableFileName = environmentPath + 
 				File.separator + environmentName + INIT_FILE_POSTFIX;
-		finalVariableFileName = environmentFolder +
+		finalVariableFileName = environmentPath +
 				File.separator + environmentName + FINAL_FILE_POSTFIX;
 		signalsFileName = environmentPath + File.separator + SIGNAL_FILE_NAME;
 		
-		ModelInstrumentor instrumentor = new ModelInstrumentor(environmentPath + File.separator +
-				"sources" + File.separator + environmentName + ".mo", environmentName);
+		ModelInstrumentor instrumentor = new ModelInstrumentor(environmentPath, environmentName);
 		instrumentor.checkAndUpdateModel(triggers);
 		instrumentor.compile();
 	}
@@ -177,7 +175,7 @@ public class ModelicaWrapper {
 		BufferedReader buf = new BufferedReader(
 				new InputStreamReader(
 						runCommand(RUN_FILE + " " +
-								environmentFolder + " " + environmentName)));
+								environmentPath + " " + environmentName)));
 		
 		String line = "";
 		try {

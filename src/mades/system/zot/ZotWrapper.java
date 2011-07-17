@@ -70,25 +70,18 @@ public class ZotWrapper {
 	private VariableFactory variableFactory;
 	private ArrayList<VariableDefinition> definedVariables;
 	
-	/*
-	private static final String CONSTRAINS_BEGIN = "\\Q(defvar history\\E[\\n]+";
-	private static final String CONSTRAINS_END = "\\Q)\\E[\\n]+\\Q(defvar constraints\\E";
-	private Pattern constrainsBeginPattern = Pattern.compile(CONSTRAINS_BEGIN);
-	private Pattern constrainsEndPattern = Pattern.compile(CONSTRAINS_END);
-	*/
-	
 	/**
 	 * Initializes this instance with the engine and the given system.
 	 * 
-	 * @param engineFileName the engine file name.
-	 * @param systemFileName the system file name.
+	 * @param systempath the system path.
+	 * @param systemName the system file name.
 	 * @param initialVariablesFileName the variables file name.
 	 * @param maxSimulationStep the maximum simulation steps.
 	 * 
 	 * @throws AssertionError if any of the given files do not 
 	 *         exist or if they are a directory.
 	 */
-	public ZotWrapper(String path, int maxSimulationStep,
+	public ZotWrapper(String systemPath, String systemName, 
 			Clock clock, VariableFactory variableFactory, Logger logger) {
 		
 		this.clock = clock;
@@ -96,20 +89,16 @@ public class ZotWrapper {
 		this.logger = logger;
 		
 		// Check project directory
-		checkFolderExistAndIsWritableOrThrow(path, logger);
-		File folder = new File(path);
+		checkFolderExistAndIsWritableOrThrow(systemPath, logger);
 		
-		String projectName = folder.getName();
-		
-		systemFileName = path + File.separator + projectName + SYSTEM;
+		systemFileName = systemPath + File.separator + systemName + SYSTEM;
 		checkFileExistsOrThrow(systemFileName, logger);
 		
-		historyFileName = path + File.separator + projectName + HISTORY;
-		constraintsFileName = path + File.separator + projectName + CONSTRAINTS;
+		historyFileName = systemPath + File.separator + systemName + HISTORY;
+		constraintsFileName = systemPath + File.separator + systemName + CONSTRAINTS;
 		checkFileExistsOrThrow(constraintsFileName, logger);
 		
-		checkAndUpdateEngine(maxSimulationStep);
-		
+		checkAndUpdateEngine(this.clock.getFinalStep());
 	}
 	
 	private void checkAndUpdateEngine(int maxSimulationStep) {
@@ -243,35 +232,7 @@ public class ZotWrapper {
 	 */
 	protected void overrideVariables(SystemMemento memento) {
 		
-		StringBuilder builder;/* = new StringBuilder();
-		BufferedReader br = null;
-		try {
-			br = new BufferedReader(new FileReader(constraintsFileName));
-			String line = null;
-			while ((line = br.readLine()) != null) {
-				builder.append(line + "\n");
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-			throw new AssertionError(e);
-		} finally {
-			try {
-				br.close();
-			} catch (IOException e) {
-				// Fail silently
-			}
-		}
-		
-		String constrains = builder.toString();
-		Matcher matcherBegin = constrainsBeginPattern.matcher(constrains);
-		Matcher matcherEnd = constrainsEndPattern.matcher(constrains);
-		if (!matcherBegin.find() || !matcherEnd.find()) {
-			throw new AssertionError("Constraints file has no constraint");
-		}
-		
-		int start = matcherBegin.end();
-		int end = matcherEnd.start();
-		*/
+		StringBuilder builder;
 		builder = new StringBuilder();
 		builder.append("(defvar history (&&\n");
 		Set<Time> keys = memento.keySet();
@@ -290,9 +251,6 @@ public class ZotWrapper {
 		}
 		builder.append("\n))");
 		
-		/*CharSequence toReplace = constrains.subSequence(start, end);
-		constrains =  constrains.replace(toReplace, builder.toString());
-		*/
 		PrintWriter variableswriter;
 		try {
 			variableswriter = new PrintWriter(

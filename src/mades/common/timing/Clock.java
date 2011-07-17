@@ -79,4 +79,8 @@ public class Clock {
 		return timeStep;
 	}
 	
+	public int getFinalStep() {
+		return (int)Math.floor(finalTime/timeStep);
+	}
+	
 }

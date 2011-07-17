@@ -75,22 +75,24 @@ public class Cosimulator {
 	 */
 	private TreeMultimap<Time, VariableAssignment> sharedVariablesMultimap;
 
-	private String environmentFileName;
+	//private String environmentFileName;
 
-	private String initFileName;
+	//private String initFileName;
 
 	private ArrayList<TriggerGroup> triggerGroups;
 	
 	/**
 	 * Default constructor.
 	 */
-	public Cosimulator(Logger logger, String cosimulationPath) {
+	public Cosimulator(Logger logger) {
 		this.logger = logger;
 		
+		/*
 		File folder = new File(cosimulationPath);
 		
 		environmentFileName = cosimulationPath + File.separator + folder.getName();
 		initFileName = environmentFileName + ".xml";
+		*/
 	}
 	
 	/**
@@ -101,26 +103,25 @@ public class Cosimulator {
 		if (args.length < 0) {
 			path = args[0];
 		} else {
-			path = "./examples/RC";
+			path = "./examples/RC/mades.xml";
 		}
 		Logger logger = Logger.getLogger(Cosimulator.class.getName());
 		logger.setLevel(Level.ALL);
 		logger.info("Starting co-simulation");
 		
-		SystemConnector system = new ZotSystemConnector(path, 30, logger);
-		EnvironmentConnector environment = new ModelicaEnvironmentConnector(path, logger);
-		Cosimulator cosimulator = new Cosimulator(logger, path);
+		SystemConnector system = new ZotSystemConnector(logger);
+		EnvironmentConnector environment = new ModelicaEnvironmentConnector(logger);
+		Cosimulator cosimulator = new Cosimulator(logger);
 		cosimulator.setEnvironment(environment);
 		cosimulator.setSystem(system);
 		
-		double initialSimulationTime = 0;
 		double timeStep = 1;
 		double maxCosimulationTime = 20;
 		int maxCosimulationAttemptsForStep = 3;
 		int maxCosimulationBacktraking = 3;
 		
 		cosimulator.startCosimulation(
-				initialSimulationTime,
+				path,
 				timeStep,
 				maxCosimulationTime,
 				maxCosimulationAttemptsForStep,
@@ -129,22 +130,9 @@ public class Cosimulator {
 		TreeMultimap<Time, VariableAssignment> results = cosimulator.getSharedVariablesMultimap();
 		
 		OutputWriter writer = new OutputWriter(results);
-		writer.writeXmlFile(path + File.separator + "cosimulation.xml");
-		
-		
-		StringBuilder builder = new StringBuilder();
-		builder.append("Simulation output:\n");
-		/*Set<Time> keys = results.keySet();
-		for (Time key: keys) {
-			builder.append("\n" + key.toString() + "\n");
-			Set<VariableAssignment> vars = results.get(key);
-			for(VariableAssignment v: vars) {
-				builder.append(
-					    v.getVariableDefinition().getSystemName() + 
-					    " = " + v.getValue() + "\n");
-			}
-		}*/
-		logger.info(builder.toString());
+		String output = path + File.separator + "madesOutput.xml";
+		writer.writeXmlFile(output);
+		logger.info("Results written on: " + output);
 	}
 	
 	/**
@@ -227,12 +215,13 @@ public class Cosimulator {
 	 *         the maximum number of retry without finding a suitable state.
 	 */
 	public void startCosimulation(
-			double initialSimulationTime,
+			String modelFileName,
 			double timeStep,
 			double maxCosimulationTime,
 			int maxCosimulationAttemptsForStep,
 			int maxCosimulationBacktraking
 			) {
+		double initialSimulationTime = 0;
 		if (simulationStarted) {
 			throw new IllegalStateException("Simulation is already running"); 
 		}
@@ -250,7 +239,7 @@ public class Cosimulator {
 		this.maxCosimulationAttemptsForStep = maxCosimulationAttemptsForStep;
 		this.maxCosimulationBacktraking = maxCosimulationBacktraking;
 		
-		reinitializeSimulation(initialSimulationTime);
+		reinitializeSimulation(modelFileName);
 		
 		
 		simulationStarted = true;
@@ -274,12 +263,11 @@ public class Cosimulator {
 	/**
 	 * Cleans the internal stacks and initializes the first state.
 	 * 
-	 * @param initialSimulationTime
-	 * @param environmentParams
-	 * @param systemParams
+	 * @param modelFileName
 	 */
 	private void reinitializeSimulation(
-			double initialSimulationTime) {
+			String modelFileName
+			) {
 		
 		if (environmentMementoStack != null) {
 			while (!environmentMementoStack.isEmpty()) {
@@ -303,13 +291,17 @@ public class Cosimulator {
 		sharedVariablesMultimap = TreeMultimap.create();
 		
 		InputParser inputParser = new InputParser(logger, clock, variableFactory,
-				initFileName);
+				modelFileName);
 		inputParser.parseDocument();
 		triggerGroups = inputParser.getTriggerGroups();
 	
 		// Add the initial states to the bottom of the stack
 		// The system must be initialized first
-		SystemMemento systemMemento = system.initialize(clock, variableFactory,
+		SystemMemento systemMemento = system.initialize(
+				inputParser.getSystemPath(),
+				inputParser.getSystemName(),
+				
+				clock, variableFactory,
 				inputParser.getSystemMemento());
 		if (systemMemento == null) {
 			String msg = "Unsatisfiable initial configuration: aborting...";
@@ -319,7 +311,10 @@ public class Cosimulator {
 		systemMementoStack.push(systemMemento);
 		storeSharedVariables(systemMemento);
 		
-		EnvironmentMemento environmentMemento = environment.initialize(clock,
+		EnvironmentMemento environmentMemento = environment.initialize(
+				inputParser.getEnvironmentPath(),
+				inputParser.getEnvironmentName(),
+				clock,
 				variableFactory, inputParser.getEnvironmentMemento(),
 				inputParser.getEnvironmentTriggers());
 		
