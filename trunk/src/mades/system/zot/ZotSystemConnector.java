@@ -23,38 +23,24 @@ public class ZotSystemConnector implements SystemConnector {
 	
 	protected SystemMemento systemMemento;
 	
-	private String path;
-	private int maxSimulationStep;
-	
-	public ZotSystemConnector(String path, int maxSimulationStep,
-			Logger logger) {
+	public ZotSystemConnector(Logger logger) {
 		this.logger = logger;
-		
-		this.path = path;
-		this.maxSimulationStep = maxSimulationStep;
 	}
 	
 	/* (non-Javadoc)
 	 * @see mades.system.SystemConnector#initialize(java.util.ArrayList, int)
 	 */
 	@Override
-	public SystemMemento initialize(Clock clock,
+	public SystemMemento initialize(
+			String systemPath, String systemName, 
+			Clock clock,
 			VariableFactory variableFactory, SystemMemento systemMemento) {
 		this.clock = clock;
-		wrapper = new ZotWrapper(path, 
-				maxSimulationStep, clock, variableFactory,
+		
+		wrapper = new ZotWrapper(systemPath, systemName,
+				clock, variableFactory,
 				logger);
 		wrapper.initialize(systemMemento);
-		// TODO(rax) shall we do other initialization steps?
-		/*
-		ArrayList<VariableAssignment> variables = wrapper.parseInit();
-		TreeMultimap<Time, VariableAssignment> variablesMultimap = TreeMultimap.create();
-		for (VariableAssignment v: variables) {
-			variablesMultimap.put(clock.getCurrentTime(), v);
-		}
-		systemMemento = new SystemMemento(variablesMultimap);
-		//systemMemento = wrapper.executeSimulationStep(clock.getCurrentTime(), systemMemento);
-		*/
 		return systemMemento;
 	}
 

@@ -8,10 +8,15 @@
     			<element name="variable" type="Mades:Variable"></element>
     		</sequence>
     		<sequence minOccurs="0" maxOccurs="unbounded">
-    			<element name="triggerGroup" type="Mades:TriggerGroup"></element>
+    			<element name="triggerGroup"
+    				type="Mades:TriggerGroup">
+    			</element>
     		</sequence>
     	</sequence>
-    	<attribute name="name" type="string"></attribute>
+    	<attribute name="systemName" type="string"></attribute>
+    	<attribute name="systemPath" type="string"></attribute>
+        <attribute name="environmentName" type="string"></attribute>
+        <attribute name="environmentPath" type="string"></attribute>
     </complexType>
 
     <complexType name="Variable">

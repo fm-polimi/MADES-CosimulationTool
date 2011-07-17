@@ -7,6 +7,7 @@ import static mades.common.utils.Files.checkFileExistsOrThrow;
 import static mades.common.utils.Runtimes.runCommand;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -17,9 +18,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import mades.common.variables.Scope;
 import mades.common.variables.Trigger;
-import mades.common.variables.VariableAssignment;
 
 /**
  * @author Michele Sama (m.sama@puzzledev.com)
@@ -29,6 +28,8 @@ import mades.common.variables.VariableAssignment;
  */
 public class ModelInstrumentor {
 
+	private static final String MODELICA_SOURCE_FOLDER = "sources";
+
 	private static final String OMC = "omc";
 	
 	private String fileName;
@@ -36,9 +37,10 @@ public class ModelInstrumentor {
 	private Logger logger;
 	private ArrayList<Trigger> triggers;
 	
-	public ModelInstrumentor(String fileName, String modelName) {
-		this.fileName = fileName;
-		this.modelName = modelName;
+	public ModelInstrumentor(String environmentPath, String environmentName) {
+		this.fileName = environmentPath + File.separator +
+				MODELICA_SOURCE_FOLDER + File.separator + environmentName + ".mo";
+		this.modelName = environmentName;
 	} 
 	
 	private String composeThresholdString() {

@@ -3,6 +3,7 @@
  */
 package mades.cosimulation;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,13 +38,22 @@ import com.google.common.collect.TreeMultimap;
  */
 public class InputParser extends DefaultHandler {
 
+	private static final String COSIMULATION_ENVIRONMENT_PATH = "environmentPath";
+	private static final String COSIMULATION_ENVIRONMENT_NAME = "environmentName";
+	private static final String COSIMULATION_SYSTEM_PATH = "systemPath";
+	private static final String COSIMULATION_SYSTEM_NAME = "systemName";
+	private static final String TRIGGER_VALUE = "value";
+	private static final String TRIGGER_THRESHOLD = "threshold";
+	private static final String TRIGGER_SIGNAL = "signal";
+	private static final String TRIGGER_VARIABLE = "variable";
+	private static final String TRIGGER_SCOPE = "scope";
 	private static final String TRIGGER_GROUP = "mades:triggergroup";
 	private static final String VARIABLE_ANNOTATION = "annotation";
-	private static final String VARIABLE_VALUE = "value";
+	private static final String VARIABLE_VALUE = TRIGGER_VALUE;
 	private static final String VARIABLE_TYPE = "type";
-	private static final String VARIABLE_SCOPE = "scope";
-	private static final String VARIABLE_SYSTEM_NAME = "systemName";
-	private static final String VARIABLE_ENVIRONMENT_NAME = "environmentName";
+	private static final String VARIABLE_SCOPE = TRIGGER_SCOPE;
+	private static final String VARIABLE_SYSTEM_NAME = COSIMULATION_SYSTEM_NAME;
+	private static final String VARIABLE_ENVIRONMENT_NAME = COSIMULATION_ENVIRONMENT_NAME;
 	private static final String VARIABLE = "mades:variable";
 	private static final String TRIGGER = "mades:trigger";
 	
@@ -52,6 +62,11 @@ public class InputParser extends DefaultHandler {
 	private Clock clock;
 	private VariableFactory variableFactory;
 
+	private String systemName;
+	private String environmentName;
+	private String systemPath;
+	private String environmentPath;
+	
 	private SystemMemento systemMemento;
 	private ArrayList<VariableAssignment> systemVariables;
 	private EnvironmentMemento environmentMemento;
@@ -133,13 +148,36 @@ public class InputParser extends DefaultHandler {
 		triggerGroups = new ArrayList<TriggerGroup>();
 	}
 
+	private void parseCosimulation(String uri, String localName, String qName,
+			Attributes attributes) {
+		
+		String path = new File(filename).getParent();
+		
+		systemName = attributes.getValue(COSIMULATION_SYSTEM_NAME);
+		try {
+			systemPath = new File(path, attributes.getValue(COSIMULATION_SYSTEM_PATH))
+					.getCanonicalPath();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		environmentName = attributes.getValue(COSIMULATION_ENVIRONMENT_NAME);
+		try {
+			environmentPath = new File(path, attributes.getValue(COSIMULATION_ENVIRONMENT_PATH))
+					.getCanonicalPath();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	private void parseTrigger(String uri, String localName, String qName,
 			Attributes attributes) {
-		String scope = attributes.getValue("scope");
-		String variable = attributes.getValue("variable");
-		String signal = attributes.getValue("signal");
-		String threshold = attributes.getValue("threshold");
-		double value = Double.parseDouble(attributes.getValue("value"));
+		String scope = attributes.getValue(TRIGGER_SCOPE);
+		String variable = attributes.getValue(TRIGGER_VARIABLE);
+		String signal = attributes.getValue(TRIGGER_SIGNAL);
+		String threshold = attributes.getValue(TRIGGER_THRESHOLD);
+		double value = Double.parseDouble(attributes.getValue(TRIGGER_VALUE));
 		
 		
 		Trigger trigger;
@@ -225,8 +263,9 @@ public class InputParser extends DefaultHandler {
 	public void startElement(String uri, String localName, String qName,
 			Attributes attributes) throws SAXException {
 		super.startElement(uri, localName, qName, attributes);
-		
-		if (VARIABLE.equalsIgnoreCase(qName)) {
+		if ("Mades:cosimulation".equalsIgnoreCase(qName)) {
+			parseCosimulation(uri, localName, qName, attributes);
+		} else if (VARIABLE.equalsIgnoreCase(qName)) {
 			parseVariable(uri, localName, qName, attributes);	
 		} else if (TRIGGER.equalsIgnoreCase(qName)) {
 			parseTrigger(uri, localName, qName, attributes);
@@ -317,6 +356,34 @@ public class InputParser extends DefaultHandler {
 	 */
 	public ArrayList<TriggerGroup> getTriggerGroups() {
 		return triggerGroups;
+	}
+
+	/**
+	 * @return the systemName
+	 */
+	public String getSystemName() {
+		return systemName;
+	}
+
+	/**
+	 * @return the environmentName
+	 */
+	public String getEnvironmentName() {
+		return environmentName;
+	}
+
+	/**
+	 * @return the systemPath
+	 */
+	public String getSystemPath() {
+		return systemPath;
+	}
+
+	/**
+	 * @return the environmentPath
+	 */
+	public String getEnvironmentPath() {
+		return environmentPath;
 	}	
 	
 }

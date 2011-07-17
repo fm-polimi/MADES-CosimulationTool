@@ -26,15 +26,20 @@ public interface EnvironmentConnector {
 	 * parameters given by the Cosimulator. This initialization has to be done
 	 * once at the beginning of the simulation.
 	 * 
-	 * @param clock the timer for this co-simulation.
+	 * @param environmentPath the environment path
+	 * @param the {@link EnvironmentMemento} model's name
+	 * @param clock the timer for this co-simulation
 	 * @param variableFactory the variable factory
-	 * @param environmentMemento a memento representing the initial state.
+	 * @param environmentMemento a memento representing the initial state
 	 * @param triggers an array containing all the triggers which should be 
 	 *         added to the environment.
 	 * @return an instance representing the configuration of
 	 *         this connector at the initial state.
 	 */
-	public EnvironmentMemento initialize(Clock clock, VariableFactory variableFactory,
+	public EnvironmentMemento initialize(
+			String environmentPath,
+			String environmentName,
+			Clock clock, VariableFactory variableFactory,
 			EnvironmentMemento environmentMemento, ArrayList<Trigger> triggers);
 	
 	/**

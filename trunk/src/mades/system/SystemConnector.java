@@ -23,13 +23,16 @@ public interface SystemConnector {
 	 * parameters given by the Cosimulator. This initialization has to be done
 	 * once and only once.
 	 * 
+	 * @param systemPath the folder containing systems files
+	 * @param systemName the system name
 	 * @param clock the timer for this co-simulation.
 	 * @param variableFactory the variable factory.
 	 * @param systemMemento a memento representing the initial state.
 	 * @return an instance representing the configuration of
 	 *         this connector at the initial state.
 	 */
-	public SystemMemento initialize(Clock clock, VariableFactory variableFactory,
+	public SystemMemento initialize(String systemPath, String systemName, 
+			Clock clock, VariableFactory variableFactory,
 			SystemMemento systemMemento);
 	
 	/**
