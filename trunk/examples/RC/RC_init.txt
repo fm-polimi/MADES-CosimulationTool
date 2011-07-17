@@ -14,12 +14,12 @@
 0 // n bool variables
 0 // n string-parameters
 0 // n string variables
-5.70227644015 //default //COND1
-3.30553605985 //default //der(COND1)
-3.30553605985 //default //der(C1.v)
-3.30553605985 //default //R1.v
-1.0926568643 //default //R1.LossPower
-0.330553605985 //default //C1.p.i
+0.0607849455585 //default //COND1
+-0.0607849455585 //default //der(COND1)
+-0.0607849455585 //default //der(C1.v)
+-0.0607849455585 //default //R1.v
+3.69480960655E-4 //default //R1.LossPower
+-0.00607849455585 //default //C1.p.i
 0.0 //default //G.p.i
 0.0 //default //s
 0.0 //C1.n.v
@@ -32,7 +32,7 @@
 0.0 //R1.alpha
 0.1 //C1.C
 6.0 //SOGLIA
-9.00390625 //REACT1
+0.0 //REACT1
 10.0 //R
 0.1 //C
 0.0 //R1.useHeatPort

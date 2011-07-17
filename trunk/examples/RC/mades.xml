@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Mades:cosimulation
-    name="RC"
+    systemName="RC"
+    systemPath="."
+    environmentName="RC"
+    environmentPath="."
     xmlns:Mades="http://www.example.org/MadesInput"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.example.org/MadesInput ../../src/mades/cosimulation/MadesInput.xsd ">

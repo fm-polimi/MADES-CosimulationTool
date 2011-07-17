@@ -1,4 +1,8 @@
 model RC
+	/**signals begin**/
+	discrete Real s;
+	/**signals end**/
+
 /**signals begin**/
 	discrete Real s;
 	/**signals end**/
