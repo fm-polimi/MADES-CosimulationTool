@@ -88,10 +88,12 @@ public class MadesMainForm extends javax.swing.JFrame
         selectVariablesComboBox = new javax.swing.JComboBox();
         chartPanel = new javax.swing.JPanel();
         stopJButton = new javax.swing.JButton();
+        progressBar = new javax.swing.JProgressBar();
 
         projetFileChooser.setToolTipText("Select the project file.");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("MADES Co-simulation tool");
 
         jLabel1.setFont(new java.awt.Font("Ubuntu", 1, 36));
         jLabel1.setForeground(new java.awt.Color(254, 6, 6));
@@ -243,7 +245,7 @@ public class MadesMainForm extends javax.swing.JFrame
         );
         chartPanelLayout.setVerticalGroup(
             chartPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 209, Short.MAX_VALUE)
+            .addGap(0, 203, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
@@ -293,6 +295,8 @@ public class MadesMainForm extends javax.swing.JFrame
                         .addComponent(jLabel2))
                     .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 726, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(progressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 416, Short.MAX_VALUE)
+                        .addGap(18, 18, 18)
                         .addComponent(startJButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(stopJButton)))
@@ -314,10 +318,12 @@ public class MadesMainForm extends javax.swing.JFrame
                 .addGap(20, 20, 20)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(12, 12, 12)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(stopJButton)
-                    .addComponent(startJButton))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(stopJButton)
+                        .addComponent(startJButton))
+                    .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
@@ -373,6 +379,7 @@ public class MadesMainForm extends javax.swing.JFrame
         stopJButton.setEnabled(true);
         selectVariablesComboBox.removeAllItems();
         selectVariablesComboBox.setEnabled(false);
+        progressBar.setValue(0);
  
         String model;
         double timeStep;
@@ -475,6 +482,7 @@ public class MadesMainForm extends javax.swing.JFrame
     private javax.swing.JPanel jPanel5;
     private javax.swing.JSlider maxAttemptJSlider;
     private javax.swing.JSlider maxBacktrakingJSlider;
+    private javax.swing.JProgressBar progressBar;
     private javax.swing.JTextField projectTextField;
     private javax.swing.JFileChooser projetFileChooser;
     private javax.swing.JButton searchButton;
