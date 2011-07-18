@@ -10,9 +10,20 @@
  */
 package mades.cosimulation.gui;
 
+import com.google.common.collect.TreeMultimap;
 import java.io.File;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import mades.common.timing.Time;
+import mades.common.variables.VariableAssignment;
+import mades.cosimulation.Cosimulator;
+import mades.cosimulation.OutputWriter;
+import mades.environment.EnvironmentConnector;
+import mades.environment.modelica.ModelicaEnvironmentConnector;
+import mades.system.SystemConnector;
+import mades.system.zot.ZotSystemConnector;
 
 /**
  *
@@ -40,21 +51,22 @@ public class MadesMainForm extends javax.swing.JFrame {
         projectTextField = new javax.swing.JTextField();
         searchButton = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
-        jTextField2 = new javax.swing.JTextField();
+        timeStepJTextField = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        jTextField3 = new javax.swing.JTextField();
+        stopTimeJTextField = new javax.swing.JTextField();
         jPanel2 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
-        jSlider1 = new javax.swing.JSlider();
+        maxAttemptJSlider = new javax.swing.JSlider();
         jPanel4 = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
-        jSlider3 = new javax.swing.JSlider();
+        maxBacktrakingJSlider = new javax.swing.JSlider();
         jLabel3 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        startJButton = new javax.swing.JButton();
         jPanel5 = new javax.swing.JPanel();
         selectVariablesComboBox = new javax.swing.JComboBox();
         jPanel6 = new javax.swing.JPanel();
+        stopJButton = new javax.swing.JButton();
 
         projetFileChooser.setToolTipText("Select the project file.");
 
@@ -77,27 +89,27 @@ public class MadesMainForm extends javax.swing.JFrame {
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Co-simulation parameters"));
 
-        jTextField2.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
-        jTextField2.setText("1");
-        jTextField2.setToolTipText("The discrete co-simulation time step.");
+        timeStepJTextField.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
+        timeStepJTextField.setText("1");
+        timeStepJTextField.setToolTipText("The discrete co-simulation time step.");
 
         jLabel4.setText(" Time step (s)");
 
         jLabel5.setText(" Stop time (s)");
 
-        jTextField3.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
-        jTextField3.setText("20");
-        jTextField3.setToolTipText("The time after which the simulation will stop.");
+        stopTimeJTextField.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
+        stopTimeJTextField.setText("20");
+        stopTimeJTextField.setToolTipText("The time after which the simulation will stop.");
 
         jLabel6.setText("Max attempts for step");
 
-        jSlider1.setMajorTickSpacing(2);
-        jSlider1.setMaximum(5);
-        jSlider1.setMinimum(1);
-        jSlider1.setMinorTickSpacing(1);
-        jSlider1.setPaintLabels(true);
-        jSlider1.setPaintTicks(true);
-        jSlider1.setValue(3);
+        maxAttemptJSlider.setMajorTickSpacing(2);
+        maxAttemptJSlider.setMaximum(5);
+        maxAttemptJSlider.setMinimum(1);
+        maxAttemptJSlider.setMinorTickSpacing(1);
+        maxAttemptJSlider.setPaintLabels(true);
+        maxAttemptJSlider.setPaintTicks(true);
+        maxAttemptJSlider.setValue(3);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -106,7 +118,7 @@ public class MadesMainForm extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jSlider1, javax.swing.GroupLayout.DEFAULT_SIZE, 154, Short.MAX_VALUE)
+                    .addComponent(maxAttemptJSlider, javax.swing.GroupLayout.DEFAULT_SIZE, 154, Short.MAX_VALUE)
                     .addComponent(jLabel6))
                 .addContainerGap())
         );
@@ -115,19 +127,19 @@ public class MadesMainForm extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jSlider1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(maxAttemptJSlider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
         jLabel8.setText("Max backtraking depth");
 
-        jSlider3.setMajorTickSpacing(2);
-        jSlider3.setMaximum(5);
-        jSlider3.setMinimum(1);
-        jSlider3.setMinorTickSpacing(1);
-        jSlider3.setPaintLabels(true);
-        jSlider3.setPaintTicks(true);
-        jSlider3.setValue(3);
+        maxBacktrakingJSlider.setMajorTickSpacing(2);
+        maxBacktrakingJSlider.setMaximum(5);
+        maxBacktrakingJSlider.setMinimum(1);
+        maxBacktrakingJSlider.setMinorTickSpacing(1);
+        maxBacktrakingJSlider.setPaintLabels(true);
+        maxBacktrakingJSlider.setPaintTicks(true);
+        maxBacktrakingJSlider.setValue(3);
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -136,7 +148,7 @@ public class MadesMainForm extends javax.swing.JFrame {
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jSlider3, javax.swing.GroupLayout.DEFAULT_SIZE, 159, Short.MAX_VALUE)
+                    .addComponent(maxBacktrakingJSlider, javax.swing.GroupLayout.DEFAULT_SIZE, 159, Short.MAX_VALUE)
                     .addComponent(jLabel8))
                 .addContainerGap())
         );
@@ -145,7 +157,7 @@ public class MadesMainForm extends javax.swing.JFrame {
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jSlider3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(maxBacktrakingJSlider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
@@ -160,8 +172,8 @@ public class MadesMainForm extends javax.swing.JFrame {
                     .addComponent(jLabel4))
                 .addGap(81, 81, 81)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jTextField3)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, 127, Short.MAX_VALUE))
+                    .addComponent(stopTimeJTextField)
+                    .addComponent(timeStepJTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 127, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -176,20 +188,24 @@ public class MadesMainForm extends javax.swing.JFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(timeStepJTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel4))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel5)
-                            .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(stopTimeJTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jLabel3.setText("Select the project. The project must be a \"mades.xml\" configuration file. ");
 
-        jButton1.setText("Start co-simulation");
-        jButton1.setEnabled(false);
+        startJButton.setText("Start co-simulation");
+        startJButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                startJButtonActionPerformed(evt);
+            }
+        });
 
         jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder("Output"));
 
@@ -228,25 +244,36 @@ public class MadesMainForm extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
+        stopJButton.setEnabled(false);
+        stopJButton.setLabel("Stop Co-simulation");
+        stopJButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                stopJButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jPanel5, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(projectTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 660, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(searchButton))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                    .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel2))
-                    .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 726, Short.MAX_VALUE)
-                    .addComponent(jButton1))
+                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 726, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(startJButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(stopJButton)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -264,9 +291,11 @@ public class MadesMainForm extends javax.swing.JFrame {
                     .addComponent(projectTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(20, 20, 20)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(12, 12, 12)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(stopJButton)
+                    .addComponent(startJButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
@@ -296,6 +325,94 @@ public class MadesMainForm extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_searchButtonActionPerformed
 
+    private void stopJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stopJButtonActionPerformed
+        if (cosimulator!= null) {
+            cosimulator.stopCosimulation();
+            cosimulator = null;
+        }
+        stopJButton.setEnabled(false);
+        startJButton.setEnabled(true);
+    }//GEN-LAST:event_stopJButtonActionPerformed
+
+    private void startJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startJButtonActionPerformed
+        if (cosimulator == null) {
+            runCosimulation();
+        }
+    }//GEN-LAST:event_startJButtonActionPerformed
+
+    private void runCosimulation() {
+        startJButton.setEnabled(false);
+        stopJButton.setEnabled(true);
+ 
+        
+        String model;
+        double timeStep;
+        double stopTime;
+        int maxAttemptsInStep;
+        int maxBacktrakingDepth;
+
+        
+        try {
+            Logger logger = Logger.getLogger(Cosimulator.class.getName());
+		logger.setLevel(Level.ALL);
+		logger.info("Starting co-simulation");
+		
+            SystemConnector system = new ZotSystemConnector(logger);
+            EnvironmentConnector environment = 
+                        new ModelicaEnvironmentConnector(logger);
+            cosimulator = new Cosimulator(logger);
+            cosimulator.setEnvironment(environment);
+            cosimulator.setSystem(system);
+		
+            
+            model = projectTextField.getText();
+            timeStep = Double.parseDouble(timeStepJTextField.getText());
+            stopTime = Double.parseDouble(stopTimeJTextField.getText());
+            maxAttemptsInStep = maxAttemptJSlider.getValue();
+            maxBacktrakingDepth = maxBacktrakingJSlider.getValue();
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this,
+                    "Co-simulation initialization failed due to the " +
+                    "following error: " + ex.getMessage(), 
+                    "Co-simulation initialization failed.",
+                    JOptionPane.ERROR_MESSAGE);
+            
+            stopJButton.setEnabled(false);
+            startJButton.setEnabled(true);
+            return;
+        }
+            
+        try {    
+            cosimulator.startCosimulation(model,
+                        timeStep, stopTime,
+                        maxAttemptsInStep,
+                        maxBacktrakingDepth);
+            
+            TreeMultimap<Time, VariableAssignment> results =
+                        cosimulator.getSharedVariablesMultimap();
+            
+            OutputWriter writer = new OutputWriter(results);
+            File f = new File(model);
+            String output = f.getParent() + File.separator + "madesOutput.xml";
+            writer.writeXmlFile(output);
+            
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this,
+                    "Co-simulation aborted failed due to the " +
+                    "following error: " + ex.getMessage(), 
+                    "Co-simulation aborted.",
+                    JOptionPane.ERROR_MESSAGE);
+            stopJButton.setEnabled(false);
+            startJButton.setEnabled(true);
+            return;
+        }
+        
+        startJButton.setEnabled(true);
+        stopJButton.setEnabled(false);
+        
+    }
+    
+    
     /**
      * @param args the command line arguments
      */
@@ -308,7 +425,6 @@ public class MadesMainForm extends javax.swing.JFrame {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -321,13 +437,18 @@ public class MadesMainForm extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
-    private javax.swing.JSlider jSlider1;
-    private javax.swing.JSlider jSlider3;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
+    private javax.swing.JSlider maxAttemptJSlider;
+    private javax.swing.JSlider maxBacktrakingJSlider;
     private javax.swing.JTextField projectTextField;
     private javax.swing.JFileChooser projetFileChooser;
     private javax.swing.JButton searchButton;
     private javax.swing.JComboBox selectVariablesComboBox;
+    private javax.swing.JButton startJButton;
+    private javax.swing.JButton stopJButton;
+    private javax.swing.JTextField stopTimeJTextField;
+    private javax.swing.JTextField timeStepJTextField;
     // End of variables declaration//GEN-END:variables
+
+
+    private Cosimulator cosimulator;
 }

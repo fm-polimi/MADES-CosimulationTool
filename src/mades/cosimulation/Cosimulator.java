@@ -6,7 +6,6 @@ package mades.cosimulation;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Set;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -39,7 +38,8 @@ public class Cosimulator {
 
 	private Logger logger;
 	
-	private boolean simulationStarted;
+	private boolean simulationStarted = false;
+        private boolean cosimulationStopped = false;
 	
 	private Clock clock;
 	private VariableFactory variableFactory;
@@ -86,15 +86,8 @@ public class Cosimulator {
 	 */
 	public Cosimulator(Logger logger) {
 		this.logger = logger;
-		
-		/*
-		File folder = new File(cosimulationPath);
-		
-		environmentFileName = cosimulationPath + File.separator + folder.getName();
-		initFileName = environmentFileName + ".xml";
-		*/
 	}
-	
+        
 	/**
 	 * @param args
 	 */
@@ -110,7 +103,8 @@ public class Cosimulator {
 		logger.info("Starting co-simulation");
 		
 		SystemConnector system = new ZotSystemConnector(logger);
-		EnvironmentConnector environment = new ModelicaEnvironmentConnector(logger);
+		EnvironmentConnector environment = 
+                        new ModelicaEnvironmentConnector(logger);
 		Cosimulator cosimulator = new Cosimulator(logger);
 		cosimulator.setEnvironment(environment);
 		cosimulator.setSystem(system);
@@ -127,7 +121,8 @@ public class Cosimulator {
 				maxCosimulationAttemptsForStep,
 				maxCosimulationBacktraking);
 		
-		TreeMultimap<Time, VariableAssignment> results = cosimulator.getSharedVariablesMultimap();
+		TreeMultimap<Time, VariableAssignment> results =
+                        cosimulator.getSharedVariablesMultimap();
 		
 		OutputWriter writer = new OutputWriter(results);
 		String output = path + File.separator + "madesOutput.xml";
@@ -145,7 +140,7 @@ public class Cosimulator {
 	}
 
 	/**
-	 * Sets a new {@link EnvironmentConnector}.
+	 * Sets a new {@link EnvironmentConnector}
 	 * 
 	 * @param environment the environment to set.
 	 * @throws IllegalStateException if the simulation is running.
@@ -153,8 +148,8 @@ public class Cosimulator {
 	public void setEnvironment(EnvironmentConnector environment) {
 		if (simulationStarted) {
 			throw new IllegalStateException(
-					"Cannot set a new environment connector while the " +
-					"simulation is running.");
+				"Cannot set a new environment connector " +
+                                "while the simulation is running.");
 		}
 		this.environment = environment;
 		logger.info("New environment set.");
@@ -178,8 +173,8 @@ public class Cosimulator {
 	public void setSystem(SystemConnector system) {
 		if (simulationStarted) {
 			throw new IllegalStateException(
-					"Cannot set a new system connector while the " +
-					"simulation is running.");
+				"Cannot set a new system connector while the " +
+				"simulation is running.");
 		}
 		this.system = system;
 		logger.info("New system set.");
@@ -243,22 +238,35 @@ public class Cosimulator {
 		
 		
 		simulationStarted = true;
-		logger.info("Starting simulation at time: " + initialSimulationTime);
+                cosimulationStopped = false;
+		logger.info("Starting simulation at time: " +
+                        initialSimulationTime);
 		
 		try {
 			// Runs the co-simulation
-			while(!clock.hasReachCosimulationEnd()) {
-				performCosimulationStep();
+			while(!clock.hasReachCosimulationEnd() &&
+                                !cosimulationStopped) {
+                            performCosimulationStep();
 			}
-			logger.info("Simulation ended at time: " + clock.getCurrentTime().getSimulationTime());
+			logger.info("Simulation ended at time: " +
+                                clock.getCurrentTime().getSimulationTime());
 		}  catch (Error err) {
-			logger.severe("Simulation ended with error: " + err.getMessage() + " at time: " + clock.getCurrentTime().getSimulationTime());
+			logger.severe("Simulation ended with error: " +
+                                err.getMessage() + " at time: " + 
+                                clock.getCurrentTime().getSimulationTime());
 			throw err;
 		} finally {
 			simulationStarted = false;
+                        cosimulationStopped = true;
 		}
 	}
 	
+        
+        public void stopCosimulation() {
+            logger.info("Simulation stopped by user.");
+            cosimulationStopped = true;
+        }
+        
 	
 	/**
 	 * Cleans the internal stacks and initializes the first state.
@@ -290,8 +298,8 @@ public class Cosimulator {
 		
 		sharedVariablesMultimap = TreeMultimap.create();
 		
-		InputParser inputParser = new InputParser(logger, clock, variableFactory,
-				modelFileName);
+		InputParser inputParser = new InputParser(logger, clock, 
+                        variableFactory, modelFileName);
 		inputParser.parseDocument();
 		triggerGroups = inputParser.getTriggerGroups();
 	

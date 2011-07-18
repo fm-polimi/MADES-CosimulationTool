@@ -29,9 +29,9 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="1" attributes="0">
+          <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="1" attributes="0">
+              <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="jPanel5" alignment="0" max="32767" attributes="0"/>
                   <Component id="jPanel1" alignment="0" max="32767" attributes="0"/>
                   <Group type="102" alignment="1" attributes="0">
@@ -45,7 +45,11 @@
                       <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Component id="jLabel3" alignment="0" pref="726" max="32767" attributes="0"/>
-                  <Component id="jButton1" alignment="1" min="-2" max="-2" attributes="0"/>
+                  <Group type="102" alignment="1" attributes="0">
+                      <Component id="startJButton" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="stopJButton" min="-2" max="-2" attributes="0"/>
+                  </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -68,9 +72,12 @@
               </Group>
               <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
               <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="stopJButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="startJButton" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="jButton1" min="-2" max="-2" attributes="0"/>
-              <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Component id="jPanel5" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -127,8 +134,8 @@
                   </Group>
                   <EmptySpace min="-2" pref="81" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                      <Component id="jTextField3" max="32767" attributes="1"/>
-                      <Component id="jTextField2" alignment="0" pref="127" max="32767" attributes="1"/>
+                      <Component id="stopTimeJTextField" max="32767" attributes="1"/>
+                      <Component id="timeStepJTextField" alignment="0" pref="127" max="32767" attributes="1"/>
                   </Group>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                   <Component id="jPanel2" min="-2" max="-2" attributes="0"/>
@@ -146,13 +153,13 @@
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="jTextField2" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="timeStepJTextField" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="jLabel4" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="jLabel5" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="jTextField3" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="stopTimeJTextField" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                       <Component id="jPanel2" alignment="0" min="-2" pref="103" max="-2" attributes="0"/>
@@ -163,7 +170,7 @@
         </DimensionLayout>
       </Layout>
       <SubComponents>
-        <Component class="javax.swing.JTextField" name="jTextField2">
+        <Component class="javax.swing.JTextField" name="timeStepJTextField">
           <Properties>
             <Property name="horizontalAlignment" type="int" value="11"/>
             <Property name="text" type="java.lang.String" value="1"/>
@@ -180,7 +187,7 @@
             <Property name="text" type="java.lang.String" value=" Stop time (s)"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JTextField" name="jTextField3">
+        <Component class="javax.swing.JTextField" name="stopTimeJTextField">
           <Properties>
             <Property name="horizontalAlignment" type="int" value="11"/>
             <Property name="text" type="java.lang.String" value="20"/>
@@ -195,7 +202,7 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jSlider1" alignment="0" pref="154" max="32767" attributes="0"/>
+                          <Component id="maxAttemptJSlider" alignment="0" pref="154" max="32767" attributes="0"/>
                           <Component id="jLabel6" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
@@ -207,7 +214,7 @@
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="jLabel6" min="-2" pref="40" max="-2" attributes="0"/>
                       <EmptySpace max="32767" attributes="0"/>
-                      <Component id="jSlider1" min="-2" max="-2" attributes="0"/>
+                      <Component id="maxAttemptJSlider" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -219,7 +226,7 @@
                 <Property name="text" type="java.lang.String" value="Max attempts for step"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JSlider" name="jSlider1">
+            <Component class="javax.swing.JSlider" name="maxAttemptJSlider">
               <Properties>
                 <Property name="majorTickSpacing" type="int" value="2"/>
                 <Property name="maximum" type="int" value="5"/>
@@ -240,7 +247,7 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jSlider3" alignment="0" pref="159" max="32767" attributes="0"/>
+                          <Component id="maxBacktrakingJSlider" alignment="0" pref="159" max="32767" attributes="0"/>
                           <Component id="jLabel8" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
@@ -252,7 +259,7 @@
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="jLabel8" min="-2" pref="40" max="-2" attributes="0"/>
                       <EmptySpace max="32767" attributes="0"/>
-                      <Component id="jSlider3" min="-2" max="-2" attributes="0"/>
+                      <Component id="maxBacktrakingJSlider" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -264,7 +271,7 @@
                 <Property name="text" type="java.lang.String" value="Max backtraking depth"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JSlider" name="jSlider3">
+            <Component class="javax.swing.JSlider" name="maxBacktrakingJSlider">
               <Properties>
                 <Property name="majorTickSpacing" type="int" value="2"/>
                 <Property name="maximum" type="int" value="5"/>
@@ -284,11 +291,13 @@
         <Property name="text" type="java.lang.String" value="Select the project. The project must be a &quot;mades.xml&quot; configuration file. "/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JButton" name="jButton1">
+    <Component class="javax.swing.JButton" name="startJButton">
       <Properties>
         <Property name="text" type="java.lang.String" value="Start co-simulation"/>
-        <Property name="enabled" type="boolean" value="false"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="startJButtonActionPerformed"/>
+      </Events>
     </Component>
     <Container class="javax.swing.JPanel" name="jPanel5">
       <Properties>
@@ -354,5 +363,14 @@
         </Container>
       </SubComponents>
     </Container>
+    <Component class="javax.swing.JButton" name="stopJButton">
+      <Properties>
+        <Property name="enabled" type="boolean" value="false"/>
+        <Property name="label" type="java.lang.String" value="Stop Co-simulation"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="stopJButtonActionPerformed"/>
+      </Events>
+    </Component>
   </SubComponents>
 </Form>
