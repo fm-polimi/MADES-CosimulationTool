@@ -10,13 +10,14 @@
  */
 package mades.cosimulation.gui;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import mades.common.variables.Scope;
 import mades.common.variables.VariableDefinition;
 import mades.cosimulation.Cosimulator;
 import mades.cosimulation.OutputWriter;
@@ -29,7 +30,8 @@ import mades.system.zot.ZotSystemConnector;
  *
  * @author rax
  */
-public class MadesMainForm extends javax.swing.JFrame {
+public class MadesMainForm extends javax.swing.JFrame
+        implements ActionListener {
 
     /** Creates new form MadesMainForm */
     public MadesMainForm() {
@@ -210,6 +212,7 @@ public class MadesMainForm extends javax.swing.JFrame {
         jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder("Output"));
 
         selectVariablesComboBox.setEnabled(false);
+        selectVariables.ComboBox.addActionListener(this);
 
         jPanel6.setBackground(new java.awt.Color(253, 251, 251));
 
@@ -465,4 +468,12 @@ public class MadesMainForm extends javax.swing.JFrame {
 
 
     private Cosimulator cosimulator;
+    private OutputWriter outputWriter;
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        VariableDefinition def =
+                (VariableDefinition)selectVariablesComboBox.getSelectedItem();
+        DataSource dataSource = outputWriter.getDataSource(def);
+    }
 }
