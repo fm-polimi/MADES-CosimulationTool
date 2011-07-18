@@ -15,6 +15,7 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.text.DateFormat;
 import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,6 +30,8 @@ import de.erichseifert.gral.data.filters.Filter.Mode;
 import de.erichseifert.gral.data.filters.Kernel;
 import de.erichseifert.gral.data.filters.KernelUtils;
 import de.erichseifert.gral.plots.XYPlot;
+import de.erichseifert.gral.plots.axes.Axis;
+import de.erichseifert.gral.plots.axes.AxisRenderer;
 import de.erichseifert.gral.plots.lines.DefaultLineRenderer2D;
 import de.erichseifert.gral.plots.lines.LineRenderer;
 import de.erichseifert.gral.ui.DrawablePanel;
@@ -231,7 +234,6 @@ public class MadesMainForm extends javax.swing.JFrame
         selectVariablesComboBox.addActionListener(this);
 
         chartPanel.setBackground(new java.awt.Color(253, 251, 251));
-        chartPanel.setLayout(new BorderLayout());
 
         javax.swing.GroupLayout chartPanelLayout = new javax.swing.GroupLayout(chartPanel);
         chartPanel.setLayout(chartPanelLayout);
@@ -504,18 +506,19 @@ public class MadesMainForm extends javax.swing.JFrame
         //Kernel kernel = KernelUtils.getUniform(30, 15, 1.0).normalize();
         //DataSource filtered = new Convolution(data, kernel, Mode.REPEAT, 1);
         XYPlot plot = new XYPlot(data);//, filtered);
-
+        
         //plot.setPointRenderer(filtered, null);
         DefaultLineRenderer2D lineRenderer = new DefaultLineRenderer2D();
         lineRenderer.setSetting(LineRenderer.COLOR, Color.BLUE);
         //plot.setLineRenderer(filtered, lineRenderer);
-        plot.setLineRenderer(dataSource, lineRenderer);
+        plot.setLineRenderer(data, lineRenderer);
         plot.setInsets(new Insets2D.Double(20.0, 50.0, 40.0, 20.0));
         if (chart != null) {
         	chartPanel.remove(chart);
         }
         chart = new InteractivePanel(plot); 
-        chartPanel.add(chart, BorderLayout.CENTER);
+        chart.setSize(chartPanel.getSize());
+        chartPanel.add(chart);
         chartPanel.repaint();
     }
 }
