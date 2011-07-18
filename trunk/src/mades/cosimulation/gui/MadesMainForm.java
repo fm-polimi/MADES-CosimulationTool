@@ -410,7 +410,7 @@ public class MadesMainForm extends javax.swing.JFrame {
                 }
             }
             
-        } catch (Exception ex) {
+        } catch (Error ex) {
             JOptionPane.showMessageDialog(this,
                     "Co-simulation aborted failed due to the " +
                     "following error: " + ex.getMessage(), 
