@@ -10,14 +10,14 @@
  */
 package mades.cosimulation.gui;
 
-import com.google.common.collect.TreeMultimap;
 import java.io.File;
+import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import mades.common.timing.Time;
-import mades.common.variables.VariableAssignment;
+import mades.common.variables.Scope;
+import mades.common.variables.VariableDefinition;
 import mades.cosimulation.Cosimulator;
 import mades.cosimulation.OutputWriter;
 import mades.environment.EnvironmentConnector;
@@ -336,15 +336,22 @@ public class MadesMainForm extends javax.swing.JFrame {
 
     private void startJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startJButtonActionPerformed
         if (cosimulator == null) {
-            runCosimulation();
+            Thread th = new Thread(){
+                @Override
+                public void run() {
+                    runCosimulation();
+                }
+            };
+            th.start();
         }
     }//GEN-LAST:event_startJButtonActionPerformed
 
     private void runCosimulation() {
         startJButton.setEnabled(false);
         stopJButton.setEnabled(true);
+        selectVariablesComboBox.removeAllItems();
+        selectVariablesComboBox.setEnabled(false);
  
-        
         String model;
         double timeStep;
         double stopTime;
@@ -393,6 +400,16 @@ public class MadesMainForm extends javax.swing.JFrame {
             String output = f.getParent() + File.separator + "madesOutput.xml";
             writer.writeXmlFile(output);
             
+            
+            Collection<VariableDefinition> variables = writer.getVariables();
+            for (VariableDefinition def: variables) {
+                if (def.getScope() == Scope.ENVIRONMENT_SHARED) {
+                    selectVariablesComboBox.addItem(def.getEnvironmentName());
+                } else {
+                    selectVariablesComboBox.addItem(def.getSystemName());
+                }
+            }
+            
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this,
                     "Co-simulation aborted failed due to the " +
@@ -406,6 +423,7 @@ public class MadesMainForm extends javax.swing.JFrame {
         
         startJButton.setEnabled(true);
         stopJButton.setEnabled(false);
+        selectVariablesComboBox.setEnabled(true);
         
     }
     
