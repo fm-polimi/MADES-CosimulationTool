@@ -5,6 +5,7 @@ package mades.cosimulation;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Set;
 
 import javax.xml.stream.XMLOutputFactory;
@@ -13,6 +14,8 @@ import javax.xml.stream.XMLStreamWriter;
 
 import mades.common.timing.Time;
 import mades.common.variables.VariableAssignment;
+import mades.common.variables.VariableDefinition;
+import mades.common.variables.VariableFactory;
 
 import com.google.common.collect.TreeMultimap;
 
@@ -22,15 +25,18 @@ import com.google.common.collect.TreeMultimap;
  */
 public class OutputWriter {
 	private TreeMultimap<Time, VariableAssignment> sharedVariablesMultimap;
+	private ArrayList<VariableDefinition> variables;
 
 	/**
 	 * @param sharedVariablesMultimap
 	 */
-	public OutputWriter(
+	public OutputWriter(VariableFactory variableFactory,
 			TreeMultimap<Time, VariableAssignment> sharedVariablesMultimap) {
 		this.sharedVariablesMultimap = sharedVariablesMultimap;
+		variables = new ArrayList<VariableDefinition>(
+				variableFactory.getDefinedVariables());
+		
 	}
-	
 	
 	public void writeXmlFile(String filename) {
 		try {
@@ -69,5 +75,12 @@ public class OutputWriter {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * @return the variables
+	 */
+	public ArrayList<VariableDefinition> getVariables() {
+		return variables;
 	}
 }
