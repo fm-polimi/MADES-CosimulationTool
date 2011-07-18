@@ -14,11 +14,15 @@ import javax.xml.stream.XMLStreamWriter;
 
 import mades.common.timing.Time;
 import mades.common.variables.Scope;
+import mades.common.variables.Type;
 import mades.common.variables.VariableAssignment;
 import mades.common.variables.VariableDefinition;
 import mades.common.variables.VariableFactory;
 
 import com.google.common.collect.TreeMultimap;
+
+import de.erichseifert.gral.data.DataSource;
+import de.erichseifert.gral.data.DataTable;
 
 /**
  * @author Michele Sama (m.sama@puzzledev.com)
@@ -88,5 +92,26 @@ public class OutputWriter {
 	 */
 	public ArrayList<VariableDefinition> getVariables() {
 		return variables;
+	}
+	
+	
+	public DataSource getDataSource(VariableDefinition def) {
+		if (def.getType() == Type.STRING) {
+			throw new AssertionError("Cannot print not numerical variable");
+		}
+		
+		DataTable variableDataSource = new DataTable(Double.class, Double.class);
+		Set<Time> keys = sharedVariablesMultimap.keySet();
+		for (Time time: keys) {
+			Set<VariableAssignment> vars = sharedVariablesMultimap.get(time);
+			for(VariableAssignment v: vars) {
+				// same instance!
+				if (v.getVariableDefinition() == def) {
+					variableDataSource.add(time.getSimulationTime(),
+							Double.parseDouble(v.getValue()));
+				}
+			}
+		}
+		return variableDataSource;
 	}
 }

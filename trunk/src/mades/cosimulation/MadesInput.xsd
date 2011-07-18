@@ -46,6 +46,7 @@
     	</attribute>
     	<attribute name="value" type="string"></attribute>
     	<attribute name="annotation" type="string" use="optional"></attribute>
+    	<attribute name="measurementUnit" type="string" use="optional"></attribute>
     </complexType>
 
 

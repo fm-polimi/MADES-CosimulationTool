@@ -10,6 +10,8 @@
  */
 package mades.cosimulation.gui;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -18,6 +20,18 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+
+import de.erichseifert.gral.data.DataSource;
+import de.erichseifert.gral.data.DataTable;
+import de.erichseifert.gral.data.comparators.Ascending;
+import de.erichseifert.gral.data.filters.Convolution;
+import de.erichseifert.gral.data.filters.Filter.Mode;
+import de.erichseifert.gral.data.filters.Kernel;
+import de.erichseifert.gral.data.filters.KernelUtils;
+import de.erichseifert.gral.plots.XYPlot;
+import de.erichseifert.gral.plots.lines.DefaultLineRenderer2D;
+import de.erichseifert.gral.plots.lines.LineRenderer;
+import de.erichseifert.gral.ui.InteractivePanel;
 import mades.common.variables.VariableDefinition;
 import mades.cosimulation.Cosimulator;
 import mades.cosimulation.OutputWriter;
@@ -212,7 +226,7 @@ public class MadesMainForm extends javax.swing.JFrame
         jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder("Output"));
 
         selectVariablesComboBox.setEnabled(false);
-        selectVariables.ComboBox.addActionListener(this);
+        selectVariablesComboBox.addActionListener(this);
 
         jPanel6.setBackground(new java.awt.Color(253, 251, 251));
 
@@ -398,13 +412,13 @@ public class MadesMainForm extends javax.swing.JFrame
                         maxAttemptsInStep,
                         maxBacktrakingDepth);
             
-            OutputWriter writer = cosimulator.createOutputWriter();
+            outputWriter = cosimulator.createOutputWriter();
             File f = new File(model);
             String output = f.getParent() + File.separator + "madesOutput.xml";
-            writer.writeXmlFile(output);
+            outputWriter.writeXmlFile(output);
             
             
-            Collection<VariableDefinition> variables = writer.getVariables();
+            Collection<VariableDefinition> variables = outputWriter.getVariables();
             for (VariableDefinition def: variables) {
             	selectVariablesComboBox.addItem(def);
             }
@@ -472,8 +486,25 @@ public class MadesMainForm extends javax.swing.JFrame
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        VariableDefinition def =
-                (VariableDefinition)selectVariablesComboBox.getSelectedItem();
+    	if (outputWriter == null) {
+    		return;
+    	}
+    	Object selected=selectVariablesComboBox.getSelectedItem();
+    	if (selected == null) {
+    		return;
+    	}
+        VariableDefinition def = (VariableDefinition)selected;
         DataSource dataSource = outputWriter.getDataSource(def);
+        DataTable data = new DataTable(dataSource);
+        data.sort(new Ascending(0));
+        Kernel kernel = KernelUtils.getUniform(30, 15, 1.0).normalize();
+        DataSource filtered = new Convolution(data, kernel, Mode.REPEAT, 1);
+        XYPlot plot = new XYPlot(data, filtered);
+
+        plot.setPointRenderer(filtered, null);
+        DefaultLineRenderer2D lineRenderer = new DefaultLineRenderer2D();
+        lineRenderer.setSetting(LineRenderer.COLOR, Color.BLUE);
+        plot.setLineRenderer(filtered, lineRenderer);
+        jPanel6.add(new InteractivePanel(plot), BorderLayout.CENTER);
     }
 }
