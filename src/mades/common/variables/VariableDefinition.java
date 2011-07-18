@@ -17,6 +17,19 @@ public class VariableDefinition implements Comparable<VariableDefinition>{
 	private String environmentName;
 	private Scope scope;
 	private Type type;
+	private String measurementUnit;
+	
+	/**
+	 * Defines a new variable. 
+	 * 
+	 * @param name
+	 * @param scope
+	 */
+	protected VariableDefinition(String systemName, String environmentName,
+			Scope scope, Type type, String measurementUnit) {
+		this(systemName, environmentName, scope, type);
+		this.measurementUnit = measurementUnit;
+	}
 	
 	/**
 	 * Defines a new variable. 
@@ -71,5 +84,12 @@ public class VariableDefinition implements Comparable<VariableDefinition>{
 	 */
 	public String getEnvironmentName() {
 		return environmentName;
+	}
+
+	/**
+	 * @return the measurementUnit
+	 */
+	public String getMeasurementUnit() {
+		return measurementUnit;
 	}
 }
