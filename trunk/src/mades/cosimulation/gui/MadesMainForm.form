@@ -341,7 +341,7 @@
             <Property name="enabled" type="boolean" value="false"/>
           </Properties>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="selectVariables.ComboBox.addActionListener(this);"/>
+            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="selectVariablesComboBox.addActionListener(this);"/>
           </AuxValues>
         </Component>
         <Container class="javax.swing.JPanel" name="chartPanel">
@@ -350,6 +350,9 @@
               <Color blue="fb" green="fb" red="fd" type="rgb"/>
             </Property>
           </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="chartPanel.setLayout(new BorderLayout());"/>
+          </AuxValues>
 
           <Layout>
             <DimensionLayout dim="0">

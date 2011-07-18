@@ -230,6 +230,7 @@ public class MadesMainForm extends javax.swing.JFrame
         selectVariablesComboBox.addActionListener(this);
 
         chartPanel.setBackground(new java.awt.Color(253, 251, 251));
+        chartPanel.setLayout(new BorderLayout());
 
         javax.swing.GroupLayout chartPanelLayout = new javax.swing.GroupLayout(chartPanel);
         chartPanel.setLayout(chartPanelLayout);
