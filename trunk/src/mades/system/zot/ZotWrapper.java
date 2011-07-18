@@ -106,7 +106,7 @@ public class ZotWrapper {
 		
 		/*
 		 * Looks for the following lines and updates them
-         * (defvar TSPACE 70)
+                 * (defvar TSPACE 70)
 		 * (load "./examples/RC/RC_system.zot")
 		 * (load "./examples/RC/RC_constraints.zot")
 		 */
