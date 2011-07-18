@@ -13,6 +13,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import mades.common.timing.Time;
+import mades.common.variables.Scope;
 import mades.common.variables.VariableAssignment;
 import mades.common.variables.VariableDefinition;
 import mades.common.variables.VariableFactory;
@@ -33,8 +34,13 @@ public class OutputWriter {
 	public OutputWriter(VariableFactory variableFactory,
 			TreeMultimap<Time, VariableAssignment> sharedVariablesMultimap) {
 		this.sharedVariablesMultimap = sharedVariablesMultimap;
-		variables = new ArrayList<VariableDefinition>(
-				variableFactory.getDefinedVariables());
+		variables = new ArrayList<VariableDefinition>();
+		for (VariableDefinition def: variableFactory.getDefinedVariables()){
+			Scope s = def.getScope(); 
+			if (s == Scope.SYSTEM_SHARED || s == Scope.ENVIRONMENT_SHARED) {
+				variables.add(def);
+			}
+		}
 		
 	}
 	
