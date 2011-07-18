@@ -403,11 +403,7 @@ public class MadesMainForm extends javax.swing.JFrame {
             
             Collection<VariableDefinition> variables = writer.getVariables();
             for (VariableDefinition def: variables) {
-                if (def.getScope() == Scope.ENVIRONMENT_SHARED) {
-                    selectVariablesComboBox.addItem(def.getEnvironmentName());
-                } else {
-                    selectVariablesComboBox.addItem(def.getSystemName());
-                }
+            	selectVariablesComboBox.addItem(def);
             }
             
         } catch (Throwable ex) {
