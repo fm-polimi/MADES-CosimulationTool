@@ -377,7 +377,7 @@ public class MadesMainForm extends javax.swing.JFrame {
             stopTime = Double.parseDouble(stopTimeJTextField.getText());
             maxAttemptsInStep = maxAttemptJSlider.getValue();
             maxBacktrakingDepth = maxBacktrakingJSlider.getValue();
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             JOptionPane.showMessageDialog(this,
                     "Co-simulation initialization failed due to the " +
                     "following error: " + ex.getMessage(), 
@@ -410,9 +410,9 @@ public class MadesMainForm extends javax.swing.JFrame {
                 }
             }
             
-        } catch (Error ex) {
+        } catch (Throwable ex) {
             JOptionPane.showMessageDialog(this,
-                    "Co-simulation aborted failed due to the " +
+                    "Co-simulation failed due to the " +
                     "following error: " + ex.getMessage(), 
                     "Co-simulation aborted.",
                     JOptionPane.ERROR_MESSAGE);
