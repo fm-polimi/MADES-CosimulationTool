@@ -362,6 +362,7 @@ public class MadesMainForm extends javax.swing.JFrame
         }
         stopJButton.setEnabled(false);
         startJButton.setEnabled(true);
+        progressBar.setValue(0);
     }//GEN-LAST:event_stopJButtonActionPerformed
 
     private void startJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startJButtonActionPerformed
@@ -380,7 +381,6 @@ public class MadesMainForm extends javax.swing.JFrame
         startJButton.setEnabled(false);
         stopJButton.setEnabled(true);
         selectVariablesComboBox.removeAllItems();
-        selectVariablesComboBox.setEnabled(false);
         progressBar.setValue(0);
  
         String model;
@@ -451,8 +451,6 @@ public class MadesMainForm extends javax.swing.JFrame
         
         startJButton.setEnabled(true);
         stopJButton.setEnabled(false);
-        selectVariablesComboBox.setEnabled(true);
-        
     }
     
     
@@ -541,11 +539,15 @@ public class MadesMainForm extends javax.swing.JFrame
 			
 			outputWriter = cosimulator.createOutputWriter();
             
-			selectVariablesComboBox.removeAllItems();
-            Collection<VariableDefinition> variables = outputWriter.getVariables();
-            for (VariableDefinition def: variables) {
-            	selectVariablesComboBox.addItem(def);
-            }
+			if (selectVariablesComboBox.getItemCount() == 0) {
+				Collection<VariableDefinition> variables = outputWriter.getVariables();
+	            for (VariableDefinition def: variables) {
+	            	selectVariablesComboBox.addItem(def);
+	            }	
+			} else {
+				int index = selectVariablesComboBox.getSelectedIndex();
+	            selectVariablesComboBox.setSelectedIndex(index);	
+			}
 		}
 	}
 }
