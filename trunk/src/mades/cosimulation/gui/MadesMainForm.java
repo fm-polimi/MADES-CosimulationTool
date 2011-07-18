@@ -380,7 +380,7 @@ public class MadesMainForm extends javax.swing.JFrame {
         } catch (Throwable ex) {
             JOptionPane.showMessageDialog(this,
                     "Co-simulation initialization failed due to the " +
-                    "following error: " + ex.getMessage(), 
+                    "following error:\n" + ex.getMessage(), 
                     "Co-simulation initialization failed.",
                     JOptionPane.ERROR_MESSAGE);
             
@@ -413,12 +413,14 @@ public class MadesMainForm extends javax.swing.JFrame {
         } catch (Throwable ex) {
             JOptionPane.showMessageDialog(this,
                     "Co-simulation failed due to the " +
-                    "following error: " + ex.getMessage(), 
+                    "following error:\n" + ex.getMessage(), 
                     "Co-simulation aborted.",
                     JOptionPane.ERROR_MESSAGE);
             stopJButton.setEnabled(false);
             startJButton.setEnabled(true);
             return;
+        } finally {
+            cosimulator = null;
         }
         
         startJButton.setEnabled(true);
@@ -434,6 +436,7 @@ public class MadesMainForm extends javax.swing.JFrame {
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
 
+            @Override
             public void run() {
                 new MadesMainForm().setVisible(true);
             }
