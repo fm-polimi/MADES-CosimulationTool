@@ -32,6 +32,7 @@ import de.erichseifert.gral.plots.XYPlot;
 import de.erichseifert.gral.plots.lines.DefaultLineRenderer2D;
 import de.erichseifert.gral.plots.lines.LineRenderer;
 import de.erichseifert.gral.ui.InteractivePanel;
+import de.erichseifert.gral.util.Insets2D;
 import mades.common.variables.VariableDefinition;
 import mades.cosimulation.Cosimulator;
 import mades.cosimulation.OutputWriter;
@@ -226,7 +227,7 @@ public class MadesMainForm extends javax.swing.JFrame
         jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder("Output"));
 
         selectVariablesComboBox.setEnabled(false);
-        selectVariables.ComboBox.addActionListener(this);
+        selectVariablesComboBox.addActionListener(this);
 
         chartPanel.setBackground(new java.awt.Color(253, 251, 251));
 
@@ -505,6 +506,10 @@ public class MadesMainForm extends javax.swing.JFrame
         DefaultLineRenderer2D lineRenderer = new DefaultLineRenderer2D();
         lineRenderer.setSetting(LineRenderer.COLOR, Color.BLUE);
         plot.setLineRenderer(filtered, lineRenderer);
-        chartPanel.add(new InteractivePanel(plot), BorderLayout.CENTER);
+        plot.setInsets(new Insets2D.Double(20.0, 50.0, 40.0, 20.0));
+        InteractivePanel chart = new InteractivePanel(plot); 
+        chart.setSize(chartPanel.getSize());
+        chartPanel.removeAll();
+        chartPanel.add(chart, BorderLayout.CENTER);
     }
 }
