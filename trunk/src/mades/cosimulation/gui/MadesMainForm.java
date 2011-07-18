@@ -388,10 +388,7 @@ public class MadesMainForm extends javax.swing.JFrame {
                         maxAttemptsInStep,
                         maxBacktrakingDepth);
             
-            TreeMultimap<Time, VariableAssignment> results =
-                        cosimulator.getSharedVariablesMultimap();
-            
-            OutputWriter writer = new OutputWriter(results);
+            OutputWriter writer = cosimulator.createOutputWriter();
             File f = new File(model);
             String output = f.getParent() + File.separator + "madesOutput.xml";
             writer.writeXmlFile(output);

@@ -28,7 +28,6 @@ public class ModelicaEnvironmentConnector implements EnvironmentConnector {
 	EnvironmentMemento environmentMemento;
 	
 	public ModelicaEnvironmentConnector(
-			
 			Logger logger
 			) {
 		this.logger = logger;

@@ -121,13 +121,15 @@ public class Cosimulator {
 				maxCosimulationAttemptsForStep,
 				maxCosimulationBacktraking);
 		
-		TreeMultimap<Time, VariableAssignment> results =
-                        cosimulator.getSharedVariablesMultimap();
-		
-		OutputWriter writer = new OutputWriter(results);
+		OutputWriter writer = cosimulator.createOutputWriter();
 		String output = path + File.separator + "madesOutput.xml";
 		writer.writeXmlFile(output);
 		logger.info("Results written on: " + output);
+	}
+	
+	
+	public OutputWriter createOutputWriter() {
+		return new OutputWriter(variableFactory, sharedVariablesMultimap);
 	}
 	
 	/**

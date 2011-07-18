@@ -3,6 +3,7 @@
  */
 package mades.common.variables;
 
+import java.util.Collection;
 import java.util.HashMap;
 
 /**
@@ -110,5 +111,14 @@ public class VariableFactory {
 	 */
 	public boolean isDefinedInEnvironment(String name) {
 		return environmentDefinedVariables.containsKey(name.toUpperCase());
+	}
+	
+	/**
+	 * Get all the defined variables.
+	 * 
+	 * @return a collection with all the defined variables.
+	 */
+	public Collection<VariableDefinition> getDefinedVariables() {
+		return systemDefinedVariables.values();
 	}
 }
