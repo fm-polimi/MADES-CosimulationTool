@@ -31,6 +31,7 @@ import de.erichseifert.gral.data.filters.KernelUtils;
 import de.erichseifert.gral.plots.XYPlot;
 import de.erichseifert.gral.plots.lines.DefaultLineRenderer2D;
 import de.erichseifert.gral.plots.lines.LineRenderer;
+import de.erichseifert.gral.ui.DrawablePanel;
 import de.erichseifert.gral.ui.InteractivePanel;
 import de.erichseifert.gral.util.Insets2D;
 import mades.common.variables.VariableDefinition;
@@ -485,6 +486,7 @@ public class MadesMainForm extends javax.swing.JFrame
 
     private Cosimulator cosimulator;
     private OutputWriter outputWriter;
+    private DrawablePanel chart;
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -499,18 +501,21 @@ public class MadesMainForm extends javax.swing.JFrame
         DataSource dataSource = outputWriter.getDataSource(def);
         DataTable data = new DataTable(dataSource);
         data.sort(new Ascending(0));
-        Kernel kernel = KernelUtils.getUniform(30, 15, 1.0).normalize();
-        DataSource filtered = new Convolution(data, kernel, Mode.REPEAT, 1);
-        XYPlot plot = new XYPlot(data, filtered);
+        //Kernel kernel = KernelUtils.getUniform(30, 15, 1.0).normalize();
+        //DataSource filtered = new Convolution(data, kernel, Mode.REPEAT, 1);
+        XYPlot plot = new XYPlot(data);//, filtered);
 
-        plot.setPointRenderer(filtered, null);
+        //plot.setPointRenderer(filtered, null);
         DefaultLineRenderer2D lineRenderer = new DefaultLineRenderer2D();
         lineRenderer.setSetting(LineRenderer.COLOR, Color.BLUE);
-        plot.setLineRenderer(filtered, lineRenderer);
+        //plot.setLineRenderer(filtered, lineRenderer);
+        plot.setLineRenderer(dataSource, lineRenderer);
         plot.setInsets(new Insets2D.Double(20.0, 50.0, 40.0, 20.0));
-        InteractivePanel chart = new InteractivePanel(plot); 
-        chart.setSize(chartPanel.getSize());
-        chartPanel.removeAll();
+        if (chart != null) {
+        	chartPanel.remove(chart);
+        }
+        chart = new InteractivePanel(plot); 
         chartPanel.add(chart, BorderLayout.CENTER);
+        chartPanel.repaint();
     }
 }
