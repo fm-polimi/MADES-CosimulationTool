@@ -81,7 +81,7 @@ public class MadesMainForm extends javax.swing.JFrame
         startJButton = new javax.swing.JButton();
         jPanel5 = new javax.swing.JPanel();
         selectVariablesComboBox = new javax.swing.JComboBox();
-        jPanel6 = new javax.swing.JPanel();
+        chartPanel = new javax.swing.JPanel();
         stopJButton = new javax.swing.JButton();
 
         projetFileChooser.setToolTipText("Select the project file.");
@@ -226,18 +226,18 @@ public class MadesMainForm extends javax.swing.JFrame
         jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder("Output"));
 
         selectVariablesComboBox.setEnabled(false);
-        selectVariablesComboBox.addActionListener(this);
+        selectVariables.ComboBox.addActionListener(this);
 
-        jPanel6.setBackground(new java.awt.Color(253, 251, 251));
+        chartPanel.setBackground(new java.awt.Color(253, 251, 251));
 
-        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
-        jPanel6.setLayout(jPanel6Layout);
-        jPanel6Layout.setHorizontalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout chartPanelLayout = new javax.swing.GroupLayout(chartPanel);
+        chartPanel.setLayout(chartPanelLayout);
+        chartPanelLayout.setHorizontalGroup(
+            chartPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 690, Short.MAX_VALUE)
         );
-        jPanel6Layout.setVerticalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        chartPanelLayout.setVerticalGroup(
+            chartPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 209, Short.MAX_VALUE)
         );
 
@@ -248,7 +248,7 @@ public class MadesMainForm extends javax.swing.JFrame
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jPanel6, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(chartPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(selectVariablesComboBox, javax.swing.GroupLayout.Alignment.LEADING, 0, 690, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -257,7 +257,7 @@ public class MadesMainForm extends javax.swing.JFrame
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addComponent(selectVariablesComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(chartPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -456,6 +456,7 @@ public class MadesMainForm extends javax.swing.JFrame
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel chartPanel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -467,7 +468,6 @@ public class MadesMainForm extends javax.swing.JFrame
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
-    private javax.swing.JPanel jPanel6;
     private javax.swing.JSlider maxAttemptJSlider;
     private javax.swing.JSlider maxBacktrakingJSlider;
     private javax.swing.JTextField projectTextField;
@@ -505,6 +505,6 @@ public class MadesMainForm extends javax.swing.JFrame
         DefaultLineRenderer2D lineRenderer = new DefaultLineRenderer2D();
         lineRenderer.setSetting(LineRenderer.COLOR, Color.BLUE);
         plot.setLineRenderer(filtered, lineRenderer);
-        jPanel6.add(new InteractivePanel(plot), BorderLayout.CENTER);
+        chartPanel.add(new InteractivePanel(plot), BorderLayout.CENTER);
     }
 }
