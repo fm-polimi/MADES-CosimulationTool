@@ -112,11 +112,11 @@ public class InputParser extends DefaultHandler {
 			parser.parse(filename, this);
 
 		}catch(SAXException se) {
-			se.printStackTrace();
+			throw new RuntimeException(se);
 		}catch(ParserConfigurationException pce) {
-			pce.printStackTrace();
+			throw new RuntimeException(pce);
 		}catch (IOException ie) {
-			ie.printStackTrace();
+			throw new RuntimeException(ie);
 		}
 	}
 
@@ -158,16 +158,14 @@ public class InputParser extends DefaultHandler {
 			systemPath = new File(path, attributes.getValue(COSIMULATION_SYSTEM_PATH))
 					.getCanonicalPath();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new AssertionError("Invalid system path: " + e.getMessage());
 		}
 		environmentName = attributes.getValue(COSIMULATION_ENVIRONMENT_NAME);
 		try {
 			environmentPath = new File(path, attributes.getValue(COSIMULATION_ENVIRONMENT_PATH))
 					.getCanonicalPath();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new AssertionError("Invalid environment path: " + e.getMessage());
 		}
 	}
 	
