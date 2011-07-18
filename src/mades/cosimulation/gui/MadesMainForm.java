@@ -235,7 +235,6 @@ public class MadesMainForm extends javax.swing.JFrame
 
         jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder("Output"));
 
-        selectVariablesComboBox.setEnabled(false);
         selectVariablesComboBox.addActionListener(this);
 
         chartPanel.setBackground(new java.awt.Color(253, 251, 251));
