@@ -3,6 +3,8 @@
  */
 package mades.cosimulation;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,13 +38,17 @@ import mades.system.zot.ZotSystemConnector;
  */
 public class Cosimulator {
 
+	public static final String SIMULATION_STEP_DONE = "Simulation step done";
+
 	private Logger logger;
 	
 	private boolean simulationStarted = false;
-        private boolean cosimulationStopped = false;
+    private boolean cosimulationStopped = false;
 	
 	private Clock clock;
 	private VariableFactory variableFactory;
+	
+	private PropertyChangeSupport propertyChangeSupport;
 	
 	/**
 	 * The environment simulator used in this co-simulation.
@@ -86,6 +92,7 @@ public class Cosimulator {
 	 */
 	public Cosimulator(Logger logger) {
 		this.logger = logger;
+		propertyChangeSupport = new PropertyChangeSupport(this);
 	}
         
 	/**
@@ -246,9 +253,10 @@ public class Cosimulator {
 		
 		try {
 			// Runs the co-simulation
-			while(!clock.hasReachCosimulationEnd() &&
-                                !cosimulationStopped) {
-                            performCosimulationStep();
+			while(!clock.hasReachCosimulationEnd() && !cosimulationStopped) {
+				performCosimulationStep(); 
+				propertyChangeSupport.firePropertyChange(
+						SIMULATION_STEP_DONE, null, sharedVariablesMultimap);
 			}
 			logger.info("Simulation ended at time: " +
                                 clock.getCurrentTime().getSimulationTime());
@@ -589,6 +597,23 @@ public class Cosimulator {
 	 */
 	public TreeMultimap<Time, VariableAssignment> getSharedVariablesMultimap() {
 		return sharedVariablesMultimap;
+	}
+
+	/**
+	 * @param propertyName
+	 * @param listener
+	 * @see java.beans.PropertyChangeSupport#addPropertyChangeListener(java.lang.String, java.beans.PropertyChangeListener)
+	 */
+	public void addPropertyChangeListener(String propertyName,
+			PropertyChangeListener listener) {
+		propertyChangeSupport.addPropertyChangeListener(propertyName, listener);
+	}
+
+	/**
+	 * @return the clock
+	 */
+	public Clock getClock() {
+		return clock;
 	}
 	
 }

@@ -82,5 +82,12 @@ public class Clock {
 	public int getFinalStep() {
 		return (int)Math.floor(finalTime/timeStep);
 	}
+
+	/**
+	 * @return the finalTime
+	 */
+	public double getFinalTime() {
+		return finalTime;
+	}
 	
 }
