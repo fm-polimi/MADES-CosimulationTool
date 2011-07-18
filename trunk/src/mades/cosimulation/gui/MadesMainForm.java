@@ -14,6 +14,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.text.DateFormat;
 import java.util.Collection;
@@ -37,6 +39,7 @@ import de.erichseifert.gral.plots.lines.LineRenderer;
 import de.erichseifert.gral.ui.DrawablePanel;
 import de.erichseifert.gral.ui.InteractivePanel;
 import de.erichseifert.gral.util.Insets2D;
+import mades.common.timing.Clock;
 import mades.common.variables.VariableDefinition;
 import mades.cosimulation.Cosimulator;
 import mades.cosimulation.OutputWriter;
@@ -50,7 +53,7 @@ import mades.system.zot.ZotSystemConnector;
  * @author rax
  */
 public class MadesMainForm extends javax.swing.JFrame
-        implements ActionListener {
+        implements ActionListener, PropertyChangeListener {
 
     /** Creates new form MadesMainForm */
     public MadesMainForm() {
@@ -406,6 +409,7 @@ public class MadesMainForm extends javax.swing.JFrame
             stopTime = Double.parseDouble(stopTimeJTextField.getText());
             maxAttemptsInStep = maxAttemptJSlider.getValue();
             maxBacktrakingDepth = maxBacktrakingJSlider.getValue();
+            cosimulator.addPropertyChangeListener(Cosimulator.SIMULATION_STEP_DONE, this);
         } catch (Throwable ex) {
             JOptionPane.showMessageDialog(this,
                     "Co-simulation initialization failed due to the " +
@@ -424,16 +428,14 @@ public class MadesMainForm extends javax.swing.JFrame
                         maxAttemptsInStep,
                         maxBacktrakingDepth);
             
-            outputWriter = cosimulator.createOutputWriter();
             File f = new File(model);
             String output = f.getParent() + File.separator + "madesOutput.xml";
             outputWriter.writeXmlFile(output);
             
-            
-            Collection<VariableDefinition> variables = outputWriter.getVariables();
-            for (VariableDefinition def: variables) {
-            	selectVariablesComboBox.addItem(def);
-            }
+            JOptionPane.showMessageDialog(this,
+            		"Co-simulation output saved in file: " + output,
+            		"Co-simulation terminated succesfully.",
+            		JOptionPane.INFORMATION_MESSAGE);
             
         } catch (Throwable ex) {
             JOptionPane.showMessageDialog(this,
@@ -529,4 +531,22 @@ public class MadesMainForm extends javax.swing.JFrame
         chartPanel.add(chart);
         chartPanel.repaint();
     }
+
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		if (Cosimulator.SIMULATION_STEP_DONE.equals(evt.getPropertyName())) {
+			Clock clock = cosimulator.getClock();
+			progressBar.setValue(
+					(int) Math.floor(
+					100 * clock.getCurrentTime().getSimulationTime() / clock.getFinalTime()));
+			
+			outputWriter = cosimulator.createOutputWriter();
+            
+			selectVariablesComboBox.removeAllItems();
+            Collection<VariableDefinition> variables = outputWriter.getVariables();
+            for (VariableDefinition def: variables) {
+            	selectVariablesComboBox.addItem(def);
+            }
+		}
+	}
 }
