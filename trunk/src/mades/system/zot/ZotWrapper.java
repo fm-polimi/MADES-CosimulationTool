@@ -244,7 +244,8 @@ public class ZotWrapper {
 	}
 	
 	protected SystemMemento runZot(Time time) {
-		InputStream inputStream = runCommand(LISP_INTERPRETER + " " + ENGINE);
+		String engine = systemPath + File.separator + ENGINE;
+		InputStream inputStream = runCommand(LISP_INTERPRETER + " " + engine);
 		
 		ZotOutputParser parser = new ZotOutputParser(clock, 
 				variableFactory, definedVariables, time.getSimulationStep(), 

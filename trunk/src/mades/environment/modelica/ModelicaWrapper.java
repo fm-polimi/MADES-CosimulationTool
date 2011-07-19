@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -39,6 +40,7 @@ public class ModelicaWrapper {
 	public static final Object START_TIME_VAR_NAME = " start value";
 	public static final Object END_TIME_VAR_NAME = " stop value";
 	private static String INIT_FILE_POSTFIX = "_init.txt";
+	private static String INIT_DOT_XML_FILE_POSTFIX = "_init.xml";
 	private static String FINAL_FILE_POSTFIX = "_final.txt";
 	private static String SIGNAL_FILE_NAME = "A_Transitions";
 	private static String RUN_FILE = "modelica.sh";
@@ -57,6 +59,7 @@ public class ModelicaWrapper {
 	private String environmentName;
 	
 	private String initialVariableFileName;
+	private String initDotXmlFileName;
 	private String finalVariableFileName;
 	private String signalsFileName;
 	
@@ -83,6 +86,8 @@ public class ModelicaWrapper {
 		
 		initialVariableFileName = environmentPath + 
 				File.separator + environmentName + INIT_FILE_POSTFIX;
+		initDotXmlFileName = environmentPath + 
+			File.separator + environmentName + INIT_DOT_XML_FILE_POSTFIX;
 		finalVariableFileName = environmentPath +
 				File.separator + environmentName + FINAL_FILE_POSTFIX;
 		signalsFileName = environmentPath + File.separator + SIGNAL_FILE_NAME;
@@ -120,13 +125,25 @@ public class ModelicaWrapper {
 	
 	
 	public EnvironmentMemento simulateNext(EnvironmentMemento memento) {
-		writeVariablesFromMemento(memento);
+		// Write both files to be compatible with both the open modelica versions
+		writeInitDotTxtFromMemento(memento);
+		writeInitDotXmlFromMemento(memento);
 		deleteSignalFile();
 		runModelica(memento);
 		return loadVariablesFromSimulation(memento);
 	}
 	
-	protected void writeVariablesFromMemento(EnvironmentMemento memento) {
+	protected void writeInitDotXmlFromMemento(EnvironmentMemento memento) {
+		InitXmlUpdater updater = new InitXmlUpdater(memento,
+				initDotXmlFileName, clock);
+		try {
+			updater.doUpdate();
+		} catch (Exception ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+	
+	protected void writeInitDotTxtFromMemento(EnvironmentMemento memento) {
 		ArrayList<VariableAssignment> variables = memento.getParams();
 		try {
 			PrintWriter writer = new PrintWriter(initialVariableFileName);
