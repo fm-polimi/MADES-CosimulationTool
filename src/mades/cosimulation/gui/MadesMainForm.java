@@ -416,6 +416,7 @@ public class MadesMainForm extends javax.swing.JFrame
                     "Co-simulation initialization failed.",
                     JOptionPane.ERROR_MESSAGE);
             
+            ex.printStackTrace();
             stopJButton.setEnabled(false);
             startJButton.setEnabled(true);
             return;
@@ -442,6 +443,7 @@ public class MadesMainForm extends javax.swing.JFrame
                     "following error:\n" + ex.getMessage(), 
                     "Co-simulation aborted.",
                     JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
             stopJButton.setEnabled(false);
             startJButton.setEnabled(true);
             return;

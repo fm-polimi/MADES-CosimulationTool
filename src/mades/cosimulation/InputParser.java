@@ -169,12 +169,7 @@ public class InputParser extends DefaultHandler {
 		} catch (IOException e) {
 			throw new AssertionError("Invalid environment path: " + e.getMessage());
 		}
-		try {
-			environmentFileName = new File(path, attributes.getValue(COSIMULATION_ENVIRONMENT_FILENAME))
-					.getCanonicalPath();
-		} catch (IOException e) {
-			throw new AssertionError("Invalid environment path: " + e.getMessage());
-		}
+		environmentFileName = attributes.getValue(COSIMULATION_ENVIRONMENT_FILENAME);
 	}
 	
 	private void parseTrigger(String uri, String localName, String qName,
