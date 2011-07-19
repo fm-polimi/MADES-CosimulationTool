@@ -4,6 +4,7 @@
 package mades.environment.modelica;
 
 import static mades.common.utils.Runtimes.runCommand;
+import static mades.common.utils.Files.*;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -40,7 +41,7 @@ public class ModelicaWrapper {
 	private static String INIT_FILE_POSTFIX = "_init.txt";
 	private static String FINAL_FILE_POSTFIX = "_final.txt";
 	private static String SIGNAL_FILE_NAME = "A_Transitions";
-	private static String RUN_FILE = "./env/modelica.sh";
+	private static String RUN_FILE = "modelica.sh";
 	
 	private static final String VARIABLE_NAME = "[ ]*[\\w -\\._\\(\\)]+";
 	private static final String DOUBLE = "[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?";
@@ -178,7 +179,7 @@ public class ModelicaWrapper {
 	protected void runModelica(EnvironmentMemento memento) {
 		BufferedReader buf = new BufferedReader(
 				new InputStreamReader(
-						runCommand(RUN_FILE + " " +
+						runCommand(environmentPath + File.separator + RUN_FILE + " " +
 								environmentPath + " " + environmentName)));
 		
 		String line = "";

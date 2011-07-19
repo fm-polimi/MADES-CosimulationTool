@@ -197,15 +197,16 @@ public class ModelInstrumentor {
 	
 	public void compile() {
 		File currentPath = getCurrentPath(this.getClass());
-		File sourceDir = new File(currentPath, "./env/modelica/sources");
-		File destDir = new File(environmentPath);
+		File currentSourceDir = new File(currentPath, "./env/modelica/sources");
+		File environmentDir = new File(environmentPath);
+		File environmentSourceDir = new File(environmentDir, "sources");
 		try {
-			Files.copy(sourceDir, destDir);
+			copyDir(currentSourceDir, environmentSourceDir);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 		
-		File mosFile = new File(destDir, "./compile.mos");
+		File mosFile = new File(environmentSourceDir, "./compile.mos");
 		try {
 			instrumentMos(mosFile);
 		} catch (IOException e) {
@@ -214,6 +215,17 @@ public class ModelInstrumentor {
 		
 		runCommand(OMC + " " + mosFile.getAbsolutePath());
 		// TODO(rax): check compilation is successful
+		try {
+			File modelicaSh = new File(environmentDir, "modelica.sh");
+			Files.copy(new File(currentPath, "./env/modelica/modelica.sh"),
+					modelicaSh);
+			modelicaSh.setExecutable(true, false);
+			
+			Files.copy(new File(currentPath, "./env/modelica/ReadMAT.py"),
+					new File(environmentDir, "ReadMAT.py"));
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	private void instrumentMos(File file)
@@ -224,8 +236,9 @@ public class ModelInstrumentor {
 		 * {% TIME_STEP %}
 		 */
 		HashMap<String, String> substitutions = new HashMap<String, String>();
-		substitutions.put("MODELFILE.MO", fileName);
-		substitutions.put("PACKAGE.MODEL", modelName);
+		substitutions.put("MODEL_PATH", environmentPath);
+		substitutions.put("MODEL_FILE", fileName);
+		substitutions.put("MODEL_NAME", modelName);
 		substitutions.put("TIME_STEP", "10");
 		
 		String mos = compileTemplateFile(substitutions, new FileReader(file));

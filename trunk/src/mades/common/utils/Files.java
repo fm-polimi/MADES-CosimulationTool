@@ -32,6 +32,37 @@ public class Files {
 		return true;
 	}
 
+	public static void copyDir(File from, File to) throws IOException {
+		copyDir(from, to, true);
+	}
+	
+	public static void copyDir(File from, File to, boolean skipHiddenFolders)
+			throws IOException {
+		if (!from.exists() && ! from.isDirectory()) {
+			throw new IOException(from.getName() + " does not exist or it is not a directory.");
+		}
+		if (to.exists()) {
+			if (!to.isDirectory()) {
+				throw new IOException(from.getName() + " it is not a directory.");
+			}
+		} else {
+			to.mkdir();
+		}
+		
+		for (File f: from.listFiles()) {
+			File tof = new File(to, f.getName());
+			if (f.isDirectory()) {
+				if (f.isHidden() && skipHiddenFolders) {
+					continue;
+				} else {
+					copyDir(f, tof, skipHiddenFolders);
+				}
+			} else {
+				com.google.common.io.Files.copy(f, new File(to, f.getName()));
+			}
+		}
+	}
+	
 	public static void checkFileExistsOrThrow(String filename, Logger logger) {
 		if (!checkFileExist(filename)) {
 			String errorMsg = "File not found or is a directory: " + 
@@ -80,13 +111,15 @@ public class Files {
 	}
 	
 	public static File getCurrentPath(@SuppressWarnings("rawtypes") Class clazz) {
+		return new File (".");
+		/*
 		return new File(clazz.getProtectionDomain()
-				.getCodeSource().getLocation().getPath());
+				.getCodeSource().getLocation().getPath());*/
 	}
 	
 	public static String compileTemplateFile(HashMap<String, String> variables,
 			Reader source) throws IOException {
-		String tag = "{%([\\w]+)%}";
+		String tag = "\\{%([\\w _-]+)%\\}";
 		Pattern patternTag = Pattern.compile(tag); 
 		
 		StringBuilder builder = new StringBuilder();
@@ -99,7 +132,7 @@ public class Files {
 				String key = matcher.group(1).trim();
 				builder.append(line.substring(lastIndex, matcher.start()));
 				builder.append(variables.get(key));
-				lastIndex = matcher.start();
+				lastIndex = matcher.end();
 			}
 			builder.append(line.substring(lastIndex));
 			builder.append("\n");

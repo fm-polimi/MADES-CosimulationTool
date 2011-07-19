@@ -11,15 +11,19 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.google.common.io.Files;
 
 import mades.common.timing.Clock;
 import mades.common.timing.Time;
@@ -48,8 +52,9 @@ import mades.system.SystemMemento;
  */
 public class ZotWrapper {
 
-	public static final String ENGINE = getCurrentPath(ZotWrapper.class) +
-			File.separator + "env/zot/run.zot";
+	public static final String ENGINE_FOLDER = getCurrentPath(ZotWrapper.class) +
+			File.separator + "env" + File.separator + "zot" + File.separator;
+	public static final String ENGINE = "run.zot";
 	public static final String LISP_INTERPRETER = "clisp";
 	
 	public static final String SYSTEM = "_system.zot";
@@ -65,6 +70,8 @@ public class ZotWrapper {
 	
 	private String historyFileName;
 	private String constraintsFileName;
+	
+	private String systemPath;
 	
 	private Logger logger;
 	private Clock clock;
@@ -89,6 +96,8 @@ public class ZotWrapper {
 		this.variableFactory = variableFactory;
 		this.logger = logger;
 		
+		this.systemPath = systemPath;
+		
 		// Check project directory
 		checkFolderExistAndIsWritableOrThrow(systemPath, logger);
 		
@@ -103,66 +112,36 @@ public class ZotWrapper {
 	}
 	
 	private void checkAndUpdateEngine(int maxSimulationStep) {
-		checkFileExistsOrThrow(ENGINE, logger);
-		
-		/*
-		 * Looks for the following lines and updates them
-                 * (defvar TSPACE 70)
-		 * (load "./examples/RC/RC_system.zot")
-		 * (load "./examples/RC/RC_constraints.zot")
-		 */
-		String tSpace = "\\Q(\\Edefvar TSPACE ([\\d])+\\Q)\\E";
-		String system = "\\Q(\\Eload TSPACE \"([\\w]/\\.)+_system.zot\"\\Q)\\E";
-		String history = "\\Q(\\Eload TSPACE \"([\\w]/\\.)+_history.zot\"\\Q)\\E";
-		String constraints = "\\Q(\\Eload TSPACE \"([\\w]/\\.)+_constraints.zot\"\\Q)\\E";
-		
-		Pattern tSpacePattern = Pattern.compile(tSpace);
-		Pattern systemPattern = Pattern.compile(system);
-		Pattern historyPattern = Pattern.compile(history);
-		Pattern constraintsPattern = Pattern.compile(constraints);
+		try {
+			copyDir(new File(ENGINE_FOLDER), new File(systemPath));
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		String engine = systemPath + File.separator + ENGINE;
+		checkFileExistsOrThrow(engine, logger);
 		
 		try {
-			StringBuilder builder = new StringBuilder();
-			BufferedReader reader = new BufferedReader(new FileReader(ENGINE));
+			/*
+			 * (defvar TSPACE {% TSPACE %})
+			 * (load "{% ZOT_MODEL %}")
+			 * (load "{% ZOT_HYSTORY %}")
+			 * (load "{% ZOT_CONSTRAINTS %}")
+			 */
+			HashMap<String, String> substitutions = new HashMap<String, String>();
+			substitutions.put("TSPACE", "" +clock.getFinalStep());
+			substitutions.put("ZOT_MODEL", systemFileName);
+			substitutions.put("ZOT_HYSTORY", historyFileName);
+			substitutions.put("ZOT_CONSTRAINTS", constraintsFileName);
 			
-			String line;
-			while ((line = reader.readLine()) != null) {
-				Matcher matcher = tSpacePattern.matcher(line);
-				if (matcher.matches()) {
-					line = "(defvar TSPACE " + maxSimulationStep + ")";
-				} else {
-					matcher = systemPattern.matcher(line);
-					if (matcher.matches()) {
-						line = "(load \"" + systemFileName + "\")";
-					} else {
-						matcher = historyPattern.matcher(line);
-						if (matcher.matches()) {
-							line = "(load \"" + historyFileName + "\")";
-						} else {
-							matcher = constraintsPattern.matcher(line);
-							if (matcher.matches()) {
-								line = "(load \"" + constraintsFileName + "\")";
-							}
-						}
-					}
-				}
-				builder.append(line + "\n");
-			}
-			reader.close();
-			
-			PrintWriter pw = new PrintWriter(new FileOutputStream(ENGINE));
-			pw.print(builder.toString());
+			String mos = compileTemplateFile(substitutions, new FileReader(engine));
+			PrintWriter pw = new PrintWriter(new FileWriter(engine));
+			pw.print(mos);
 			pw.flush();
 			pw.close();
-			
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
-		
+			
 	}
 	
 	public void initialize(SystemMemento systemMemento) {
