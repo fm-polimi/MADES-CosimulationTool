@@ -48,7 +48,8 @@ import mades.system.SystemMemento;
  */
 public class ZotWrapper {
 
-	public static final String ENGINE = "./env/run.zot";
+	public static final String ENGINE = getCurrentPath(ZotWrapper.class) +
+			File.separator + "env/zot/run.zot";
 	public static final String LISP_INTERPRETER = "clisp";
 	
 	public static final String SYSTEM = "_system.zot";
@@ -171,7 +172,6 @@ public class ZotWrapper {
 			definedVariables.add(v.getVariableDefinition());
 		}
 	}
-	
 	
 	
 	/**

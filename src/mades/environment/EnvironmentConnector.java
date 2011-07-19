@@ -27,7 +27,8 @@ public interface EnvironmentConnector {
 	 * once at the beginning of the simulation.
 	 * 
 	 * @param environmentPath the environment path
-	 * @param the {@link EnvironmentMemento} model's name
+	 * @param environmentFileName the model's file name
+	 * @param environmentName the model's name
 	 * @param clock the timer for this co-simulation
 	 * @param variableFactory the variable factory
 	 * @param environmentMemento a memento representing the initial state
@@ -38,6 +39,7 @@ public interface EnvironmentConnector {
 	 */
 	public EnvironmentMemento initialize(
 			String environmentPath,
+			String environmentFileName,
 			String environmentName,
 			Clock clock, VariableFactory variableFactory,
 			EnvironmentMemento environmentMemento, ArrayList<Trigger> triggers);

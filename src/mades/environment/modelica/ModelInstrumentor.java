@@ -3,7 +3,7 @@
  */
 package mades.environment.modelica;
 
-import static mades.common.utils.Files.checkFileExistsOrThrow;
+import static mades.common.utils.Files.*;
 import static mades.common.utils.Runtimes.runCommand;
 
 import java.io.BufferedReader;
@@ -14,9 +14,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.google.common.io.Files;
 
 import mades.common.variables.Trigger;
 
@@ -27,19 +30,23 @@ import mades.common.variables.Trigger;
  *
  */
 public class ModelInstrumentor {
-
 	private static final String MODELICA_SOURCE_FOLDER = "sources";
 
 	private static final String OMC = "omc";
 	
+	private String environmentPath;
+	private String absoluteFileName;
 	private String fileName;
 	private String modelName;
 	private Logger logger;
 	private ArrayList<Trigger> triggers;
 	
-	public ModelInstrumentor(String environmentPath, String environmentName) {
-		this.fileName = environmentPath + File.separator +
-				MODELICA_SOURCE_FOLDER + File.separator + environmentName + ".mo";
+	public ModelInstrumentor(String environmentPath, String fileName,
+			String environmentName) {
+		this.environmentPath = environmentPath;
+		this.fileName = fileName;
+		this.absoluteFileName = environmentPath + File.separator +
+				MODELICA_SOURCE_FOLDER + File.separator + fileName;
 		this.modelName = environmentName;
 	} 
 	
@@ -149,7 +156,6 @@ public class ModelInstrumentor {
 						" not found in .mo file.");
 			}
 			
-			
 		} else {
 			// Insert the threshold before "equation"
 			builder.insert(algorithmIndex, begin + 
@@ -159,11 +165,11 @@ public class ModelInstrumentor {
 	
 	public void checkAndUpdateModel(ArrayList<Trigger> triggers) {
 		this.triggers = triggers;
-		checkFileExistsOrThrow(fileName, logger);
+		checkFileExistsOrThrow(absoluteFileName, logger);
 		
 		try {
 			StringBuilder builder = new StringBuilder();
-			BufferedReader reader = new BufferedReader(new FileReader(fileName));
+			BufferedReader reader = new BufferedReader(new FileReader(absoluteFileName));
 			
 			String line;
 			while ((line = reader.readLine()) != null) {
@@ -174,7 +180,7 @@ public class ModelInstrumentor {
 			addThresholdAndSignalVariablesToMo(builder);
 			addTriggersToMo(builder);
 			
-			PrintWriter pw = new PrintWriter(new FileOutputStream(fileName));
+			PrintWriter pw = new PrintWriter(new FileOutputStream(absoluteFileName));
 			pw.print(builder.toString());
 			pw.flush();
 			pw.close();
@@ -190,8 +196,43 @@ public class ModelInstrumentor {
 	}
 	
 	public void compile() {
-		runCommand(OMC + " " + fileName);
+		File currentPath = getCurrentPath(this.getClass());
+		File sourceDir = new File(currentPath, "./env/modelica/sources");
+		File destDir = new File(environmentPath);
+		try {
+			Files.copy(sourceDir, destDir);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		
+		File mosFile = new File(destDir, "./compile.mos");
+		try {
+			instrumentMos(mosFile);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		
+		runCommand(OMC + " " + mosFile.getAbsolutePath());
 		// TODO(rax): check compilation is successful
+	}
+
+	private void instrumentMos(File file)
+			throws FileNotFoundException, IOException {
+		/**
+		 * {% MODELFILE.MO %}
+		 * {% PACKAGE.MODEL %}
+		 * {% TIME_STEP %}
+		 */
+		HashMap<String, String> substitutions = new HashMap<String, String>();
+		substitutions.put("MODELFILE.MO", fileName);
+		substitutions.put("PACKAGE.MODEL", modelName);
+		substitutions.put("TIME_STEP", "10");
+		
+		String mos = compileTemplateFile(substitutions, new FileReader(file));
+		PrintWriter pw = new PrintWriter(file);
+		pw.print(mos);
+		pw.flush();
+		pw.close();
 	}
 
 	

@@ -3,8 +3,16 @@
  */
 package mades.common.utils;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.util.HashMap;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Michele Sama (m.sama@puzzledev.com)
@@ -69,5 +77,33 @@ public class Files {
 			logger.severe(errorMsg);
 			throw new AssertionError(errorMsg);
 		}
+	}
+	
+	public static File getCurrentPath(@SuppressWarnings("rawtypes") Class clazz) {
+		return new File(clazz.getProtectionDomain()
+				.getCodeSource().getLocation().getPath());
+	}
+	
+	public static String compileTemplateFile(HashMap<String, String> variables,
+			Reader source) throws IOException {
+		String tag = "{%([\\w]+)%}";
+		Pattern patternTag = Pattern.compile(tag); 
+		
+		StringBuilder builder = new StringBuilder();
+		BufferedReader reader = new BufferedReader(source);
+		String line = null;
+		while ((line = reader.readLine()) != null) {
+			Matcher matcher = patternTag.matcher(line);
+			int lastIndex = 0;
+			while (matcher.find()) {
+				String key = matcher.group(1).trim();
+				builder.append(line.substring(lastIndex, matcher.start()));
+				builder.append(variables.get(key));
+				lastIndex = matcher.start();
+			}
+			builder.append(line.substring(lastIndex));
+			builder.append("\n");
+		}
+		return builder.toString();
 	}
 }

@@ -52,6 +52,7 @@ public class ModelicaWrapper {
 	private Pattern signalPattern = Pattern.compile(SIGNAL_LINE);
 	
 	private String environmentPath;
+	private String environmentFileName;
 	private String environmentName;
 	
 	private String initialVariableFileName;
@@ -67,13 +68,15 @@ public class ModelicaWrapper {
 	 * @param environmentPath
 	 * @param environmentName
 	 */
-	protected ModelicaWrapper(String environmentPath, 
+	protected ModelicaWrapper(String environmentPath,
+			String environmentFileName,
 			String environmentName, Clock clock,
 			VariableFactory variableFactory, ArrayList<Trigger> triggers) {
 		this.variableFactory = variableFactory;
 		this.clock = clock;
 		
-		this.environmentPath = environmentPath ;
+		this.environmentPath = environmentPath;
+		this.environmentFileName = environmentFileName;
 		this.environmentName = environmentName;
 		
 		
@@ -83,7 +86,8 @@ public class ModelicaWrapper {
 				File.separator + environmentName + FINAL_FILE_POSTFIX;
 		signalsFileName = environmentPath + File.separator + SIGNAL_FILE_NAME;
 		
-		ModelInstrumentor instrumentor = new ModelInstrumentor(environmentPath, environmentName);
+		ModelInstrumentor instrumentor = new ModelInstrumentor(environmentPath,
+				environmentFileName, environmentName);
 		instrumentor.checkAndUpdateModel(triggers);
 		instrumentor.compile();
 	}

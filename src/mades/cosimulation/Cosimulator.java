@@ -331,6 +331,7 @@ public class Cosimulator {
 		
 		EnvironmentMemento environmentMemento = environment.initialize(
 				inputParser.getEnvironmentPath(),
+				inputParser.getEnvironmentFileName(),
 				inputParser.getEnvironmentName(),
 				clock,
 				variableFactory, inputParser.getEnvironmentMemento(),

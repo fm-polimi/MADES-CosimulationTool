@@ -1,10 +1,10 @@
 (asdf:operate 'asdf:load-op 'ae2zot-r)
 (use-package :trio-utils)
 
-(defvar TSPACE 30)
-(load "./examples/RC/RC_system.zot")
-(load "./examples/RC/RC_history.zot")
-(load "./examples/RC/RC_constraints.zot")
+(defvar TSPACE 20)
+(load "{% ZOT_MODEL %}")
+(load "{% ZOT_HYSTORY %}")
+(load "{% ZOT_CONSTRAINTS %}")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; RUNNING THE SYSTEM
