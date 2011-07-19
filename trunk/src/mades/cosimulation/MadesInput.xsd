@@ -15,8 +15,9 @@
     	</sequence>
     	<attribute name="systemName" type="string"></attribute>
     	<attribute name="systemPath" type="string"></attribute>
-        <attribute name="environmentName" type="string"></attribute>
-        <attribute name="environmentPath" type="string"></attribute>
+    	<attribute name="environmentName" type="string"></attribute>
+    	<attribute name="environmentPath" type="string"></attribute>
+    	<attribute name="environmentFileName" type="string"></attribute>
     </complexType>
 
     <complexType name="Variable">

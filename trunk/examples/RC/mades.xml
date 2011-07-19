@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Mades:cosimulation
     systemName="RC"
-    systemPath="."
+    systemPath="zot"
     environmentName="RC"
-    environmentPath="."
+    environmentPath="modelica"
+    environmentFileName="RC.mo"
     xmlns:Mades="http://www.example.org/MadesInput"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.example.org/MadesInput ../../src/mades/cosimulation/MadesInput.xsd ">

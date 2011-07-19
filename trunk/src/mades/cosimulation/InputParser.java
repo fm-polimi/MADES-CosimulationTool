@@ -40,6 +40,7 @@ public class InputParser extends DefaultHandler {
 
 	private static final String COSIMULATION_ENVIRONMENT_PATH = "environmentPath";
 	private static final String COSIMULATION_ENVIRONMENT_NAME = "environmentName";
+	private static final String COSIMULATION_ENVIRONMENT_FILENAME = "environmentFileName";
 	private static final String COSIMULATION_SYSTEM_PATH = "systemPath";
 	private static final String COSIMULATION_SYSTEM_NAME = "systemName";
 	private static final String TRIGGER_VALUE = "value";
@@ -66,6 +67,7 @@ public class InputParser extends DefaultHandler {
 	private String environmentName;
 	private String systemPath;
 	private String environmentPath;
+	private String environmentFileName;
 	
 	private SystemMemento systemMemento;
 	private ArrayList<VariableAssignment> systemVariables;
@@ -163,6 +165,12 @@ public class InputParser extends DefaultHandler {
 		environmentName = attributes.getValue(COSIMULATION_ENVIRONMENT_NAME);
 		try {
 			environmentPath = new File(path, attributes.getValue(COSIMULATION_ENVIRONMENT_PATH))
+					.getCanonicalPath();
+		} catch (IOException e) {
+			throw new AssertionError("Invalid environment path: " + e.getMessage());
+		}
+		try {
+			environmentFileName = new File(path, attributes.getValue(COSIMULATION_ENVIRONMENT_FILENAME))
 					.getCanonicalPath();
 		} catch (IOException e) {
 			throw new AssertionError("Invalid environment path: " + e.getMessage());
@@ -382,6 +390,13 @@ public class InputParser extends DefaultHandler {
 	 */
 	public String getEnvironmentPath() {
 		return environmentPath;
+	}
+
+	/**
+	 * @return the environmentFileName
+	 */
+	public String getEnvironmentFileName() {
+		return environmentFileName;
 	}	
 	
 }

@@ -27,9 +27,7 @@ public class ModelicaEnvironmentConnector implements EnvironmentConnector {
 
 	EnvironmentMemento environmentMemento;
 	
-	public ModelicaEnvironmentConnector(
-			Logger logger
-			) {
+	public ModelicaEnvironmentConnector(Logger logger) {
 		this.logger = logger;
 	}
 	
@@ -39,11 +37,13 @@ public class ModelicaEnvironmentConnector implements EnvironmentConnector {
 	@Override
 	public EnvironmentMemento initialize(
 			String environmentPath,
-			String environmentName,Clock clock,
+			String environmentFileName,
+			String environmentName,
+			Clock clock,
 			VariableFactory variableFactory, EnvironmentMemento environmentMemento,
 			ArrayList<Trigger> triggers) {
 		wrapper = new ModelicaWrapper(
-				environmentPath, environmentName, 
+				environmentPath, environmentFileName, environmentName, 
 				clock, variableFactory, triggers);
 		environmentMemento = wrapper.initialize(environmentMemento);
 		return environmentMemento;
