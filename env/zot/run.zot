@@ -1,7 +1,7 @@
 (asdf:operate 'asdf:load-op 'ae2zot-r)
 (use-package :trio-utils)
 
-(defvar TSPACE 20)
+(defvar TSPACE {% TSPACE %})
 (load "{% ZOT_MODEL %}")
 (load "{% ZOT_HYSTORY %}")
 (load "{% ZOT_CONSTRAINTS %}")

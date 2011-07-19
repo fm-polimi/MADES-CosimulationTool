@@ -74,6 +74,9 @@ def Main():
 				j = j+1
 					
 				fo.write(toFile)
+				
+				# RAX: j must be set to 0 or some variables will be skipped
+				j = 0
 		else:
 			print "Errore - linea del file init.txt non riconoscibile"
 					
