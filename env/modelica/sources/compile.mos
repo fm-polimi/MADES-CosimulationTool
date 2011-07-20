@@ -3,6 +3,6 @@ loadFile("{% MODEL_FILE %}");
 loadModel(Modelica);
 system("gcc -c -o libPrintExt.o PrintExt.c");
 system("gcc -c -o libInitExt.o InitExt.c");
-simulate({% MODEL_NAME %},startTime=0.0,stopTime={% TIME_STEP %},outputFormat="mat");
+simulate({% MODEL_NAME %},startTime=0.0,stopTime={% TIME_STEP %},outputFormat="csv");
 system("cp {% MODEL_NAME %} ../");
 system("cp {% MODEL_NAME %}_init.* ../");
