@@ -71,9 +71,11 @@ public class ModelInstrumentor {
 	
 	private void addThresholdAndSignalVariablesToMo(StringBuilder builder) {
 		instrument(builder, "\n\t/**thresholds begin**/\n", 
-				"\t/**thresholds end**/\n", "model " + modelName, composeThresholdString());
+				"\t/**thresholds end**/\n", "model " + modelName,
+				true, composeThresholdString());
 		instrument(builder, "\n\t/**signals begin**/\n", 
-				"\t/**signals end**/\n", "model " + modelName, composeSignalsString());
+				"\t/**signals end**/\n", "model " + modelName,
+				true, composeSignalsString());
 	}
 	
 	private String composeChangesString() {
@@ -111,7 +113,7 @@ public class ModelInstrumentor {
 			builder.append("\n");
 			
 			builder.append("\twhen change(" + signal + ") then\n");
-			builder.append("\tFilePrint(" + signal + ", pre(" + signal + "), time);\n");
+			builder.append("\t\tFilePrint(" + signal + ", pre(" + signal + "), time);\n");
 			builder.append("\tend when;\n");
 			builder.append("\n");
 		}
@@ -120,11 +122,13 @@ public class ModelInstrumentor {
 	
 	private void addTriggersToMo(StringBuilder builder) {		
 		instrument(builder, "\n\t/**triggers begin**/\n", "\t/**triggers end**/\n",
-				"algorithm", composeChangesString());
+				"end " + modelName + ";", true,
+				composeChangesString());
 	}
 	
 	private void instrument(StringBuilder builder, String begin,
-			String end, String alternative, String substitution) {
+			String end, String alternative, boolean before, 
+			String substitution) {
 		Pattern alternativePattern = Pattern.compile("\\Q" + alternative + "\\E");
 		Pattern beginPattern = Pattern.compile("\\Q" + begin + "\\E");
 		Pattern endPattern = Pattern.compile("\\Q" + end + "\\E");
@@ -136,7 +140,7 @@ public class ModelInstrumentor {
 		Matcher matcher = alternativePattern.matcher(model);
 		int algorithmIndex = -1;
 		if (matcher.find()) {
-			algorithmIndex = matcher.end();
+			algorithmIndex = before?matcher.start():matcher.end();
 		} else {
 			throw new AssertionError("Expected string " + alternative +
 					" section not found in .mo file.");
@@ -179,6 +183,7 @@ public class ModelInstrumentor {
 			
 			addThresholdAndSignalVariablesToMo(builder);
 			addTriggersToMo(builder);
+			addInclusions(builder);
 			
 			PrintWriter pw = new PrintWriter(new FileOutputStream(absoluteFileName));
 			pw.print(builder.toString());
@@ -248,5 +253,24 @@ public class ModelInstrumentor {
 		pw.close();
 	}
 
-	
+	private void addInclusions(StringBuilder builder) {
+		File inclusionFileName = new File(getCurrentPath(this.getClass()),
+				"./env/modelica/include/include.mo");
+		StringBuilder inclusion = new StringBuilder(); 
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(inclusionFileName));
+			String line;
+			while ((line = br.readLine()) != null) {
+				inclusion.append(line + "\n");
+			}
+			br.close();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		
+			
+		instrument(builder, "\n/** include begin **/\n",
+				"/** include end **/\n", "end " + modelName + ";", false,
+				inclusion.toString());
+	} 
 }
