@@ -14,6 +14,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -52,6 +53,7 @@ public class InitXmlUpdater {
 	}
 	
 	private void updateDefaultExperiment(Document doc) {
+		int len = doc.getElementsByTagName("DefaultExperiment").getLength();
 		Node staff = doc.getElementsByTagName("DefaultExperiment").item(0);
 		NamedNodeMap attributes = staff.getAttributes();
 		for (int i = 0; i< attributes.getLength(); i++) {
@@ -69,15 +71,18 @@ public class InitXmlUpdater {
 			Node node = variableNodes.item(i);
 			NamedNodeMap attributes = node.getAttributes();
 			Node attribute = attributes.getNamedItem("name");
-			String var = variableMap.get(attribute.getNodeName());
+			String varname = attribute.getNodeValue();
+			String var = variableMap.get(varname);
 			if (var != null) {
 				NodeList children = node.getChildNodes();
 				for (int j = 0; j < children.getLength(); j++) {
 					Node child = children.item(j);
-					NamedNodeMap childAttributes = child.getAttributes();
-					Node start = childAttributes.getNamedItem("start");
-					if (start != null) {
-						start.setNodeValue(var);
+					if ("Real".equalsIgnoreCase(child.getNodeName())) {
+						NamedNodeMap childAttributes = child.getAttributes();
+						Node start = childAttributes.getNamedItem("start");
+						if (start != null) {
+							start.setNodeValue(var);
+						}
 					}
 				}
 			}
@@ -88,6 +93,11 @@ public class InitXmlUpdater {
 		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 		Document doc = docBuilder.parse(filePath);
+		
+		Element root = doc.getDocumentElement(); 
+		if (root == null) {
+			throw new RuntimeException("Empty XML document");
+		}
 		
 		// DefaultExperiment
 		updateDefaultExperiment(doc);
