@@ -128,7 +128,7 @@ public class ZotWrapper {
 			 * (load "{% ZOT_CONSTRAINTS %}")
 			 */
 			HashMap<String, String> substitutions = new HashMap<String, String>();
-			substitutions.put("TSPACE", "" +clock.getFinalStep());
+			substitutions.put("TSPACE", "" + (2 * clock.getFinalStep()));
 			substitutions.put("ZOT_MODEL", systemFileName);
 			substitutions.put("ZOT_HYSTORY", historyFileName);
 			substitutions.put("ZOT_CONSTRAINTS", constraintsFileName);
