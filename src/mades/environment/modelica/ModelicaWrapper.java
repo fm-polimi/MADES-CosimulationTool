@@ -19,7 +19,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import mades.common.timing.Clock;
+import mades.common.variables.Scope;
 import mades.common.variables.Trigger;
+import mades.common.variables.VariableAssignment;
 //import mades.common.variables.VariableAssignment;
 //import mades.common.variables.VariableDefinition;
 import mades.common.variables.VariableFactory;
@@ -126,8 +128,6 @@ public class ModelicaWrapper {
 	
 	
 	public EnvironmentMemento simulateNext(EnvironmentMemento memento) {
-		// Write both files to be compatible with both the open modelica versions
-		//writeInitDotTxtFromMemento(memento);
 		writeInitDotXmlFromMemento(memento);
 		deleteSignalFile();
 		runModelica(memento);
@@ -145,6 +145,7 @@ public class ModelicaWrapper {
 	}
 	
 	/*
+	 * Commented because compatible with the previous version of modelica only
 	protected void writeInitDotTxtFromMemento(EnvironmentMemento memento) {
 		ArrayList<VariableAssignment> variables = memento.getParams();
 		try {
@@ -213,52 +214,6 @@ public class ModelicaWrapper {
 	}
 	
 	protected EnvironmentMemento loadVariablesFromSimulation(EnvironmentMemento memento) {
-		/*ArrayList<VariableAssignment> variables = new ArrayList<VariableAssignment>();
-		
-		
-		double startTime = 0;
-		double endTime = 0;
-		
-		try {
-			BufferedReader reader = new BufferedReader(
-					new FileReader(finalVariableFileName));
-			String line = null;
-
-			
-			while ((line = reader.readLine()) != null) {
-				Matcher matcher = variablePattern.matcher(line);
-				if (matcher.matches()) {
-					String value = matcher.group(1);
-					String annotation = matcher.group(5);
-					String name = matcher.group(6);
-					VariableDefinition def = variableFactory.getEnvironmentVar(name);
-					
-					if (name.equals(START_TIME_VAR_NAME)) {
-						startTime = Double.parseDouble(value);
-						value = "" + (clock.getCurrentTime().getSimulationTime() - 
-								clock.getTimeStep());
-					} else if (name.equals(END_TIME_VAR_NAME)) {
-						endTime = Double.parseDouble(value);
-						value = "" + clock.getCurrentTime().getSimulationTime();
-					}
-					
-					if (annotation == null) {
-						annotation = "";
-					}
-					
-					VariableAssignment var = new VariableAssignment(def, value, annotation);
-					variables.add(var);
-				} else {
-					System.out.println("** Skipped line: " + line);
-				}
-			}
-			reader.close();
-		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		*/
 		ModelicaCsvParser csvParser = new ModelicaCsvParser(
 				csvFileName, variableFactory);
 		try {
@@ -269,14 +224,23 @@ public class ModelicaWrapper {
 		
 			
 		// TODO(rax): use modelica variable " tolerance";
+		/*
 		if (clock.getCurrentTime().getSimulationTime() - csvParser.getStopTime()
 				> TOLERANCE) {
 			throw new AssertionError("Incomplete modelica simulation.");
+		}*/
+		
+		
+		ArrayList<VariableAssignment> variables =
+				new ArrayList<VariableAssignment>(csvParser.getVariables());
+		// Keep the system state
+		for (VariableAssignment v: memento.getParams()) {
+			if (v.getVariableDefinition().getScope() == Scope.SYSTEM_SHARED) {
+				variables.add(v);
+			}
 		}
-		
-		
 		EnvironmentMemento resultMemento = new EnvironmentMemento(
-				clock.getCurrentTime(), csvParser.getVariables(),
+				clock.getCurrentTime(), variables,
 				memento.getSignals());
 		File signalsFile = new File(signalsFileName);
 		if (signalsFile.isFile() && signalsFile.exists()) {

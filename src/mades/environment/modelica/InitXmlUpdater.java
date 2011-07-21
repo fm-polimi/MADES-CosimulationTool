@@ -41,19 +41,11 @@ public class InitXmlUpdater {
 		}
 		experimentMap = new HashMap<String, String>();
 		experimentMap.put("stopTime", "" + clock.getCurrentTime().getSimulationTime());
-		experimentMap.put("stepSize", variableMap.get(" step value"));
 		experimentMap.put("startTime", "" + (clock.getCurrentTime().getSimulationTime() - 
 				clock.getTimeStep()));
-		/*
-		experimentMap.put("outputFormat", variableMap.get(" outputFormat"));
-		experimentMap.put("solver", variableMap.get(" method"));
-		experimentMap.put("tolerance", variableMap.get(" tolerance"));
-		experimentMap.put("variableFilter", variableMap.get(" variableFilter"));
-		*/
 	}
 	
 	private void updateDefaultExperiment(Document doc) {
-		int len = doc.getElementsByTagName("DefaultExperiment").getLength();
 		Node staff = doc.getElementsByTagName("DefaultExperiment").item(0);
 		NamedNodeMap attributes = staff.getAttributes();
 		for (int i = 0; i< attributes.getLength(); i++) {
