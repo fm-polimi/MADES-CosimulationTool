@@ -86,7 +86,15 @@ public class EnvironmentMemento {
 	/**
 	 * @param memento
 	 */
-	public void update(SystemMemento memento) {		
+	public void update(SystemMemento memento) {
+		if (time!=memento.getLatestSimulatedTime()) {
+			throw new RuntimeException("Updating an environment memento at time: " + 
+					time + 
+					"  with a system memento at time: " +
+					memento.getLatestSimulatedTime());
+		}
+		
+		
 		for (int i = params.size() - 1; i > -1; i --) {
 			VariableAssignment envVar = params.get(i);
 			VariableDefinition def = envVar.getVariableDefinition();

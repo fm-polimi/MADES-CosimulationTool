@@ -45,7 +45,7 @@ public class ModelicaWrapper {
 	private static String INIT_DOT_XML_FILE_POSTFIX = "_init.xml";
 	//private static String FINAL_FILE_POSTFIX = "_final.txt";
 	private static String CVS_RES_FILE_POSTFIX = "_res.csv";
-	private static String SIGNAL_FILE_NAME = "A_Transitions";
+	private static String SIGNAL_FILE_NAME = "Transitions";
 	private static String RUN_FILE = "modelica.sh";
 	
 	private static final String VARIABLE_NAME = "[ ]*[\\w -\\._\\(\\)]+";

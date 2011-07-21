@@ -343,102 +343,75 @@ public class Cosimulator {
 	}
 	
 	protected void performCosimulationStep() {
-		int environmentBacktrakingAttemptsLeft = maxCosimulationBacktraking;
-		int systemBacktrakingAttemptsLeft = maxCosimulationBacktraking;
-		
-		boolean systemStepApproved = false;
-		
-		while (!systemStepApproved) {
-			boolean environmentStepApproved = false;
-			
-			while (!environmentStepApproved) {
-				systemBacktrakingAttemptsLeft -= 1;
-				if (systemBacktrakingAttemptsLeft < 0) {
-					logger.severe(
-							"Max co-simulation backtraking attempts " +
-							"reached: aborting...");
-					throw new RuntimeException(
-							"Max co-simulation backtraking attempts reached.");
-				}
-	
-				int attemptsInStep = maxCosimulationAttemptsForStep;
-				
-				while (!environmentStepApproved) {
-					assert(environmentMementoStack.size() == 
-						    systemMementoStack.size());
-					
-					environmentBacktrakingAttemptsLeft -= 1;
-					if (environmentBacktrakingAttemptsLeft < 0) {
-						logger.severe(
-								"Max co-simulation backtraking attempts " +
-								"reached: aborting...");
-						throw new RuntimeException(
-								"Max co-simulation backtraking attempts reached.");
-					}
-					
+		/******************/
+		int backtrakingAttempts = maxCosimulationBacktraking;
+		boolean stepApproved = false;
+		boolean skipEnv = false;
+		do {
+			int attemptsInStep = maxCosimulationAttemptsForStep;
+			do {
+				if (!skipEnv) {
+					// t -> t + delta
 					clock.tickForward();
-					// Simulate the environment at the next time.
 					simulateEnvironment();
-					
+				} else {
+					// The environment was already simulated.
+					skipEnv = false;
+				}
+				
+				
+				if (isLastEnvironmentSimulationValid()) {
+					try {
+						simulateSystem();
+						stepApproved = true;
+					} catch(AssertionError err) {
+						// Unsat
+						rollbackEnvironment();
+						clock.tickBackward();
+						attemptsInStep = attemptsInStep - 1;
+						rollbackSystem();
+						logger.severe("The simulated step has no solution: retrying (" + 
+								attemptsInStep +" attempts left).");
+						// no need to resimulate modelica because it is deterministic
+						skipEnv = true;
+					}
+				} else {
 					// If the environment is not valid then we need to
 					// re-simulate the system at the previous time, then the
 					// environment again.
-					if (!isLastEnvironmentSimulationValid()) {
-						logger.severe("Last simulated system state is " +
-								"not valid.");
-						rollbackEnvironment();
-						attemptsInStep -= 1;
-	
-						// Roll back the environment and try again.
-						clock.tickBackward();
-						rollbackSystem();
-						try {
-							simulateSystem();
-						} catch(AssertionError err) {
-							break;
-						}
-						
-						if (attemptsInStep < 0) {
-							logger.severe(
-								"Max co-simulation attempts at this step " +
-								"reached: backtracking...");
-							break;
-						}
-					} else {
-						environmentStepApproved = true;
-					}
-				}
-				
-				if (!environmentStepApproved) {
-					// Roll back the system and the simulation time
+					rollbackSystem();
 					rollbackEnvironment();
 					clock.tickBackward();
-					try {
-						simulateSystem();
-					}
-					catch(AssertionError err) {
-						String msg = "Unsatisfiable configuration during backtraking: aborting.";
-						logger.severe(msg);
-						throw err;
-					}
+					attemptsInStep = attemptsInStep - 1;
+					rollbackSystem();
+					logger.severe("The simulated step is invalid: retrying (" + 
+							attemptsInStep +" attemptsleft).");
+					// no need to resimulate modelica because it is deterministic
+					skipEnv = true;
 				}
-			}
-			
-			// Simulate the environment at the next time
-			try {
-				simulateSystem();
-				systemStepApproved = true;
-			} catch(AssertionError err) {
-				logger.severe(err.getMessage());
-				err.printStackTrace();
 				
-				// Roll back the system and the simulation time
-				rollbackEnvironment();
-				clock.tickBackward();
-				rollbackSystem();
-			}
+			} while (attemptsInStep > 0 && !stepApproved);
 			
+			if (stepApproved) {
+				break;
+			}
+			rollbackEnvironment();
+			clock.tickBackward();
+			backtrakingAttempts = backtrakingAttempts -1;
+			rollbackSystem();
+			logger.severe("Maximum number of attempts in state reached: backtraking (" + 
+					backtrakingAttempts + " backtraking left)");
+			// no need to resimulate modelica because it is deterministic
+			skipEnv = true;
+			
+		} while (backtrakingAttempts > 0 && !stepApproved);
+		
+		if (!stepApproved) {
+			logger.severe("Maximum backtraking depth reached: aborting...");
+			throw new RuntimeException("Maximum backtraking depth reached.");
 		}
+		
+		
 		//Remove from the two stacks elements earlier than maxCosimulationBacktraking
 		deleteObsoleteData();
 	}

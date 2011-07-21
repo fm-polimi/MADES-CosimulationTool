@@ -72,10 +72,10 @@ public class ModelInstrumentor {
 	private void addThresholdAndSignalVariablesToMo(StringBuilder builder) {
 		instrument(builder, "\n\t/**thresholds begin**/\n", 
 				"\t/**thresholds end**/\n", "model " + modelName,
-				true, composeThresholdString());
+				false, composeThresholdString());
 		instrument(builder, "\n\t/**signals begin**/\n", 
 				"\t/**signals end**/\n", "model " + modelName,
-				true, composeSignalsString());
+				false, composeSignalsString());
 	}
 	
 	private String composeChangesString() {
@@ -113,7 +113,7 @@ public class ModelInstrumentor {
 			builder.append("\n");
 			
 			builder.append("\twhen change(" + signal + ") then\n");
-			builder.append("\t\tFilePrint(" + signal + ", pre(" + signal + "), time);\n");
+			builder.append("\t\tFilePrint(\"" + var + "\", " + signal + ", pre(" + signal + "), time);\n");
 			builder.append("\tend when;\n");
 			builder.append("\n");
 		}
@@ -225,9 +225,6 @@ public class ModelInstrumentor {
 			Files.copy(new File(currentPath, "./env/modelica/modelica.sh"),
 					modelicaSh);
 			modelicaSh.setExecutable(true, false);
-			
-			Files.copy(new File(currentPath, "./env/modelica/ReadMAT.py"),
-					new File(environmentDir, "ReadMAT.py"));
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
