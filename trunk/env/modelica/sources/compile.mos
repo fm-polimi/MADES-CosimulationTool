@@ -6,3 +6,4 @@ system("gcc -c -o libInitExt.o InitExt.c");
 simulate({% MODEL_NAME %},startTime=0.0,stopTime={% TIME_STEP %},outputFormat="csv");
 system("cp {% MODEL_NAME %} ../");
 system("cp {% MODEL_NAME %}_init.* ../");
+system("cp {% MODEL_NAME %}_res.* ../");

@@ -172,7 +172,15 @@ public class ZotWrapper {
 					builder.append("(-P- " + def.getSystemName() + ")");
 				}	
 			} else {
-				builder.append("([=] (-V- " + def.getSystemName() + ") " + v.getValue() + ")");
+				double value = Double.parseDouble(v.getValue());
+				// Z3 has problem with number smallerd than 0.001
+				if (value > 0 && value < 0.001) {
+					value = 0.001;
+				} else if (value < 0 && value > 0.001) {
+					value = -0.001;
+				}
+					
+				builder.append("([=] (-V- " + def.getSystemName() + ") " + value + ")");
 			}
 		}
 		

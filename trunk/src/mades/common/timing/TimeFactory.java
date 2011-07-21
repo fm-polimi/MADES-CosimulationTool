@@ -46,10 +46,13 @@ public class TimeFactory {
 	 * @return
 	 */
 	public Time create(double time, int step) {
-		if (times.containsKey(time) || steps.containsKey(step)) {
+		Time t;
+		if (times.containsKey(time)) {
 			return times.get(time);
+		} else if (steps.containsKey(step)) {
+			return steps.get(step);
 		}
-		Time t = new Time(time, step);
+		t = new Time(time, step);
 		times.put(time, t);
 		steps.put(step, t);
 		return t;
