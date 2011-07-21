@@ -26,7 +26,6 @@ import com.google.common.collect.TreeMultimap;
  */
 public class ZotOutputParser {
 
-	private static String START_STEP = "------ time 1 ------";
 	private static String STEP = "^------ time (\\d+) ------$";
 	private static String END = "------ end ------";
 	private static String SIGNALS = "\\*\\*(\\w+)\\*\\*";
@@ -36,7 +35,7 @@ public class ZotOutputParser {
 	private static String VARIABLE_FRACTION = "([\\w._-]+)( = ([0-9]+)/([0-9]+)?)";
 	
 	private static final String UNSAT = "---UNSAT---";
-	private Pattern unsatPattern = Pattern.compile(UNSAT);
+	private static final String SAT = "---SAT---";
 	
 	private enum State {
 	    HEADER, VARIABLES 
@@ -65,6 +64,7 @@ public class ZotOutputParser {
 	
 	private boolean unsat = false;
 	
+	// TODO(rax): make this instance re-usable
 	public ZotOutputParser(Clock clock,
 			VariableFactory variableFactory,
 			ArrayList<VariableDefinition> variables,
@@ -79,7 +79,7 @@ public class ZotOutputParser {
 	
 	public TreeMultimap<Time, VariableAssignment> parse() {
 		variablesMultimap = TreeMultimap.create();
-		step = 0;
+		step = -1;
 		
 		String line = "";
 		try {
@@ -94,23 +94,31 @@ public class ZotOutputParser {
 		return variablesMultimap;
 	}
 	
-	protected void processLine(String line) {
-		Matcher matcher = unsatPattern.matcher(line);
-		if (matcher.matches()) {
-			unsat = true;
-		}
-		
+	
+	protected void processLine(String line) {		
 		switch(state) {
 			case HEADER: {
+				if (SAT.equals(line)) {
+					state = State.VARIABLES;
+				} else if (UNSAT.equals(line)) {
+					unsat = true;
+				}
+				/*
 				if (line.equals(START_STEP)) {
 					state = State.VARIABLES;
 					currentTime = timeFactory.get(0);
 					falseVariablesAtStep = (ArrayList<VariableDefinition>) variables.clone();
-				}
+				}*/
 				break;
 			}
 			case VARIABLES: {
 				if (line.equals(END)) {
+					// Set all the missing variables to false
+					for (VariableDefinition def: falseVariablesAtStep) {
+						if (def.getType() == Type.BOOLEAN) {
+							variablesMultimap.put(currentTime, new VariableAssignment(def, "0", ""));
+						}
+					}
 					simulationStepReached = true;
 					break;
 				}
@@ -118,14 +126,23 @@ public class ZotOutputParser {
 				Matcher lineMatcher = stepPattern.matcher(line);
 				
 				if (lineMatcher.matches()) {
-					// Set all the missing variables to false
-					for (VariableDefinition def: falseVariablesAtStep) {
-						if (def.getType() == Type.BOOLEAN) {
-							variablesMultimap.put(currentTime, new VariableAssignment(def, "0", ""));
+					/**
+					 * In the output step 0 is random.
+					 * For Zot the simulation step 0 is at time step -1, therefore
+					 * when we read the step number we need to subtract 1.  
+					 */
+					step = Integer.parseInt(lineMatcher.group(1)) - 1;
+					
+					// Start saving from the second step
+					if (step > 0) {
+						// Set all the missing variables to false
+						for (VariableDefinition def: falseVariablesAtStep) {
+							if (def.getType() == Type.BOOLEAN) {
+								variablesMultimap.put(currentTime, new VariableAssignment(def, "0", ""));
+							}
 						}
 					}
 					
-					step = Integer.parseInt(lineMatcher.group(1)) - 1;
 					if (step > simulationStep) {
 						simulationStepReached = true;
 						break;
@@ -133,6 +150,11 @@ public class ZotOutputParser {
 					currentTime = timeFactory.get(step);
 					falseVariablesAtStep = (ArrayList<VariableDefinition>) variables.clone();
 				} else {
+					// Skip all the variable at first step because it is random.
+					if (step == -1) {
+						break;
+					}
+					
 					String varname = line.trim();
 					if (varname.equals("")) {
 						break;

@@ -272,7 +272,12 @@ public class ZotWrapper {
 					"Memento cannot be null.");
 		}
 		overrideVariables(memento);
-		return runZot(time);
+		SystemMemento results = runZot(time);
+		if (results != null) {
+			results.setRolledBackVariablesMultimap(
+					memento.getRolledBackVariablesMultimap());
+		}
+		return results;
 	}
 	
 	

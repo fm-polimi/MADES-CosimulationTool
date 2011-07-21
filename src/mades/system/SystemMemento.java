@@ -205,6 +205,12 @@ public class SystemMemento {
 	
 	public void update(EnvironmentMemento memento) {
 		Time time = memento.getTime();
+		if (time.getSimulationStep() != getLatestSimulatedTime().getSimulationStep() + 1) {
+			throw new RuntimeException("Updating a system memento at time: " + 
+					getLatestSimulatedTime() + 
+					"  with an environment memento at time: " +
+					time);
+		}
 		
 		SortedSet<VariableAssignment> variables = variablesMultimap.get(time);
 		if (variables.size() != 0) {
@@ -229,5 +235,20 @@ public class SystemMemento {
 	
 	public Time getLatestSimulatedTime() {
 		return variablesMultimap.keySet().last();
+	}
+
+	/**
+	 * @return the rolledBackVariablesMultimap
+	 */
+	public HashMultimap<Time, Collection<VariableAssignment>> getRolledBackVariablesMultimap() {
+		return rolledBackVariablesMultimap;
+	}
+
+	/**
+	 * @param rolledBackVariablesMultimap the rolledBackVariablesMultimap to set
+	 */
+	public void setRolledBackVariablesMultimap(
+			HashMultimap<Time, Collection<VariableAssignment>> rolledBackVariablesMultimap) {
+		this.rolledBackVariablesMultimap = HashMultimap.create(rolledBackVariablesMultimap);
 	}
 }
