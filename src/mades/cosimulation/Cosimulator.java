@@ -379,7 +379,6 @@ public class Cosimulator {
 					// If the environment is not valid then we need to
 					// re-simulate the system at the previous time, then the
 					// environment again.
-					rollbackSystem();
 					rollbackEnvironment();
 					clock.tickBackward();
 					attemptsInStep = attemptsInStep - 1;
