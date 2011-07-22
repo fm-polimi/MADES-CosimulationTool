@@ -6,7 +6,6 @@ package mades.cosimulation;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.logging.Logger;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -17,6 +16,7 @@ import mades.common.timing.Clock;
 import mades.common.timing.Time;
 import mades.common.variables.Scope;
 import mades.common.variables.Trigger;
+import mades.common.variables.TriggerFactory;
 import mades.common.variables.TriggerGroup;
 import mades.common.variables.Type;
 import mades.common.variables.VariableAssignment;
@@ -62,6 +62,7 @@ public class InputParser extends DefaultHandler {
 	private String filename;
 	private Clock clock;
 	private VariableFactory variableFactory;
+	private TriggerFactory triggerFactory;
 
 	private String systemName;
 	private String environmentName;
@@ -94,11 +95,14 @@ public class InputParser extends DefaultHandler {
 	 * @param variableFactory
 	 */
 	public InputParser(Logger logger, Clock clock,
-			VariableFactory variableFactory, String filename) {
+			VariableFactory variableFactory, 
+			TriggerFactory triggerFactory,
+			String filename) {
 		this.logger = logger;
 		this.clock = clock;
 		this.filename = filename;
 		this.variableFactory = variableFactory;
+		this.triggerFactory = triggerFactory;
 	}
 	
 	public void parseDocument() {
@@ -183,8 +187,8 @@ public class InputParser extends DefaultHandler {
 		
 		Trigger trigger;
 		if ("system".equalsIgnoreCase(scope)) {
-			trigger = new Trigger(variable, signal, threshold,
-					Scope.SYSTEM_SHARED, value);
+			trigger = triggerFactory.getOrDefine(variable, signal, 
+					threshold, Scope.SYSTEM_SHARED, value);
 			if (variableFactory.isDefinedInSystem(variable)) {
 				trigger.setVariable(variableFactory.getSystemVar(variable));
 			}
@@ -196,8 +200,8 @@ public class InputParser extends DefaultHandler {
 			}
 			systemTriggers.add(trigger);
 		} else {
-			trigger = new Trigger(variable, signal, threshold,
-					Scope.ENVIRONMENT_SHARED, value);
+			trigger = triggerFactory.getOrDefine(variable, signal,
+					threshold, Scope.ENVIRONMENT_SHARED, value);
 			if (variableFactory.isDefinedInEnvironment(variable)) {
 				trigger.setVariable(variableFactory.getEnvironmentVar(variable));
 			}
@@ -316,7 +320,7 @@ public class InputParser extends DefaultHandler {
 	public void endDocument() throws SAXException {
 		super.endDocument();
 		environmentMemento = new EnvironmentMemento(clock.getCurrentTime(),
-				environmentVariables, new SignalMap());
+				environmentVariables);
 		TreeMultimap<Time, VariableAssignment> multimap = TreeMultimap.create();
 		for (VariableAssignment v: systemVariables) {
 			multimap.put(clock.getCurrentTime(), v);

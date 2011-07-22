@@ -20,7 +20,9 @@ import java.util.regex.Pattern;
 
 import mades.common.timing.Clock;
 import mades.common.variables.Scope;
+import mades.common.variables.Transition;
 import mades.common.variables.Trigger;
+import mades.common.variables.TriggerFactory;
 import mades.common.variables.VariableAssignment;
 //import mades.common.variables.VariableAssignment;
 //import mades.common.variables.VariableDefinition;
@@ -36,8 +38,7 @@ import mades.environment.SignalMap;
  *
  */
 public class ModelicaWrapper {
-
-	private final static double TOLERANCE = 0.00000001;
+	//private final static double TOLERANCE = 0.00000001;
 	
 	public static final Object START_TIME_VAR_NAME = " start value";
 	public static final Object END_TIME_VAR_NAME = " stop value";
@@ -55,6 +56,7 @@ public class ModelicaWrapper {
 	//private Pattern variablePattern = Pattern.compile(VARIABLE_LINE);
 	
 	private static final String SIGNAL_LINE = "^(TRANSnp|TRANSpn):\\t(" + VARIABLE_NAME + ")\\t(" + DOUBLE + ")$";
+	private static String UP_DOWN = "TRANSpn";
 	private Pattern signalPattern = Pattern.compile(SIGNAL_LINE);
 	
 	private String environmentPath;
@@ -68,6 +70,7 @@ public class ModelicaWrapper {
 	private String csvFileName;
 	
 	private VariableFactory variableFactory;
+	private TriggerFactory triggerFactory;
 	private Clock clock;
 	
 	/**
@@ -77,8 +80,11 @@ public class ModelicaWrapper {
 	protected ModelicaWrapper(String environmentPath,
 			String environmentFileName,
 			String environmentName, Clock clock,
-			VariableFactory variableFactory, ArrayList<Trigger> triggers) {
+			VariableFactory variableFactory, 
+			TriggerFactory triggerFactory,
+			ArrayList<Trigger> triggers) {
 		this.variableFactory = variableFactory;
+		this.triggerFactory = triggerFactory;
 		this.clock = clock;
 		
 		this.environmentPath = environmentPath;
@@ -240,15 +246,14 @@ public class ModelicaWrapper {
 			}
 		}
 		EnvironmentMemento resultMemento = new EnvironmentMemento(
-				clock.getCurrentTime(), variables,
-				memento.getSignals());
+				clock.getCurrentTime(), variables);
 		File signalsFile = new File(signalsFileName);
 		if (signalsFile.isFile() && signalsFile.exists()) {
 			try {
 				BufferedReader reader = new BufferedReader(new FileReader(signalsFile));
 				String line = null;
 				while ((line = reader.readLine()) != null) {
-					parseSignalLine(resultMemento.getSignals(), line);
+					parseSignalLine(resultMemento, line);
 				}
 				reader.close();
 			} catch (FileNotFoundException e) {
@@ -261,13 +266,17 @@ public class ModelicaWrapper {
 		return resultMemento;
 	}
 	
-	protected void parseSignalLine(SignalMap signals, String line) {
+	protected void parseSignalLine(EnvironmentMemento memento, String line) {
 		Matcher matcher = signalPattern.matcher(line);
 		if (matcher.matches()) {
 			String upDown = matcher.group(1);
-			String name = matcher.group(2);
-			String value = matcher.group(3);
-			signals.put(name, Double.parseDouble(value));
+			String variable = matcher.group(2);
+			String time = matcher.group(3);
+			
+			Trigger t = triggerFactory.get(variable);
+			Transition tr = t.addTransition(Double.parseDouble(time),
+					UP_DOWN.equalsIgnoreCase(upDown));
+			memento.addTransition(tr);
 		}
 	}
 }

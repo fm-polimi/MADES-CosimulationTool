@@ -7,7 +7,9 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import mades.common.timing.Clock;
+import mades.common.variables.Transition;
 import mades.common.variables.Trigger;
+import mades.common.variables.TriggerFactory;
 import mades.common.variables.VariableFactory;
 import mades.environment.EnvironmentConnector;
 import mades.environment.EnvironmentMemento;
@@ -40,11 +42,14 @@ public class ModelicaEnvironmentConnector implements EnvironmentConnector {
 			String environmentFileName,
 			String environmentName,
 			Clock clock,
-			VariableFactory variableFactory, EnvironmentMemento environmentMemento,
+			VariableFactory variableFactory, 
+			TriggerFactory triggerFactory,
+			EnvironmentMemento environmentMemento,
 			ArrayList<Trigger> triggers) {
 		wrapper = new ModelicaWrapper(
 				environmentPath, environmentFileName, environmentName, 
-				clock, variableFactory, triggers);
+				clock, variableFactory, triggerFactory, 
+				triggers);
 		environmentMemento = wrapper.initialize(environmentMemento);
 		return environmentMemento;
 	}
@@ -80,8 +85,8 @@ public class ModelicaEnvironmentConnector implements EnvironmentConnector {
 	 * @see mades.environment.EnvironmentConnector#getEventsHistory()
 	 */
 	@Override
-	public SignalMap getEventsHistory() {
-		return environmentMemento.getSignals();
+	public ArrayList<Transition> getTransitions() {
+		return environmentMemento.getTransitions();
 	}
 
 }

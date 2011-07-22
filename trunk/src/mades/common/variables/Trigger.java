@@ -3,22 +3,26 @@
  */
 package mades.common.variables;
 
+import java.util.ArrayList;
+
 /**
  * @author Michele Sama (m.sama@puzzledev.com)
  *
  */
 public class Trigger {
-	String variableName;
-	VariableDefinition variable;
+	private String variableName;
+	private VariableDefinition variable;
 	
-	String signalName;
-	VariableDefinition signal; 
+	private String signalName;
+	private VariableDefinition signal; 
 	
-	String thresholdName;
-	VariableDefinition threshold;
+	private String thresholdName;
+	private VariableDefinition threshold;
 	
-	Scope scope;
-	double value;
+	private Scope scope;
+	private double value;
+	
+	private ArrayList<Transition> transitions = new ArrayList<Transition>();
 	
 	/**
 	 * @param variable
@@ -26,7 +30,7 @@ public class Trigger {
 	 * @param threshold
 	 * @param value
 	 */
-	public Trigger(String variable, String signal, String threshold,
+	protected Trigger(String variable, String signal, String threshold,
 			Scope scope, double value) {
 		this.variableName = variable;
 		this.signalName = signal;
@@ -108,4 +112,25 @@ public class Trigger {
 		this.threshold = threshold;
 	}
 	
+	public Transition addTransition(double time, boolean upDown) {
+		Transition t = new Transition(this, time, upDown);
+		transitions.add(t);
+		return t;
+	}
+	
+	public boolean validate(double minSignalDelta, double oldestTime) {
+		for (int i = transitions.size() - 1; i > 1; i--) {
+			Transition end = transitions.get(i);
+			Transition begin = transitions.get(i - 1);
+			
+			if ((end.getTime() - begin.getTime()) < minSignalDelta) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	public Transition getLatestTransition() {
+		return transitions.get(transitions.size() - 1);
+	}
 }

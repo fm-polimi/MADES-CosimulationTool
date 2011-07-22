@@ -6,7 +6,9 @@ package mades.environment;
 import java.util.ArrayList;
 
 import mades.common.timing.Clock;
+import mades.common.variables.Transition;
 import mades.common.variables.Trigger;
+import mades.common.variables.TriggerFactory;
 import mades.common.variables.VariableFactory;
 import mades.cosimulation.Cosimulator;
 import mades.system.SystemMemento;
@@ -41,7 +43,9 @@ public interface EnvironmentConnector {
 			String environmentPath,
 			String environmentFileName,
 			String environmentName,
-			Clock clock, VariableFactory variableFactory,
+			Clock clock, 
+			VariableFactory variableFactory,
+			TriggerFactory triggerFactory,
 			EnvironmentMemento environmentMemento, ArrayList<Trigger> triggers);
 	
 	/**
@@ -83,5 +87,5 @@ public interface EnvironmentConnector {
 	 * @return A collection of event name, array of times in which the 
 	 *         event has occurred.
 	 */
-	public SignalMap getEventsHistory();
+	public ArrayList<Transition> getTransitions();
 }

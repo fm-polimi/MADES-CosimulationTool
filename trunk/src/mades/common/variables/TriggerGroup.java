@@ -39,5 +39,27 @@ public class TriggerGroup {
 		return triggers.size();
 	}
 	
-	
+	public boolean validate(double minSignalDelta, double oldestTime) {
+		// Check single values
+		for (Trigger v: triggers) {
+			if (!v.validate(minSignalDelta, oldestTime)) {
+				return false;
+			}
+		}
+		
+		// Check groups
+		double min = Double.MAX_VALUE;
+		double max = Double.MIN_VALUE;
+		for (Trigger v: triggers) {
+			double t = v.getLatestTransition().getTime();
+			min = (t < min) ? t : min;
+			max = (t > max) ? t : max;
+		} 
+		if ((max - min) < minSignalDelta) {
+			return false;
+		}
+		
+		
+		return true;
+	}
 }
