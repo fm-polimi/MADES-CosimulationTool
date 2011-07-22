@@ -347,6 +347,7 @@ public class Cosimulator {
 		int backtrakingAttempts = maxCosimulationBacktraking;
 		boolean stepApproved = false;
 		boolean skipEnv = false;
+		int nextStep = clock.getCurrentTime().getSimulationStep() + 1;
 		do {
 			int attemptsInStep = maxCosimulationAttemptsForStep;
 			do {
@@ -389,7 +390,8 @@ public class Cosimulator {
 					skipEnv = true;
 				}
 				
-			} while (attemptsInStep > 0 && !stepApproved);
+			} while (attemptsInStep > 0 && !stepApproved && 
+					!(clock.getCurrentTime().getSimulationStep() == nextStep));
 			
 			if (stepApproved) {
 				break;
