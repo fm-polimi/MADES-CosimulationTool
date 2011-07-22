@@ -316,8 +316,8 @@ public class Cosimulator {
 		SystemMemento systemMemento = system.initialize(
 				inputParser.getSystemPath(),
 				inputParser.getSystemName(),
-				
 				clock, variableFactory,
+				triggerFactory,
 				inputParser.getSystemMemento());
 		if (systemMemento == null) {
 			String msg = "Unsatisfiable initial configuration: aborting...";
@@ -372,12 +372,13 @@ public class Cosimulator {
 						stepApproved = true;
 					} catch(AssertionError err) {
 						// Unsat
-						rollbackEnvironment();
-						clock.tickBackward();
-						attemptsInStep = attemptsInStep - 1;
-						rollbackSystem();
+						-- attemptsInStep;
 						logger.severe("The simulated step has no solution: retrying (" + 
 								attemptsInStep +" attempts left).");
+						
+						rollbackEnvironment();
+						clock.tickBackward();
+						rollbackSystem();
 						// no need to resimulate modelica because it is deterministic
 						skipEnv = true;
 					}
@@ -385,12 +386,13 @@ public class Cosimulator {
 					// If the environment is not valid then we need to
 					// re-simulate the system at the previous time, then the
 					// environment again.
+					-- attemptsInStep;
+					logger.severe("The simulated step is invalid: retrying (" + 
+							attemptsInStep +" attempts left).");
+					
 					rollbackEnvironment();
 					clock.tickBackward();
-					attemptsInStep = attemptsInStep - 1;
 					rollbackSystem();
-					logger.severe("The simulated step is invalid: retrying (" + 
-							attemptsInStep +" attemptsleft).");
 					// no need to resimulate modelica because it is deterministic
 					skipEnv = true;
 				}
@@ -439,6 +441,7 @@ public class Cosimulator {
 				throw new AssertionError("EnvironmentMemento at time " + 
 						memento.getTime() + " is not obsolete.");
 			}
+			memento.deleteTransitions();
 		}
 		elementsToremove = systemMementoStack.size() -
 				maxCosimulationBacktraking;
@@ -452,7 +455,7 @@ public class Cosimulator {
 			}
 			
 			memento.deleteRelatedFiles();
-			
+			memento.deleteTransitions();
 		}
 	}
 	
@@ -475,6 +478,7 @@ public class Cosimulator {
 				sharedVariablesMultimap.remove(memento.getTime(), v);
 			}
 		}
+		memento.deleteTransitions();
 	}
 	
 	protected void rollbackSystem() {
@@ -502,6 +506,7 @@ public class Cosimulator {
 		// Add the unsat configuration to the current memento
 		SystemMemento currentMemento = systemMementoStack.peek();
 		currentMemento.addUnsatConfiguration(clock.getCurrentTime(), variables);
+		discardedMemento.deleteTransitions();
 	}
 	
 	protected void simulateEnvironment() {
@@ -571,7 +576,7 @@ public class Cosimulator {
 		double oldestTime = environmentMemento.getTime().getSimulationTime();
 		
 		for (TriggerGroup tg: triggerGroups) {
-			if (!tg.validate(0.0001, oldestTime)){
+			if (!tg.validate(clock.getTimeStep(), 0.00000000001, oldestTime)){
 				return false;
 			}
 		}

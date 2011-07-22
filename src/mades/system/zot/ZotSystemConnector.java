@@ -6,6 +6,7 @@ package mades.system.zot;
 import java.util.logging.Logger;
 
 import mades.common.timing.Clock;
+import mades.common.variables.TriggerFactory;
 import mades.common.variables.VariableFactory;
 import mades.environment.EnvironmentMemento;
 import mades.system.SystemConnector;
@@ -34,11 +35,13 @@ public class ZotSystemConnector implements SystemConnector {
 	public SystemMemento initialize(
 			String systemPath, String systemName, 
 			Clock clock,
-			VariableFactory variableFactory, SystemMemento systemMemento) {
+			VariableFactory variableFactory,
+			TriggerFactory triggerFactory,
+			SystemMemento systemMemento) {
 		this.clock = clock;
 		
 		wrapper = new ZotWrapper(systemPath, systemName,
-				clock, variableFactory,
+				clock, variableFactory, triggerFactory,
 				logger);
 		wrapper.initialize(systemMemento);
 		return systemMemento;

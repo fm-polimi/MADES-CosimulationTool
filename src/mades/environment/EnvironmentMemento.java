@@ -111,4 +111,11 @@ public class EnvironmentMemento {
 	public boolean addTransition(Transition e) {
 		return transitions.add(e);
 	}
+	
+	public void deleteTransitions() {
+		for (Transition t: transitions) {
+			t.getTrigger().removeTransition(t);
+		}
+		transitions.clear();
+	}
 }

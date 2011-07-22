@@ -4,6 +4,7 @@
 package mades.system;
 
 import mades.common.timing.Clock;
+import mades.common.variables.TriggerFactory;
 import mades.common.variables.VariableFactory;
 import mades.cosimulation.Cosimulator;
 import mades.environment.EnvironmentMemento;
@@ -33,6 +34,7 @@ public interface SystemConnector {
 	 */
 	public SystemMemento initialize(String systemPath, String systemName, 
 			Clock clock, VariableFactory variableFactory,
+			TriggerFactory triggerFactory,
 			SystemMemento systemMemento);
 	
 	/**

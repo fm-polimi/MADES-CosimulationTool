@@ -5,6 +5,8 @@ package mades.common.variables;
 
 import java.util.ArrayList;
 
+import mades.common.timing.Clock;
+
 /**
  * @author Michele Sama (m.sama@puzzledev.com)
  *
@@ -39,12 +41,17 @@ public class TriggerGroup {
 		return triggers.size();
 	}
 	
-	public boolean validate(double minSignalDelta, double oldestTime) {
+	public boolean validate(double delta, double tolerance, double oldestTime) {
 		// Check single values
 		for (Trigger v: triggers) {
-			if (!v.validate(minSignalDelta, oldestTime)) {
+			if (!v.validate(delta, oldestTime)) {
 				return false;
 			}
+		}
+		
+		// Only groups with 2 or more triggers should do that.
+		if (triggers.size() < 2) {
+			return true;
 		}
 		
 		// Check groups
@@ -55,7 +62,8 @@ public class TriggerGroup {
 			min = (t < min) ? t : min;
 			max = (t > max) ? t : max;
 		} 
-		if ((max - min) < minSignalDelta) {
+		double distance = (max - min);
+		if (distance < delta && distance > tolerance) {
 			return false;
 		}
 		

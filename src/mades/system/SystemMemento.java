@@ -5,6 +5,7 @@ package mades.system;
 
 import java.util.Collection;
 import java.util.Map.Entry;
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.SortedSet;
 
@@ -14,6 +15,10 @@ import com.google.common.collect.TreeMultimap;
 
 import mades.common.timing.Time;
 import mades.common.variables.Scope;
+import mades.common.variables.Transition;
+import mades.common.variables.Trigger;
+import mades.common.variables.TriggerFactory;
+import mades.common.variables.Type;
 import mades.common.variables.VariableAssignment;
 import mades.common.variables.VariableDefinition;
 import mades.environment.EnvironmentMemento;
@@ -26,19 +31,16 @@ import mades.environment.EnvironmentMemento;
  */
 public class SystemMemento {
 
-
-	/**
-	 * 
-	 */
 	private TreeMultimap<Time, VariableAssignment> variablesMultimap;
-	
-	private HashMultimap<Time, Collection<VariableAssignment>> rolledBackVariablesMultimap;
+	private HashMultimap<Time, Collection<VariableAssignment>> rolledBackVariablesMultimap;	
+	private ArrayList<Transition> transitions;
 	
 	/**
 	 */
 	public SystemMemento() {
 		variablesMultimap = TreeMultimap.create();
 		rolledBackVariablesMultimap = HashMultimap.create();
+		transitions = new ArrayList<Transition>();
 	}
 
 	/**
@@ -59,8 +61,45 @@ public class SystemMemento {
 		
 		// TODO shall we make a deep copy?
 		rolledBackVariablesMultimap = HashMultimap.create(oldMemento.rolledBackVariablesMultimap);
+		transitions = new ArrayList<Transition>();
 	}
 
+	public void computeTransitions(TriggerFactory triggerFactory) {
+		transitions.clear();
+		SortedSet<Time> times = variablesMultimap.keySet();	
+		if (times.size() < 2) {
+			return;
+		}
+		Time now = null;
+		Time previous = null;
+		for (Time t: times) {
+			now = t;
+			previous = now;
+		}
+		if (!now.equals(getLatestSimulatedTime())) {
+			throw new AssertionError("Wrong last time");
+		}
+		ArrayList<VariableAssignment> previousVars = new ArrayList(variablesMultimap.get(previous));
+		ArrayList<VariableAssignment> currentVars = new ArrayList(variablesMultimap.get(now));
+		
+		for (int i = 0; i < previousVars.size(); i++) {
+			VariableAssignment prev = previousVars.get(i);
+			VariableAssignment curr = currentVars.get(i);
+			if (curr.getVariableDefinition() != prev.getVariableDefinition()) {
+				throw new AssertionError("Wrong variable from memento.");
+			}
+			// Only boolean variables
+			if (curr.getVariableDefinition().getType() != Type.BOOLEAN) {
+				continue;
+			}
+			if (curr.getValue() != prev.getValue()) {
+				Trigger t = triggerFactory.get(curr.getVariableDefinition().getSystemName());
+				Transition tr = t.addTransition(now.getSimulationTime(), curr.getValue() == "0");
+				transitions.add(tr);
+			}
+		}
+		
+	}
 	
 	/**
 	 * @param variablesMultimap
@@ -68,6 +107,7 @@ public class SystemMemento {
 	public SystemMemento(TreeMultimap<Time, VariableAssignment> variablesMultimap) {
 		this.variablesMultimap = TreeMultimap.create(variablesMultimap);
 		rolledBackVariablesMultimap = HashMultimap.create();
+		transitions = new ArrayList<Transition>();
 	}
 
 	/**
@@ -250,5 +290,12 @@ public class SystemMemento {
 	public void setRolledBackVariablesMultimap(
 			HashMultimap<Time, Collection<VariableAssignment>> rolledBackVariablesMultimap) {
 		this.rolledBackVariablesMultimap = HashMultimap.create(rolledBackVariablesMultimap);
+	}
+	
+	public void deleteTransitions() {
+		for (Transition t: transitions) {
+			t.getTrigger().removeTransition(t);
+		}
+		transitions.clear();
 	}
 }
