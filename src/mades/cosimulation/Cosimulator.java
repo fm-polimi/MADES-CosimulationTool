@@ -17,6 +17,7 @@ import com.google.common.collect.TreeMultimap;
 import mades.common.timing.Clock;
 import mades.common.timing.Time;
 import mades.common.variables.Scope;
+import mades.common.variables.TriggerFactory;
 import mades.common.variables.TriggerGroup;
 import mades.common.variables.VariableAssignment;
 import mades.common.variables.VariableFactory;
@@ -47,6 +48,7 @@ public class Cosimulator {
 	
 	private Clock clock;
 	private VariableFactory variableFactory;
+	private TriggerFactory triggerFactory;
 	
 	private PropertyChangeSupport propertyChangeSupport;
 	
@@ -80,10 +82,6 @@ public class Cosimulator {
 	 * at the end of the co-simulation. It only contains shared variables.
 	 */
 	private TreeMultimap<Time, VariableAssignment> sharedVariablesMultimap;
-
-	//private String environmentFileName;
-
-	//private String initFileName;
 
 	private ArrayList<TriggerGroup> triggerGroups;
 	
@@ -199,7 +197,6 @@ public class Cosimulator {
 		return simulationStarted;
 	}
 
-
 	/**
 	 * Starts a new co-simulation.
 	 * 
@@ -239,6 +236,7 @@ public class Cosimulator {
 		clock = new Clock(logger, timeStep,
 				initialSimulationTime, maxCosimulationTime);
 		variableFactory = new VariableFactory();
+		triggerFactory = new TriggerFactory();
 		
 		this.maxCosimulationAttemptsForStep = maxCosimulationAttemptsForStep;
 		this.maxCosimulationBacktraking = maxCosimulationBacktraking;
@@ -270,13 +268,12 @@ public class Cosimulator {
                         cosimulationStopped = true;
 		}
 	}
-	
         
-        public void stopCosimulation() {
-            logger.info("Simulation stopped by user.");
-            cosimulationStopped = true;
-        }
-        
+    public void stopCosimulation() {
+        logger.info("Simulation stopped by user.");
+        cosimulationStopped = true;
+    }
+    
 	
 	/**
 	 * Cleans the internal stacks and initializes the first state.
@@ -309,7 +306,8 @@ public class Cosimulator {
 		sharedVariablesMultimap = TreeMultimap.create();
 		
 		InputParser inputParser = new InputParser(logger, clock, 
-                        variableFactory, modelFileName);
+				variableFactory, triggerFactory,
+                modelFileName);
 		inputParser.parseDocument();
 		triggerGroups = inputParser.getTriggerGroups();
 	
@@ -334,7 +332,9 @@ public class Cosimulator {
 				inputParser.getEnvironmentFileName(),
 				inputParser.getEnvironmentName(),
 				clock,
-				variableFactory, inputParser.getEnvironmentMemento(),
+				variableFactory, 
+				triggerFactory,
+				inputParser.getEnvironmentMemento(),
 				inputParser.getEnvironmentTriggers());
 		
 		environmentMementoStack.push(environmentMemento);
@@ -346,7 +346,13 @@ public class Cosimulator {
 		/******************/
 		int backtrakingAttempts = maxCosimulationBacktraking;
 		boolean stepApproved = false;
+		
+		/* Since Modelica is deterministic there is no need
+		 * to re-simulate the environment at each step.
+		 */
 		boolean skipEnv = false;
+		
+		// The next simulation step.
 		int nextStep = clock.getCurrentTime().getSimulationStep() + 1;
 		do {
 			int attemptsInStep = maxCosimulationAttemptsForStep;
@@ -359,7 +365,6 @@ public class Cosimulator {
 					// The environment was already simulated.
 					skipEnv = false;
 				}
-				
 				
 				if (isLastEnvironmentSimulationValid()) {
 					try {
@@ -562,9 +567,15 @@ public class Cosimulator {
 	}
 	
 	boolean isLastEnvironmentSimulationValid() {
-		EnvironmentMemento environmentMemento = environmentMementoStack.peek();
-		SignalMap signals = environmentMemento.getSignals();
-		return signals.validate(clock.getTimeStep());
+		EnvironmentMemento environmentMemento = environmentMementoStack.firstElement();
+		double oldestTime = environmentMemento.getTime().getSimulationTime();
+		
+		for (TriggerGroup tg: triggerGroups) {
+			if (!tg.validate(0.0001, oldestTime)){
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**

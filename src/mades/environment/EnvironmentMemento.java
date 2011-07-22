@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import mades.common.timing.Time;
 import mades.common.variables.Scope;
+import mades.common.variables.Transition;
 import mades.common.variables.VariableAssignment;
 import mades.common.variables.VariableDefinition;
 import mades.system.SystemMemento;
@@ -19,7 +20,7 @@ import mades.system.SystemMemento;
  */
 public class EnvironmentMemento {
 	
-	private SignalMap signals;
+	private ArrayList<Transition> transitions;
 	private Time time;
 	private ArrayList<VariableAssignment> params;
 	
@@ -27,23 +28,17 @@ public class EnvironmentMemento {
 	 * @param time
 	 * @param params
 	 */
-	public EnvironmentMemento(Time time, ArrayList<VariableAssignment> params, SignalMap signals) {
+	public EnvironmentMemento(Time time,
+			ArrayList<VariableAssignment> params) {
 		this.time = time;
 		this.params = params;
-		this.signals = new SignalMap(signals);
+		this.transitions = new ArrayList<Transition>();
 	}
 	
 	public EnvironmentMemento(EnvironmentMemento oldMemento) {
 		this.time = oldMemento.getTime();
-		this.params = new ArrayList<VariableAssignment>();
-		for (VariableAssignment v: oldMemento.params) {
-			VariableAssignment var = new VariableAssignment(
-					v.getVariableDefinition(),
-					v.getValue(),
-					v.getAnnotation());
-			this.params.add(var);
-		}
-		this.signals = new SignalMap(oldMemento.signals);
+		this.params = new ArrayList<VariableAssignment>(oldMemento.params);
+		this.transitions = new ArrayList<Transition>(oldMemento.transitions);
 	}
 	
 	/**
@@ -59,14 +54,7 @@ public class EnvironmentMemento {
 	public ArrayList<VariableAssignment> getParams() {
 		return params;
 	}
-	
-	/**
-	 * @return the signals
-	 */
-	public SignalMap getSignals() {
-		return signals;
-	}
-	
+		
 	/**
 	 * Return a variable assignment for the given variable definition.
 	 * 
@@ -106,5 +94,21 @@ public class EnvironmentMemento {
 				params.set(i, var.clone());
 			}
 		}
+	}
+
+	/**
+	 * @return the transitions
+	 */
+	public ArrayList<Transition> getTransitions() {
+		return transitions;
+	}
+
+	/**
+	 * @param e
+	 * @return
+	 * @see java.util.ArrayList#add(java.lang.Object)
+	 */
+	public boolean addTransition(Transition e) {
+		return transitions.add(e);
 	}
 }
