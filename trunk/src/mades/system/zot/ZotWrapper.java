@@ -27,6 +27,7 @@ import com.google.common.io.Files;
 
 import mades.common.timing.Clock;
 import mades.common.timing.Time;
+import mades.common.variables.TriggerFactory;
 import mades.common.variables.Type;
 import mades.common.variables.VariableAssignment;
 import mades.common.variables.VariableDefinition;
@@ -76,6 +77,7 @@ public class ZotWrapper {
 	private Logger logger;
 	private Clock clock;
 	private VariableFactory variableFactory;
+	private TriggerFactory triggerFactory;
 	private ArrayList<VariableDefinition> definedVariables;
 	
 	/**
@@ -90,10 +92,13 @@ public class ZotWrapper {
 	 *         exist or if they are a directory.
 	 */
 	public ZotWrapper(String systemPath, String systemName, 
-			Clock clock, VariableFactory variableFactory, Logger logger) {
+			Clock clock, VariableFactory variableFactory,
+			TriggerFactory triggerFactory, 
+			Logger logger) {
 		
 		this.clock = clock;
 		this.variableFactory = variableFactory;
+		this.triggerFactory = triggerFactory;
 		this.logger = logger;
 		
 		this.systemPath = systemPath;
@@ -262,6 +267,7 @@ public class ZotWrapper {
 		if (parser.isUnsat()) {
 			return null;
 		}
+		memento.computeTransitions(triggerFactory);
 		return memento;
 	}
 	

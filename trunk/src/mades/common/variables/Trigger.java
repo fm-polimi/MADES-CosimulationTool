@@ -133,4 +133,8 @@ public class Trigger {
 	public Transition getLatestTransition() {
 		return transitions.get(transitions.size() - 1);
 	}
+	
+	public boolean removeTransition(Transition t) {
+		return transitions.remove(t);
+	}
 }
