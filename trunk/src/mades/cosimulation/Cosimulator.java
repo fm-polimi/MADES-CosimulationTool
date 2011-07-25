@@ -450,13 +450,18 @@ public class Cosimulator {
 							(clock.getCurrentTime().getSimulationStep() < nextStep))
 					);
 			
-			if (stepApproved) {
+			// We have a next step
+			if (stepApproved && 
+					(clock.getCurrentTime().getSimulationStep() == nextStep)) {
 				break;
 			}
-			rollbackEnvironment();
-			clock.tickBackward();
+			
 			backtrakingAttempts -= 1;
-			rollbackSystem();
+			for (int r = 0; r < (maxCosimulationBacktraking - backtrakingAttempts); r++) {
+				rollbackEnvironment();
+				clock.tickBackward();
+				rollbackSystem();
+			}
 			logger.severe("Maximum number of attempts in state reached: backtraking (" + 
 					backtrakingAttempts + " backtraking left)");
 			// no need to resimulate modelica because it is deterministic
@@ -485,8 +490,9 @@ public class Cosimulator {
 	 * {@link Cosimulator.maxCosimulationBacktraking}.
 	 */
 	protected void deleteObsoleteData() {
+		int elementsToKeep = 2 + maxCosimulationBacktraking;
 		int elementsToremove = environmentMementoStack.size() -
-				maxCosimulationBacktraking;
+				elementsToKeep;
 		int currentStep = clock.getCurrentTime().getSimulationStep();
 		for (int i = elementsToremove; i > 0; i--) {
 			EnvironmentMemento memento = environmentMementoStack.remove(0);
@@ -497,8 +503,9 @@ public class Cosimulator {
 			}
 			memento.deleteTransitions();
 		}
+		elementsToKeep = 3 + maxCosimulationBacktraking;
 		elementsToremove = systemMementoStack.size() -
-				maxCosimulationBacktraking;
+				elementsToKeep;
 		for (int i = elementsToremove; i > 0; i--) {
 			SystemMemento memento = systemMementoStack.remove(0);
 			
@@ -548,7 +555,7 @@ public class Cosimulator {
 		// TODO(rax): assert is the right memento
 		
 		// Remove shared variables
-		Time t = clock.getCurrentTime();
+		Time t = discardedMemento.getLatestSimulatedTime();
 		Collection<VariableAssignment> variables = 
 				discardedMemento.get(t);
 		for (VariableAssignment v: variables) {
@@ -559,7 +566,7 @@ public class Cosimulator {
 		
 		// Add the unsat configuration to the current memento
 		SystemMemento currentMemento = systemMementoStack.peek();
-		currentMemento.addUnsatConfiguration(clock.getCurrentTime(), variables);
+		currentMemento.addUnsatConfiguration(t, variables);
 		discardedMemento.deleteTransitions();
 	}
 	

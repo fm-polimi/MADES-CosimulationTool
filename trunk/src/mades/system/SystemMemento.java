@@ -265,6 +265,11 @@ public class SystemMemento {
 	}
 	
 	public void addUnsatConfiguration(Time time, Collection<VariableAssignment> variables) {
+		if (time.getSimulationStep() != getLatestSimulatedTime().getSimulationStep() + 1) {
+			throw new AssertionError("Times do not match while setting " +
+					"unsat configurations. Unsat time: " + 
+					time + " memento time: " + getLatestSimulatedTime());
+		}
 		rolledBackVariablesMultimap.put(time, variables);
 	}
 	
