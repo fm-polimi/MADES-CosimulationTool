@@ -300,8 +300,6 @@ public class Cosimulator {
 			// Runs the co-simulation
 			while(!clock.hasReachCosimulationEnd() && !cosimulationStopped) {
 				performCosimulationStep(); 
-				propertyChangeSupport.firePropertyChange(
-						SIMULATION_STEP_DONE, null, sharedVariablesMultimap);
 			}
 			logger.info("Simulation ended at time: " +
                                 clock.getCurrentTime().getSimulationTime());
@@ -409,6 +407,8 @@ public class Cosimulator {
 					// t -> t + delta
 					clock.tickForward();
 					simulateEnvironment();
+					propertyChangeSupport.firePropertyChange(
+							SIMULATION_STEP_DONE, null, sharedVariablesMultimap);
 				} else {
 					// The environment was already simulated.
 					skipEnv = false;
@@ -417,6 +417,8 @@ public class Cosimulator {
 				if (isLastEnvironmentSimulationValid()) {
 					try {
 						simulateSystem();
+						propertyChangeSupport.firePropertyChange(
+								SIMULATION_STEP_DONE, null, sharedVariablesMultimap);
 						stepApproved = true;
 					} catch(AssertionError err) {
 						// Unsat
@@ -461,6 +463,9 @@ public class Cosimulator {
 			}
 			
 			backtrakingAttempts -= 1;
+			if (backtrakingAttempts == 0) {
+				break;
+			}
 			for (int r = 0; r < (maxCosimulationBacktraking - backtrakingAttempts); r++) {
 				rollbackEnvironment();
 				clock.tickBackward();
