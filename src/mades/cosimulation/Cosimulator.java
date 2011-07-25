@@ -429,6 +429,8 @@ public class Cosimulator {
 						rollbackSystem();
 						// no need to resimulate modelica because it is deterministic
 						skipEnv = true;
+						propertyChangeSupport.firePropertyChange(
+								SIMULATION_STEP_DONE, null, sharedVariablesMultimap);
 					}
 				} else {
 					// If the environment is not valid then we need to
@@ -441,6 +443,8 @@ public class Cosimulator {
 					rollbackEnvironment();
 					clock.tickBackward();
 					rollbackSystem();
+					propertyChangeSupport.firePropertyChange(
+							SIMULATION_STEP_DONE, null, sharedVariablesMultimap);
 					// no need to resimulate modelica because it is deterministic
 					skipEnv = true;
 				}
@@ -464,6 +468,8 @@ public class Cosimulator {
 			}
 			logger.severe("Maximum number of attempts in state reached: backtraking (" + 
 					backtrakingAttempts + " backtraking left)");
+			propertyChangeSupport.firePropertyChange(
+					SIMULATION_STEP_DONE, null, sharedVariablesMultimap);
 			// no need to resimulate modelica because it is deterministic
 			skipEnv = true;
 			
