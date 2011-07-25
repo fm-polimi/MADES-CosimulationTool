@@ -7,12 +7,13 @@ cd ~
 mkdir mades
 cd mades
 # Download the latest JAR 
-wget http://code.google.com/p/mades/downloads/detail?name=Mades.jar&can=2&q=
+wget http://mades.googlecode.com/files/mades_all.tar.gz
+
 #TODO(rax): make the jar file executable
 
 # Download and install ZOT
 # TODO(rax): download it in a tmp folder and remove it after install
-wget http://code.google.com/p/mades/downloads/detail?name=zot_25_07_2011.zip&can=2&q=
+wget http://mades.googlecode.com/files/zot_25_07_2011.zip
 # TODO(rax): copy the whole zot folder in /usr/local/
 # TODO(rax): make a symbolic link from /usr/local/zot/bin/zot to /usr/bin/
 # TODO(rax): make sure that /usr/local/zot/bin/zot has the right permission and it is executable!
@@ -24,8 +25,3 @@ wget http://code.google.com/p/mades/downloads/detail?name=zot_25_07_2011.zip&can
 #http://yices.csl.sri.com/download-yices2.shtml
 #http://research.microsoft.com/en-us/um/redmond/projects/z3/
 
-
-# Download and install the examples
-# TODO(rax): unzip this file inside the MADES folder. They should be inside a folder called "examples"
-wget http://code.google.com/p/mades/downloads/detail?name=examples.zip&can=2&q=
-# TODO(rax): remove the file after it has been unzipped
