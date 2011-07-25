@@ -83,7 +83,7 @@ public class ModelicaCsvParser {
 					def = variableFactory.define(varName, varName,
 							Scope.ENVIRONMENT_INTERNAL, Type.DOUBLE);
 				}
-				variables.add(new VariableAssignment(def, token, ""));
+				variables.add(new VariableAssignment(def, token));
 			}
 			i ++;
 		}

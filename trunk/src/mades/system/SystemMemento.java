@@ -53,8 +53,7 @@ public class SystemMemento {
 			for (VariableAssignment v: variables) {
 				VariableAssignment var = new VariableAssignment(
 						v.getVariableDefinition(), 
-						v.getValue(), 
-						v.getAnnotation());
+						v.getValue());
 				variablesMultimap.put(t, var);
 			}
 		}
