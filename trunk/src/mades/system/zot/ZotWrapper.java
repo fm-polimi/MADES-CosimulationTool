@@ -103,6 +103,7 @@ public class ZotWrapper {
 	
 	private void checkAndUpdateEngine(int maxSimulationStep) {
 		try {
+			logger.info("Copying engine dir: " + new File(ENGINE_FOLDER).getAbsolutePath());
 			copyDir(new File(ENGINE_FOLDER), new File(systemPath));
 		} catch (IOException e) {
 			throw new RuntimeException(e);
