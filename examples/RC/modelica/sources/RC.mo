@@ -43,7 +43,7 @@ algorithm
 	end when;
 
 	when change(s) then
-	FilePrint(s, pre(s), time);
+		FilePrint("C1.v", s, pre(s), time);
 	end when;
 
 	/**triggers end**/
@@ -64,6 +64,22 @@ algorithm
   	
   	
 end RC;
+/** include begin **/
+function Init
+external
+	InitExt() annotation(Library="libInitExt.o",Include="#include \"InitExt.h\"");
+end Init;
+
+function FilePrint
+	input String varName;
+	input Real x;
+	input Real x_pre;
+	input Real t;
+external
+	PrintExt(varName,x,x_pre,t) annotation(Library="libPrintExt.o",Include="#include \"PrintExt.h\"");
+end FilePrint;
+/** include end **/
+
 
 function Init
 external

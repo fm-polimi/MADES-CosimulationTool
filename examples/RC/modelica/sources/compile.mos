@@ -1,0 +1,9 @@
+cd("/home/rax/workspace-mades/mades/examples/RC/modelica/sources/");
+loadFile("RC.mo");
+loadModel(Modelica);
+system("gcc -c -o libPrintExt.o PrintExt.c");
+system("gcc -c -o libInitExt.o InitExt.c");
+simulate(RC,startTime=0.0,stopTime=10,outputFormat="csv");
+system("cp RC ../");
+system("cp RC_init.* ../");
+system("cp RC_res.* ../");

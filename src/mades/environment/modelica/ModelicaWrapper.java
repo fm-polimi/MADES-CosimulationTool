@@ -38,29 +38,21 @@ import mades.environment.EnvironmentMemento;
  *
  */
 public class ModelicaWrapper {
-	//private final static double TOLERANCE = 0.00000001;
-	
-	public static final Object START_TIME_VAR_NAME = " start value";
-	public static final Object END_TIME_VAR_NAME = " stop value";
-	//private static String INIT_FILE_POSTFIX = "_init.txt";
 	private static String INIT_DOT_XML_FILE_POSTFIX = "_init.xml";
-	//private static String FINAL_FILE_POSTFIX = "_final.txt";
 	private static String CVS_RES_FILE_POSTFIX = "_res.csv";
 	private static String SIGNAL_FILE_NAME = "Transitions";
 	private static String RUN_FILE = "modelica.sh";
 	
 	private static final String VARIABLE_NAME = "[ ]*[\\w -\\._\\(\\)]+";
-	private static final String SIGNAL_LINE = "^(TRANSnp|TRANSpn):\\t(" + VARIABLE_NAME + ")\\t(" + Constants.DOUBLE + ")$";
+	private static final String SIGNAL_LINE = "^(TRANSnp|TRANSpn):\\t(" + 
+			VARIABLE_NAME + ")\\t(" + Constants.DOUBLE + ")$";
 	private static String UP_DOWN = "TRANSpn";
 	private Pattern signalPattern = Pattern.compile(SIGNAL_LINE);
 	
 	private String environmentPath;
-	//private String environmentFileName;
 	private String environmentName;
 	
-	//private String initialVariableFileName;
 	private String initDotXmlFileName;
-	//private String finalVariableFileName;
 	private String signalsFileName;
 	private String csvFileName;
 	
@@ -83,18 +75,13 @@ public class ModelicaWrapper {
 		this.clock = clock;
 		
 		this.environmentPath = environmentPath;
-		//this.environmentFileName = environmentFileName;
 		this.environmentName = environmentName;
 		
 		
-		/*initialVariableFileName = environmentPath + 
-				File.separator + environmentName + INIT_FILE_POSTFIX;*/
 		initDotXmlFileName = environmentPath + 
 			File.separator + environmentName + INIT_DOT_XML_FILE_POSTFIX;
 		csvFileName = environmentPath + 
 			File.separator + environmentName + CVS_RES_FILE_POSTFIX;
-		/*finalVariableFileName = environmentPath +
-				File.separator + environmentName + FINAL_FILE_POSTFIX;*/
 		signalsFileName = environmentPath + File.separator + SIGNAL_FILE_NAME;
 		
 		ModelInstrumentor instrumentor = new ModelInstrumentor(environmentPath,
@@ -222,15 +209,6 @@ public class ModelicaWrapper {
 		} catch(Exception ex) {
 			throw new RuntimeException(ex);
 		}
-		
-			
-		// TODO(rax): use modelica variable " tolerance";
-		/*
-		if (clock.getCurrentTime().getSimulationTime() - csvParser.getStopTime()
-				> TOLERANCE) {
-			throw new AssertionError("Incomplete modelica simulation.");
-		}*/
-		
 		
 		ArrayList<VariableAssignment> variables =
 				new ArrayList<VariableAssignment>(csvParser.getVariables());
