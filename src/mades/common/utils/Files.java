@@ -110,8 +110,14 @@ public class Files {
 	
 	public static File getCurrentPath(@SuppressWarnings("rawtypes") Class clazz) {
 		//return new File (".");
-		return new File(clazz.getProtectionDomain()
+		File location = new File(clazz.getProtectionDomain()
 				.getCodeSource().getLocation().getPath());
+		if (location.isFile()) {
+			// Jar file
+			return location.getParentFile();
+		} else {
+			return location;
+		}
 	}
 	
 	public static String compileTemplateFile(HashMap<String, String> variables,
