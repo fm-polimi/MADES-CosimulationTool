@@ -100,7 +100,7 @@ public class Cosimulator {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		String usage = "Usage: Mades <PATH> " +
+		String usage = "Usage: Mades <filename> " +
 			"[-timeStep=1] " + 
 			"[-stopTime=20] " +
 			"[-attemptsInStep=3] " +
@@ -111,7 +111,7 @@ public class Cosimulator {
 			return;
 		}
 		
-		String path = null;
+		String filename = null;
 		double timeStep = 1;
 		double maxCosimulationTime = 20;
 		int maxCosimulationAttemptsForStep = 3;
@@ -124,7 +124,7 @@ public class Cosimulator {
 		try {
 			for (String s: args) {
 				if (!s.startsWith("-")) {
-					path = s;
+					filename = s;
 				} else {
 					Matcher matcher = timeStepPattern.matcher(s);
 					if (matcher.matches()) {
@@ -144,8 +144,8 @@ public class Cosimulator {
 					}
 				}
 			}
-			if (path == null) {
-				throw new RuntimeException("Path string not specified.");
+			if (filename == null) {
+				throw new RuntimeException("filename string not specified.");
 			}
 		} catch (Exception ex) {
 			System.out.println("ERROR: " + ex.getMessage());
@@ -167,14 +167,14 @@ public class Cosimulator {
 		
 		
 		cosimulator.startCosimulation(
-				path,
+				filename,
 				timeStep,
 				maxCosimulationTime,
 				maxCosimulationAttemptsForStep,
 				maxCosimulationBacktraking);
 		
 		OutputWriter writer = cosimulator.createOutputWriter();
-		String output = path + File.separator + "madesOutput.xml";
+		String output = new File(filename).getParent() + File.separator + "madesOutput.xml";
 		writer.writeXmlFile(output);
 		logger.info("Results written on: " + output);
 	}

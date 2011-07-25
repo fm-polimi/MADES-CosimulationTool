@@ -47,7 +47,6 @@ public class InputParser extends DefaultHandler {
 	private static final String TRIGGER_VARIABLE = "variable";
 	private static final String TRIGGER_SCOPE = "scope";
 	private static final String TRIGGER_GROUP = "mades:triggergroup";
-	private static final String VARIABLE_ANNOTATION = "annotation";
 	private static final String VARIABLE_VALUE = TRIGGER_VALUE;
 	private static final String VARIABLE_TYPE = "type";
 	private static final String VARIABLE_SCOPE = TRIGGER_SCOPE;
@@ -228,12 +227,7 @@ public class InputParser extends DefaultHandler {
 			value = "\"" + value + "\"";
 		}
 		
-		String annotation = attributes.getValue(VARIABLE_ANNOTATION);
-		if (annotation == null) {
-			annotation = "";
-		}
-		
-		VariableAssignment var = new VariableAssignment(def, value, annotation);
+		VariableAssignment var = new VariableAssignment(def, value);
 		switch(scope) {
 			case ENVIRONMENT_INTERNAL: {
 				environmentVariables.add(var);
