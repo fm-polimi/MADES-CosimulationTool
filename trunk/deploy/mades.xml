@@ -5,13 +5,14 @@
     <target name="create_run_jar">
         <jar destfile="/home/rax/workspace-mades/mades/deploy/Mades.jar" filesetmanifest="mergewithoutmain">
             <manifest>
-                <attribute name="Main-Class" value="mades.cosimulation.Cosimulator"/>
+                <attribute name="Main-Class" value="mades.cosimulation.gui.MadesMainForm"/>
                 <attribute name="Class-Path" value="."/>
             </manifest>
             <fileset dir="/home/rax/workspace-mades/mades/bin"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/rax/workspace-mades/mades/libs/guava-r09.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/rax/workspace-mades/mades/libs/GRAL/gral-core-0.9-SNAPSHOT.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="/home/rax/eclipse/plugins/org.junit_4.8.1.v4_8_1_v20100427-1100/junit.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="/home/rax/eclipse/plugins/org.hamcrest.core_1.1.0.v20090501071000.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="/home/rax/workspace-mades/mades/libs/guava-r09.jar"/>
         </jar>
     </target>
 </project>

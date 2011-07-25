@@ -109,10 +109,9 @@ public class Files {
 	}
 	
 	public static File getCurrentPath(@SuppressWarnings("rawtypes") Class clazz) {
-		return new File (".");
-		/*
+		//return new File (".");
 		return new File(clazz.getProtectionDomain()
-				.getCodeSource().getLocation().getPath());*/
+				.getCodeSource().getLocation().getPath());
 	}
 	
 	public static String compileTemplateFile(HashMap<String, String> variables,
