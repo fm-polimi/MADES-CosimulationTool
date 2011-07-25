@@ -13,7 +13,6 @@ import mades.common.variables.TriggerFactory;
 import mades.common.variables.VariableFactory;
 import mades.environment.EnvironmentConnector;
 import mades.environment.EnvironmentMemento;
-import mades.environment.SignalMap;
 import mades.system.SystemMemento;
 
 /**

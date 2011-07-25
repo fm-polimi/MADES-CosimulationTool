@@ -19,6 +19,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import mades.common.timing.Clock;
+import mades.common.utils.Constants;
 import mades.common.variables.Scope;
 import mades.common.variables.Transition;
 import mades.common.variables.Trigger;
@@ -28,7 +29,6 @@ import mades.common.variables.VariableAssignment;
 //import mades.common.variables.VariableDefinition;
 import mades.common.variables.VariableFactory;
 import mades.environment.EnvironmentMemento;
-import mades.environment.SignalMap;
 
 /**
  * @author Michele Sama (m.sama@puzzledev.com)
@@ -50,12 +50,7 @@ public class ModelicaWrapper {
 	private static String RUN_FILE = "modelica.sh";
 	
 	private static final String VARIABLE_NAME = "[ ]*[\\w -\\._\\(\\)]+";
-	private static final String DOUBLE = "[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?";
-	//private static final String LABEL = "(\"[\\w\\W]+\")";
-	//private static final String VARIABLE_LINE = "^("  + DOUBLE + "|" + LABEL + ")( //[ ]*(default))? //(" + VARIABLE_NAME + ")$";
-	//private Pattern variablePattern = Pattern.compile(VARIABLE_LINE);
-	
-	private static final String SIGNAL_LINE = "^(TRANSnp|TRANSpn):\\t(" + VARIABLE_NAME + ")\\t(" + DOUBLE + ")$";
+	private static final String SIGNAL_LINE = "^(TRANSnp|TRANSpn):\\t(" + VARIABLE_NAME + ")\\t(" + Constants.DOUBLE + ")$";
 	private static String UP_DOWN = "TRANSpn";
 	private Pattern signalPattern = Pattern.compile(SIGNAL_LINE);
 	

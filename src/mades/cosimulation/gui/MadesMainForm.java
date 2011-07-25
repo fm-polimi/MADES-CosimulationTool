@@ -50,11 +50,48 @@ import mades.system.zot.ZotSystemConnector;
 
 /**
  *
- * @author rax
+ * @author Michele Sama (m.sama@puzzledev.com)
+ * 
+ * Main form for MADES. Use this class to run MADES with the GUI.
+ * 
  */
 public class MadesMainForm extends javax.swing.JFrame
         implements ActionListener, PropertyChangeListener {
 
+	private static final long serialVersionUID = 4046070019836240661L;
+
+	// Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel chartPanel;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
+    private javax.swing.JSlider maxAttemptJSlider;
+    private javax.swing.JSlider maxBacktrakingJSlider;
+    private javax.swing.JProgressBar progressBar;
+    private javax.swing.JTextField projectTextField;
+    private javax.swing.JFileChooser projetFileChooser;
+    private javax.swing.JButton searchButton;
+    private javax.swing.JComboBox selectVariablesComboBox;
+    private javax.swing.JButton startJButton;
+    private javax.swing.JButton stopJButton;
+    private javax.swing.JTextField stopTimeJTextField;
+    private javax.swing.JTextField timeStepJTextField;
+    // End of variables declaration//GEN-END:variables
+
+
+    private Cosimulator cosimulator;
+    private OutputWriter outputWriter;
+    private DrawablePanel chart;
+
+	
     /** Creates new form MadesMainForm */
     public MadesMainForm() {
         initComponents();
@@ -366,7 +403,7 @@ public class MadesMainForm extends javax.swing.JFrame
     }//GEN-LAST:event_stopJButtonActionPerformed
 
     private void startJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startJButtonActionPerformed
-        if (cosimulator == null) {
+        if (cosimulator == null || !cosimulator.isSimulationStarted()) {
             Thread th = new Thread(){
                 @Override
                 public void run() {
@@ -447,8 +484,6 @@ public class MadesMainForm extends javax.swing.JFrame
             stopJButton.setEnabled(false);
             startJButton.setEnabled(true);
             return;
-        } finally {
-            cosimulator = null;
         }
         
         startJButton.setEnabled(true);
@@ -468,37 +503,7 @@ public class MadesMainForm extends javax.swing.JFrame
             }
         });
     }
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel chartPanel;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel4;
-    private javax.swing.JPanel jPanel5;
-    private javax.swing.JSlider maxAttemptJSlider;
-    private javax.swing.JSlider maxBacktrakingJSlider;
-    private javax.swing.JProgressBar progressBar;
-    private javax.swing.JTextField projectTextField;
-    private javax.swing.JFileChooser projetFileChooser;
-    private javax.swing.JButton searchButton;
-    private javax.swing.JComboBox selectVariablesComboBox;
-    private javax.swing.JButton startJButton;
-    private javax.swing.JButton stopJButton;
-    private javax.swing.JTextField stopTimeJTextField;
-    private javax.swing.JTextField timeStepJTextField;
-    // End of variables declaration//GEN-END:variables
-
-
-    private Cosimulator cosimulator;
-    private OutputWriter outputWriter;
-    private DrawablePanel chart;
-
+   
     @Override
     public void actionPerformed(ActionEvent e) {
     	if (outputWriter == null) {

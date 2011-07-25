@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
@@ -23,7 +22,6 @@ import mades.common.variables.VariableAssignment;
 import mades.common.variables.VariableDefinition;
 import mades.common.variables.VariableFactory;
 import mades.environment.EnvironmentMemento;
-import mades.environment.SignalMap;
 import mades.system.SystemMemento;
 
 import org.xml.sax.Attributes;
@@ -106,7 +104,7 @@ public class InputParser extends DefaultHandler {
 	}
 	
 	public void parseDocument() {
-
+		logger.info("Starting to parse file: " + filename + ".");
 		//get a factory
 		SAXParserFactory parserFactory = SAXParserFactory.newInstance();
 		try {
@@ -117,13 +115,12 @@ public class InputParser extends DefaultHandler {
 			//parse the file and also register this class for call backs
 			parser.parse(filename, this);
 
-		}catch(SAXException se) {
-			throw new RuntimeException(se);
-		}catch(ParserConfigurationException pce) {
-			throw new RuntimeException(pce);
-		}catch (IOException ie) {
-			throw new RuntimeException(ie);
+		}catch (Exception ex) {
+			logger.severe("Parsing of file: " + filename +
+					" failed with error: " + ex.getMessage());
+			throw new RuntimeException(ex);
 		}
+		logger.info("File: " + filename + " parsed successfully.");
 	}
 
 
@@ -183,7 +180,6 @@ public class InputParser extends DefaultHandler {
 		String signal = attributes.getValue(TRIGGER_SIGNAL);
 		String threshold = attributes.getValue(TRIGGER_THRESHOLD);
 		double value = Double.parseDouble(attributes.getValue(TRIGGER_VALUE));
-		
 		
 		Trigger trigger;
 		if ("system".equalsIgnoreCase(scope)) {
