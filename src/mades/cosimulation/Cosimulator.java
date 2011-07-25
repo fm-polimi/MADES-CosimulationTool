@@ -401,6 +401,7 @@ public class Cosimulator {
 		
 		// The next simulation step.
 		int nextStep = clock.getCurrentTime().getSimulationStep() + 1;
+		
 		do {
 			int attemptsInStep = maxCosimulationAttemptsForStep;
 			do {
@@ -419,7 +420,7 @@ public class Cosimulator {
 						stepApproved = true;
 					} catch(AssertionError err) {
 						// Unsat
-						-- attemptsInStep;
+						attemptsInStep -= 1;
 						logger.severe("The simulated step has no solution: retrying (" + 
 								attemptsInStep +" attempts left).");
 						
@@ -433,7 +434,7 @@ public class Cosimulator {
 					// If the environment is not valid then we need to
 					// re-simulate the system at the previous time, then the
 					// environment again.
-					-- attemptsInStep;
+					attemptsInStep -= 1;
 					logger.severe("The simulated step is invalid: retrying (" + 
 							attemptsInStep +" attempts left).");
 					
@@ -444,24 +445,30 @@ public class Cosimulator {
 					skipEnv = true;
 				}
 				
-			} while (attemptsInStep > 0 && !stepApproved && 
-					!(clock.getCurrentTime().getSimulationStep() == nextStep));
+			} while (attemptsInStep > 0 && 
+					(!stepApproved || 
+							(clock.getCurrentTime().getSimulationStep() < nextStep))
+					);
 			
 			if (stepApproved) {
 				break;
 			}
 			rollbackEnvironment();
 			clock.tickBackward();
-			backtrakingAttempts = backtrakingAttempts -1;
+			backtrakingAttempts -= 1;
 			rollbackSystem();
 			logger.severe("Maximum number of attempts in state reached: backtraking (" + 
 					backtrakingAttempts + " backtraking left)");
 			// no need to resimulate modelica because it is deterministic
 			skipEnv = true;
 			
-		} while (backtrakingAttempts > 0 && !stepApproved);
+		} while (backtrakingAttempts > 0 &&
+				(!stepApproved || 
+						(clock.getCurrentTime().getSimulationStep() < nextStep))
+				);
 		
-		if (!stepApproved) {
+		if (!stepApproved || 
+				(clock.getCurrentTime().getSimulationStep() < nextStep)) {
 			logger.severe("Maximum backtraking depth reached: aborting...");
 			throw new RuntimeException("Maximum backtraking depth reached.");
 		}
@@ -560,7 +567,7 @@ public class Cosimulator {
 		if (!simulationStarted) {
 			throw new AssertionError("Simulation is not started");
 		}
-		logger.info("Symulating environment at time: " + clock.getCurrentTime().getSimulationTime());
+		logger.info("Simulating environment at time: " + clock.getCurrentTime().getSimulationTime());
 		
 		environment.load(environmentMementoStack.peek(), systemMementoStack.peek());
 		
