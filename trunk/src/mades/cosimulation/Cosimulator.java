@@ -11,6 +11,8 @@ import java.util.Collection;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.google.common.collect.TreeMultimap;
 
@@ -23,11 +25,12 @@ import mades.common.variables.VariableAssignment;
 import mades.common.variables.VariableFactory;
 import mades.environment.EnvironmentConnector;
 import mades.environment.EnvironmentMemento;
-import mades.environment.SignalMap;
 import mades.environment.modelica.ModelicaEnvironmentConnector;
 import mades.system.SystemConnector;
 import mades.system.SystemMemento;
 import mades.system.zot.ZotSystemConnector;
+
+import static mades.common.utils.Constants.*;
 
 /**
  * @author Michele Sama (m.sama@puzzledev.com)
@@ -97,12 +100,59 @@ public class Cosimulator {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		String path;
+		String usage = "Usage: Mades <PATH> " +
+			"[-timeStep=1] " + 
+			"[-stopTime=20] " +
+			"[-attemptsInStep=3] " +
+			"[-backtrakingDepth=3].";
+		
 		if (args.length < 0) {
-			path = args[0];
-		} else {
-			path = "./examples/RC/mades.xml";
+			System.out.println(usage);
+			return;
 		}
+		
+		String path = null;
+		double timeStep = 1;
+		double maxCosimulationTime = 20;
+		int maxCosimulationAttemptsForStep = 3;
+		int maxCosimulationBacktraking = 3;
+		Pattern timeStepPattern = Pattern.compile("-timeStep[ ]*=[ ]*(" + DOUBLE + ")");
+		Pattern stopTimePattern = Pattern.compile("-stopTime[ ]*=[ ]*(" + DOUBLE + ")");
+		Pattern attemptsInStepPattern = Pattern.compile("-attemptsInStep[ ]*=[ ]*([\\d]*)");
+		Pattern backtrakingDepthPattern = Pattern.compile("-timeStep[ ]*=[ ]*([\\d]*)");
+		
+		try {
+			for (String s: args) {
+				if (!s.startsWith("-")) {
+					path = s;
+				} else {
+					Matcher matcher = timeStepPattern.matcher(s);
+					if (matcher.matches()) {
+						timeStep = Double.parseDouble(matcher.group(1));
+					}
+					matcher = stopTimePattern.matcher(s);
+					if (matcher.matches()) {
+						maxCosimulationTime = Double.parseDouble(matcher.group(1));
+					}
+					matcher = attemptsInStepPattern.matcher(s);
+					if (matcher.matches()) {
+						maxCosimulationAttemptsForStep = Integer.parseInt(matcher.group(1));
+					}
+					matcher = backtrakingDepthPattern.matcher(s);
+					if (matcher.matches()) {
+						maxCosimulationBacktraking = Integer.parseInt(matcher.group(1));
+					}
+				}
+			}
+			if (path == null) {
+				throw new RuntimeException("Path string not specified.");
+			}
+		} catch (Exception ex) {
+			System.out.println("ERROR: " + ex.getMessage());
+			System.out.println(usage);
+			return;
+		}
+		
 		Logger logger = Logger.getLogger(Cosimulator.class.getName());
 		logger.setLevel(Level.ALL);
 		logger.info("Starting co-simulation");
@@ -114,10 +164,7 @@ public class Cosimulator {
 		cosimulator.setEnvironment(environment);
 		cosimulator.setSystem(system);
 		
-		double timeStep = 1;
-		double maxCosimulationTime = 20;
-		int maxCosimulationAttemptsForStep = 3;
-		int maxCosimulationBacktraking = 3;
+		
 		
 		cosimulator.startCosimulation(
 				path,
