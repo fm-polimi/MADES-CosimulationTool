@@ -18,7 +18,7 @@ if [ -d ~/mades_r1 ]
 		wget -q http://build.openmodelica.org/apt/openmodelica.asc -O- | sudo apt-key add - 
 
 		sudo apt-get update
-		sudo apt-get install default-jre gcc common-lisp-controller sbcl omc openmodelica
+		sudo apt-get install default-jre gcc common-lisp-controller sbcl omc openmodelica libexpat1-dev
 
 		# Create a local folder and check out mades
 		cd ~
