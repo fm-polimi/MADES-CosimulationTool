@@ -1,8 +1,10 @@
 #!/bin/bash
 VERSION=`uname -m`
+
+#Verify if ~/mades_r1 folder exists, if true please check the content before continue
 if [ -d ~/mades_r1 ]
 	then
-    	echo "Mades directory exists, please verify"
+    	echo "Mades directory already exists, please verify"
         exit 1
     else
 		if grep 'deb http://build.openmodelica.org/apt nightly-ubuntu contrib' /etc/apt/sources.list
