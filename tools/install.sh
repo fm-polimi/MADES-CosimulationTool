@@ -1,27 +1,61 @@
 #!/bin/bash
-sudo apt-get install default-jre gcc common-lisp-controller sbcl
-# TODO(rax): install also open modelica (omc)
+VERSION=`uname -m`
+if [ -d ~/mades_r1 ]
+	then
+    	echo "Mades directory exists, please verify"
+        exit 1
+    else
+		if grep 'deb http://build.openmodelica.org/apt nightly-ubuntu contrib' /etc/apt/sources.list
+			then
+        		echo "sources.list entry exists"
+			else
+        		echo "sources.list does not exists"
+        		echo "deb http://build.openmodelica.org/apt nightly-ubuntu contrib" | sudo tee --append /etc/apt/sources.list
+		fi
 
-# Create a local folder and check out mades
-cd ~
-mkdir mades
-cd mades
-# Download the latest JAR 
-wget http://mades.googlecode.com/files/mades_all.tar.gz
+		wget -q http://build.openmodelica.org/apt/openmodelica.asc -O- | sudo apt-key add - 
 
-#TODO(rax): make the jar file executable
+		sudo apt-get update
+		sudo apt-get install default-jre gcc common-lisp-controller sbcl omc openmodelica
 
-# Download and install ZOT
-# TODO(rax): download it in a tmp folder and remove it after install
-wget http://mades.googlecode.com/files/zot_25_07_2011.zip
-# TODO(rax): copy the whole zot folder in /usr/local/
-# TODO(rax): make a symbolic link from /usr/local/zot/bin/zot to /usr/bin/
-# TODO(rax): make sure that /usr/local/zot/bin/zot has the right permission and it is executable!
+		# Create a local folder and check out mades
+		cd ~
+		mkdir mades_r1
+		cd mades_r1
+		mkdir zot_archive
 
-# TODO(rax): download z3 and place it in /usr/bin
-# TODO(rax): WARNING download the right version at 32 or 64 bit!!!!!!!!
-# TODO(rax): make sure it can be executed
+		# Download the latest JAR 
+		wget http://mades.googlecode.com/files/mades_all.tar.gz
+		tar zxvf mades_all.tar.gz
+		sudo chmod +x ./mades/Mades.jar
+
+		# Download and install ZOT
+		wget http://mades.googlecode.com/files/zot_25_07_2011.tar.gz
+		tar zxvf zot_25_07_2011.tar.gz
+		if [ -d /usr/local/zot ]
+			then
+        		echo "Zot directory exists"
+        		tar zcvf ~/mades_r1/zot_archive/zot-`date +\%Y-\%m-\%d-\%s`.sql.gz /usr/local/zot
+        		sudo rm -R /usr/local/zot
+			else 
+        		echo "Zot directory does not exists"
+		fi
+		sudo mv zot /usr/local
+		sudo ln -s /usr/local/zot/bin/zot /usr/bin
+		sudo chmod +x /usr/local/zot/bin/zot
+
+		if VERSION="x86_64"
+			then
+				wget http://research.microsoft.com/projects/z3/z3-x64-2.19.tar.gz
+				tar zxvf z3-x64-2.19.tar.gz
+			else
+				wget http://research.microsoft.com/projects/z3/z3-2.19.tar.gz
+				tar zxvf z3-2.19.tar.gz
+		fi
+		sudo ln -s -f ~/mades_r1/z3/bin/z3 /usr/bin
+
 # solvers
 #http://yices.csl.sri.com/download-yices2.shtml
 #http://research.microsoft.com/en-us/um/redmond/projects/z3/
 
+fi
