@@ -1,0 +1,18 @@
+%TCIDATA{CSTFile=book.cst}
+\documentclass{kapproc} % Computer Modern font calls
+\long\def\AuthorInstruction#1\endAuthorInstruction{}
+\begin{document}
+
+
+\AuthorInstruction
+\ \       Please run Preview or Typeset on this file in order
+to see the Kluwer Proceedings Documentation, for producing books
+using KapProc.cls.
+\endAuthorInstruction
+
+
+\input{procdocs.sav}
+
+
+\end{document}
+
