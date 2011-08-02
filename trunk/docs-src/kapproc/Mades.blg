@@ -1,0 +1,46 @@
+This is BibTeX, Version 0.99d (TeX Live 2010)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: Mades.aux
+The style file: kapalike.bst
+Database file #1: Mades.bib
+You've used 5 entries,
+            1935 wiz_defined-function locations,
+            504 strings with 4456 characters,
+and the built_in function-call counts, 1802 in all, are:
+= -- 174
+> -- 80
+< -- 6
++ -- 30
+- -- 26
+* -- 136
+:= -- 329
+add.period$ -- 15
+call.type$ -- 5
+change.case$ -- 37
+chr.to.int$ -- 5
+cite$ -- 5
+duplicate$ -- 71
+empty$ -- 112
+format.name$ -- 33
+if$ -- 349
+int.to.chr$ -- 1
+int.to.str$ -- 0
+missing$ -- 2
+newline$ -- 27
+num.names$ -- 17
+pop$ -- 28
+preamble$ -- 1
+purify$ -- 37
+quote$ -- 0
+skip$ -- 62
+stack$ -- 0
+substring$ -- 92
+swap$ -- 13
+text.length$ -- 2
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 30
+warning$ -- 0
+while$ -- 13
+width$ -- 0
+write$ -- 64

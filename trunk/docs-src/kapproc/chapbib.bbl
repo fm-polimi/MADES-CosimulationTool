@@ -1,0 +1,69 @@
+%% Aug. 11, 1997 version
+
+\begin{thebibliography}{10}
+
+\bibitem{AbadiCarSecond}
+M.~Abadi and L.~Cardelli.
+\newblock A theory of primitive objects: Second-order systems.
+\newblock {\em Science of Computer Programming}, 25(2-3):81--116, December
+  1995.
+\newblock A preliminary version appeared in the 1994 Proc. of European
+  Symposium on Programming.
+
+\bibitem{ArnoldGosling}
+K.~Arnold and J.~Gosling.
+\newblock {\em The Java Programming Language}.
+\newblock Addison Wesley, 1996.
+
+
+\bibitem{CardelliDot}
+L.~Cardelli and X.~Leroy.
+\newblock {\em Abstract types and the dot notation}, pages 479--504.
+\newblock IFIP State of the Art Reports. North Holland, March 1990.
+\newblock Also appeared as {SRC} {R}esearch {R}eport 56.
+
+\bibitem{CookThesis}
+W.R. Cook.
+\newblock {\em A Denotational Semantics of Inheritance}.
+\newblock PhD thesis, Brown University, 1989.
+
+\bibitem{DiBlasioFisher}
+P.~DiBlasio and K.~Fisher.
+\newblock A concurrent object calculus.
+\newblock In {\em CONCUR '96 Proc.}, pages 655--670, Pisa, 1996. Springer LNCS
+  1119.
+
+
+\bibitem{GoldbergR}
+A.~Goldberg and D.~Robson.
+\newblock {\em Smalltalk--80: The Language and its Implementation}.
+\newblock Addison Wesley, 1983.
+
+\bibitem{GunterMitch}
+C.A. Gunter and J.C. Mitchell, editors.
+\newblock {\em Theoretical Aspects of Object-Oriented Programming}.
+\newblock MIT Press, Cambridge, MA, 1994.
+
+
+\bibitem{Liskclu}
+B.~Liskov et~al.
+\newblock {\em {CLU} Reference Manual}.
+\newblock Springer LNCS 114, Berlin, 1981.
+
+\bibitem{LiskovS}
+B.~Liskov, A.~Snyder, R.~Atkinson, and C.~Schaffert.
+\newblock Abstraction mechanisms in {CLU}.
+\newblock {\em Comm. ACM}, 20:564--576, 1977.
+
+\bibitem{BMeyerEiffel}
+B.~Meyer.
+\newblock {\em Eiffel: The Language}.
+\newblock Prentice-Hall, 1992.
+
+\bibitem{mth90}
+R.~Milner, M.~Tofte, and R.~Harper.
+\newblock {\em The Definition of {Standard ML}}.
+\newblock MIT Press, 1990.
+\end{thebibliography}
+
+
