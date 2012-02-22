@@ -1,0 +1,45 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; THE SYSTEM
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defvar C1 1)
+(defvar C2 2)
+(defvar C3 3)
+(defvar C4 5)
+(defvar LB 9)
+(defvar UB 11)
+
+
+(define-tvar 'react1 *real*)
+(define-tvar 'cond1 *real*)
+
+
+;; s is some condition that, when it holds for C1 instants, triggers some action act1 within C2 instants.
+;; formula monitor:
+;; Lasted(s, C1) -> Futr(WithinF(act1, C2), 1)
+
+(defvar monitor  
+  (-> (lasted (!! (-P- s)) C1)
+      (futr (withinf (-P- act1) C2) 1)))
+
+;; action act1, in turn, triggers a reaction sigreact1 in an interval [C3,C4]
+;; formula reaction:
+;; act1 -> Futr(Lasts(sigreact1, C4-C3), C3)
+
+(defvar reaction
+  (-> (-P- act1)
+      (futr (lasts (-P- sigreact1) (- C4 C3)) C3)))
+
+(defvar numerical_reaction1
+  (-> (-P- sigreact1)
+      (&& ([>=] (-V- react1) LB) ([<=] (-V- react1) UB))))
+
+(defvar numerical_reaction2
+  (-> (!! (-P- sigreact1))
+      ([=] (-V- react1) 0)))
+
+
+(defvar monitor2  
+  (-> (-P- sigreact1)
+	(lasted (!! (-P- s)) 3)))
+
+(defvar the-system (Alw (&& monitor reaction numerical_reaction1 numerical_reaction2)))
