@@ -98,6 +98,12 @@ public class ZotWrapper {
 		constraintsFileName = systemPath + File.separator + systemName + CONSTRAINTS;
 		checkFileExistsOrThrow(constraintsFileName, logger);
 		
+		// The windows lisp interpreter wants "/" as a path separator
+		// instead of File.separator
+		systemFileName.replace(File.separator, "/");
+		historyFileName.replace(File.separator, "/");
+		constraintsFileName.replace(File.separator, "/");
+		
 		checkAndUpdateEngine(this.clock.getFinalStep());
 	}
 	
