@@ -1,0 +1,4 @@
+(defvar constraints
+  (&&
+    (yesterday history)
+  ))

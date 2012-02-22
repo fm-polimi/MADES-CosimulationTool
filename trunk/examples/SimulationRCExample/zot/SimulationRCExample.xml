@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Mades:cosimulation
+    systemName="SimulationRCExample"
+    systemPath="zot"
+    environmentName="SimulationRCExample"
+    environmentPath="modelica"
+    environmentFileName="SimulationRCExample.mo"
+    xmlns:Mades="http://www.example.org/MadesInput"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.example.org/MadesInput ../../src/mades/cosimulation/MadesInput.xsd ">
+<Mades:variable
+  environmentName="c_volt"
+  scope="environment_shared"
+  systemName="OBJMATTRMON_C_V"
+  type="double"
+  value="9.86"/>
+<Mades:variable
+  environmentName="in_volt"
+  scope="system_shared"
+  systemName="OBJCATTRVOLT_CMD"
+  type="double"
+  />
+<Mades:variable
+  environmentName="c_sig0"
+  scope="environment_shared"
+  systemName="C_SIG0"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="MADESSYSTEMSTART"
+  scope="system_private"
+  systemName="MADESSYSTEMSTART"
+  type="boolean"/>
+<Mades:variable
+  environmentName="OBJcSTATEreactEXIT"
+  scope="system_private"
+  systemName="OBJCSTATEREACTEXIT"
+  type="boolean"/>
+<Mades:variable
+  environmentName="OBJmTRIGGERUMLID36"
+  scope="system_private"
+  systemName="OBJMTRIGGERUMLID36"
+  type="boolean"/>
+<Mades:variable
+  environmentName="$OBJmSTATELow"
+  scope="system_private"
+  systemName="$OBJMSTATELOW"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="OBJmTRIGGERUMLID37"
+  scope="system_private"
+  systemName="OBJMTRIGGERUMLID37"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="OBJmSTATEActENTER"
+  scope="system_private"
+  systemName="OBJMSTATEACTENTER"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="OBJmTRIGGERUMLID35"
+  scope="system_private"
+  systemName="OBJMTRIGGERUMLID35"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="OBJmTRIGGERUMLID34"
+  scope="system_private"
+  systemName="OBJMTRIGGERUMLID34"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="OBJmSTATEHighEXIT"
+  scope="system_private"
+  systemName="OBJMSTATEHIGHEXIT"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="OBJcSTATEwaitEXIT"
+  scope="system_private"
+  systemName="OBJCSTATEWAITEXIT"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="OBJmGUARDUMLID34"
+  scope="system_private"
+  systemName="OBJMGUARDUMLID34"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="OBJmGUARDUMLID36"
+  scope="system_private"
+  systemName="OBJMGUARDUMLID36"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="$OBJmSTATEAct"
+  scope="system_private"
+  systemName="$OBJMSTATEACT"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="OBJmGUARDUMLID37"
+  scope="system_private"
+  systemName="OBJMGUARDUMLID37"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="SDActDetect_SqDACT"
+  scope="system_private"
+  systemName="SDACTDETECT_SQDACT"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="$MSGUMLID18START"
+  scope="system_private"
+  systemName="$MSGUMLID18START"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="OBJcSTATEwaitENTER"
+  scope="system_private"
+  systemName="OBJCSTATEWAITENTER"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="OBJmTRANSITIONUMLID35"
+  scope="system_private"
+  systemName="OBJMTRANSITIONUMLID35"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="OBJmTRANSITIONUMLID36"
+  scope="system_private"
+  systemName="OBJMTRANSITIONUMLID36"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="OBJmTRANSITIONUMLID33"
+  scope="system_private"
+  systemName="OBJMTRANSITIONUMLID33"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="OBJmTRANSITIONUMLID34"
+  scope="system_private"
+  systemName="OBJMTRANSITIONUMLID34"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="OBJcOPact_detect"
+  scope="system_private"
+  systemName="OBJCOPACT_DETECT"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="SDActDetect_SqDSTART"
+  scope="system_private"
+  systemName="SDACTDETECT_SQDSTART"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="OBJcTRANSITIONUMLID25"
+  scope="system_private"
+  systemName="OBJCTRANSITIONUMLID25"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="OBJmTRANSITIONUMLID37"
+  scope="system_private"
+  systemName="OBJMTRANSITIONUMLID37"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="OBJcTRANSITIONUMLID26"
+  scope="system_private"
+  systemName="OBJCTRANSITIONUMLID26"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="OBJcTRANSITIONUMLID27"
+  scope="system_private"
+  systemName="OBJCTRANSITIONUMLID27"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="OBJmSTATEWait_ActEXIT"
+  scope="system_private"
+  systemName="OBJMSTATEWAIT_ACTEXIT"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="$OBJcSTATEidle"
+  scope="system_private"
+  systemName="$OBJCSTATEIDLE"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="OBJmHighINVARIANT"
+  scope="system_private"
+  systemName="OBJMHIGHINVARIANT"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="OBJmSTATEHighENTER"
+  scope="system_private"
+  systemName="OBJMSTATEHIGHENTER"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="OBJmActINVARIANT"
+  scope="system_private"
+  systemName="OBJMACTINVARIANT"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="SDActDetect_SqDEND"
+  scope="system_private"
+  systemName="SDACTDETECT_SQDEND"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="$OBJcSTATEwait"
+  scope="system_private"
+  systemName="$OBJCSTATEWAIT"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="$MSGUMLID18END"
+  scope="system_private"
+  systemName="$MSGUMLID18END"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="OBJmSTATELowEXIT"
+  scope="system_private"
+  systemName="OBJMSTATELOWEXIT"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="$OBJmSTATEWait_Act"
+  scope="system_private"
+  systemName="$OBJMSTATEWAIT_ACT"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="OBJmSTATEWait_ActENTER"
+  scope="system_private"
+  systemName="OBJMSTATEWAIT_ACTENTER"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="$OBJcSTATEreact"
+  scope="system_private"
+  systemName="$OBJCSTATEREACT"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="OBJcwaitINVARIANT"
+  scope="system_private"
+  systemName="OBJCWAITINVARIANT"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="OBJcidleINVARIANT"
+  scope="system_private"
+  systemName="OBJCIDLEINVARIANT"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="OBJcreactINVARIANT"
+  scope="system_private"
+  systemName="OBJCREACTINVARIANT"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="OBJcSTATEreactENTER"
+  scope="system_private"
+  systemName="OBJCSTATEREACTENTER"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="OBJcSTATEidleENTER"
+  scope="system_private"
+  systemName="OBJCSTATEIDLEENTER"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="OBJcSTATEidleEXIT"
+  scope="system_private"
+  systemName="OBJCSTATEIDLEEXIT"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="SDActDetect_SqD"
+  scope="system_private"
+  systemName="SDACTDETECT_SQD"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="OBJcTRIGGERUMLID25"
+  scope="system_private"
+  systemName="OBJCTRIGGERUMLID25"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="OBJcTRIGGERUMLID26"
+  scope="system_private"
+  systemName="OBJCTRIGGERUMLID26"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="SDActDetect_SqDSTOP"
+  scope="system_private"
+  systemName="SDACTDETECT_SQDSTOP"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="OBJcTRIGGERUMLID27"
+  scope="system_private"
+  systemName="OBJCTRIGGERUMLID27"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="$OBJmSTATEHigh"
+  scope="system_private"
+  systemName="$OBJMSTATEHIGH"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="OBJmSTATEActEXIT"
+  scope="system_private"
+  systemName="OBJMSTATEACTEXIT"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="OBJmSTATELowENTER"
+  scope="system_private"
+  systemName="OBJMSTATELOWENTER"
+  type="boolean"
+  />
+<Mades:variable
+  environmentName="OBJeATTRc_volt"
+  scope="system_private"
+  systemName="OBJEATTRC_VOLT"
+  type="double"
+  />
+<Mades:variable
+  environmentName="OBJeATTRin_volt"
+  scope="system_private"
+  systemName="OBJEATTRIN_VOLT"
+  type="double"
+  />
+<Mades:triggerGroup>
+  <Mades:trigger
+    scope="environment"
+    threshold="C_Th0"
+    signal="c_sig0"
+    variable="c_volt"
+    value="6.0"/>
+</Mades:triggerGroup>
+</Mades:cosimulation>

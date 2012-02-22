@@ -1,0 +1,156 @@
+(define-tvar 'OBJeATTRc_volt *real*)
+(define-tvar 'OBJeATTRin_volt *real*)
+(define-tvar 'OBJcATTRvolt_cmd *real*)
+(define-tvar 'OBJmATTRmon_c_v *real*)
+(defvar system-behavior 
+ (&& 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; CLASS DIAGRAM 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; OBJECTDIAGRAM 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; OBJECT m
+
+;; BLOCKING SEMANTICS
+
+;; OPERATIONS SEMANTICS
+
+;; OBJECT e
+
+;; BLOCKING SEMANTICS
+
+;; OPERATIONS SEMANTICS
+
+;; OBJECT c
+
+;; BLOCKING SEMANTICS
+
+;; OPERATIONS SEMANTICS
+(<-> (-P- OBJcOPact_detect) (-P- $MSGUMLID18END))
+
+;; OBJECT app
+
+;; BLOCKING SEMANTICS
+
+;; OPERATIONS SEMANTICS
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; SEQUENCE DIAGRAM ActDetect_SqD 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(<-> (-P- SDActDetect_SqD) (||  (-P- SDActDetect_SqDSTART) (since_ei (&&  (!! (-P- SDActDetect_SqDSTOP)) (!! (-P- SDActDetect_SqDEND))) (-P- SDActDetect_SqDSTART))))
+
+;; START SEMANTICS
+(-> (-P- SDActDetect_SqDSTART) (||  (&&  (until_ei (&&  (!! (-P- SDActDetect_SqDSTART)) (!! (-P- $MSGUMLID18START))) (-P- SDActDetect_SqDSTOP)) (!! (-P- $MSGUMLID18START))) (until_ei (!! (-P- SDActDetect_SqDSTOP)) (-P- $MSGUMLID18START))))
+(-> (-P- $MSGUMLID18START) (since_ei (&&  (!! (-P- SDActDetect_SqDSTOP)) (!! (-P- $MSGUMLID18START))) (-P- SDActDetect_SqDSTART)))
+(-> (-P- SDActDetect_SqDSTART) (||  (&&  (until_ei (&&  (!! (-P- SDActDetect_SqDSTART)) (!! (-P- $MSGUMLID18END))) (-P- SDActDetect_SqDSTOP)) (!! (-P- $MSGUMLID18END))) (until_ei (!! (-P- SDActDetect_SqDSTOP)) (-P- $MSGUMLID18END))))
+(-> (-P- $MSGUMLID18END) (since_ei (&&  (!! (-P- SDActDetect_SqDSTOP)) (!! (-P- $MSGUMLID18END))) (-P- SDActDetect_SqDSTART)))
+
+;; END SEMANTICS
+(-> (-P- $MSGUMLID18START) (||  (&&  (until_ei (&&  (!! (-P- $MSGUMLID18START)) (!! (-P- SDActDetect_SqDEND))) (-P- SDActDetect_SqDSTOP)) (!! (-P- SDActDetect_SqDEND))) (until_ei (!! (-P- SDActDetect_SqDSTOP)) (-P- SDActDetect_SqDEND))))
+(-> (-P- SDActDetect_SqDEND) (since_ei (&&  (!! (-P- SDActDetect_SqDSTOP)) (!! (-P- SDActDetect_SqDEND))) (-P- $MSGUMLID18START)))
+(-> (-P- $MSGUMLID18END) (||  (&&  (until_ei (&&  (!! (-P- $MSGUMLID18END)) (!! (-P- SDActDetect_SqDEND))) (-P- SDActDetect_SqDSTOP)) (!! (-P- SDActDetect_SqDEND))) (until_ei (!! (-P- SDActDetect_SqDSTOP)) (-P- SDActDetect_SqDEND))))
+(-> (-P- SDActDetect_SqDEND) (since_ei (&&  (!! (-P- SDActDetect_SqDSTOP)) (!! (-P- SDActDetect_SqDEND))) (-P- $MSGUMLID18END)))
+(<-> (-P- SDActDetect_SqDEND) (||  (&&  (-P- $MSGUMLID18END) (since_ei (!! (-P- SDActDetect_SqDEND)) (-P- $MSGUMLID18START))) (&&  (-P- $MSGUMLID18START) (since_ei (!! (-P- SDActDetect_SqDEND)) (-P- $MSGUMLID18END)))))
+
+;; STOP SEMANTICS
+
+;; LIFELINES SEMANTICS
+
+;; EXOCCS SEMANTICS
+
+;; MESSAGES SEMANTICS
+(<-> (-P- $MSGUMLID18START) (-P- $MSGUMLID18END))
+
+;; ASSIGNMENT SEMANTICS
+
+;; TIME CONSTRAINTS SEMANTICS
+
+;; SEQUENCE DIAGRAM PARAMETER SEMANTICS
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; STATE DIAGRAM m 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(-> (-P- OBJmSTATEActENTER) (past (-P- OBJmTRANSITIONUMLID35) 1))
+(-> (-P- OBJmSTATEActEXIT) (||  (-P- OBJmTRANSITIONUMLID36) (-P- OBJmTRANSITIONUMLID37)))
+(<-> (-P- $OBJmSTATEAct) (||  (-P- OBJmSTATEActENTER) (since_ei (!! (-P- OBJmSTATEActEXIT)) (-P- OBJmSTATEActENTER))))
+(-> (-P- $OBJmSTATEAct) (-P- OBJmActINVARIANT))
+(-> (-P- OBJmActINVARIANT) ([<=] (-V- OBJmATTRmon_c_v) 6))
+(-> (-P- OBJmSTATEHighENTER) (past (||  (-P- MADESSYSTEMSTART) (-P- OBJmTRANSITIONUMLID36)) 1))
+(-> (-P- MADESSYSTEMSTART) (futr (-P- OBJmSTATEHighENTER) 1))
+(-> (-P- OBJmSTATEHighEXIT) (-P- OBJmTRANSITIONUMLID33))
+(<-> (-P- $OBJmSTATEHigh) (||  (-P- OBJmSTATEHighENTER) (since_ei (!! (-P- OBJmSTATEHighEXIT)) (-P- OBJmSTATEHighENTER))))
+(-> (-P- $OBJmSTATEHigh) (-P- OBJmHighINVARIANT))
+(-> (-P- OBJmHighINVARIANT) ([>] (-V- OBJmATTRmon_c_v) 6))
+(-> (-P- OBJmSTATEWait_ActENTER) (past (-P- OBJmTRANSITIONUMLID34) 1))
+(-> (-P- OBJmSTATEWait_ActEXIT) (-P- OBJmTRANSITIONUMLID35))
+(<-> (-P- $OBJmSTATEWait_Act) (||  (-P- OBJmSTATEWait_ActENTER) (since_ei (!! (-P- OBJmSTATEWait_ActEXIT)) (-P- OBJmSTATEWait_ActENTER))))
+(-> (-P- OBJmSTATELowENTER) (past (||  (-P- OBJmTRANSITIONUMLID33) (-P- OBJmTRANSITIONUMLID37)) 1))
+(-> (-P- OBJmSTATELowEXIT) (-P- OBJmTRANSITIONUMLID34))
+(<-> (-P- $OBJmSTATELow) (||  (-P- OBJmSTATELowENTER) (since_ei (!! (-P- OBJmSTATELowEXIT)) (-P- OBJmSTATELowENTER))))
+(-> (&&  (-P- $OBJmSTATEHigh) (-P- OBJmTRANSITIONUMLID33)) (&&  (-P- OBJmSTATEHighEXIT) (futr (-P- OBJmSTATELowENTER) 1)))
+(-> (-P- OBJmTRANSITIONUMLID33) (-P- $OBJmSTATEHigh))
+
+(-> (&&  (-P- $OBJmSTATELow) (-P- OBJmTRANSITIONUMLID34)) (&&  (-P- OBJmSTATELowEXIT) (futr (-P- OBJmSTATEWait_ActENTER) 1)))
+(<-> (&&  (-P- $OBJmSTATELow) (-P- OBJmTRIGGERUMLID34) (-P- OBJmGUARDUMLID34)) (-P- OBJmTRANSITIONUMLID34))
+(<-> ([<=] (-V- OBJmATTRmon_c_v) 6) (-P- OBJmGUARDUMLID34))
+(<-> (past (-P- OBJmSTATELowENTER) 1) (-P- OBJmTRIGGERUMLID34))
+(-> (&&  (-P- $OBJmSTATEAct) (-P- OBJmTRANSITIONUMLID36)) (&&  (-P- OBJmSTATEActEXIT) (futr (-P- OBJmSTATEHighENTER) 1) (-P- SDActDetect_SqDSTART)))
+(<-> (&&  (-P- $OBJmSTATEAct) (-P- OBJmTRIGGERUMLID36) (-P- OBJmGUARDUMLID36)) (-P- OBJmTRANSITIONUMLID36))
+(<-> ([>] (-V- OBJmATTRmon_c_v) 6) (-P- OBJmGUARDUMLID36))
+(<-> (past (-P- OBJmSTATEActENTER) 1) (-P- OBJmTRIGGERUMLID36))
+(-> (&&  (-P- $OBJmSTATEWait_Act) (-P- OBJmTRANSITIONUMLID35)) (&&  (-P- OBJmSTATEWait_ActEXIT) (futr (-P- OBJmSTATEActENTER) 1)))
+(<-> (&&  (-P- $OBJmSTATEWait_Act) (-P- OBJmTRIGGERUMLID35)) (-P- OBJmTRANSITIONUMLID35))
+(<-> (&&  (withinp (-P- OBJmSTATEWait_ActENTER) 2) (since_ei (!! (-P- OBJmSTATEWait_ActENTER)) (-P- OBJmSTATEWait_ActENTER))) (-P- OBJmTRIGGERUMLID35))
+(-> (&&  (-P- $OBJmSTATEAct) (-P- OBJmTRANSITIONUMLID37)) (&&  (-P- OBJmSTATEActEXIT) (futr (-P- OBJmSTATELowENTER) 1) (-P- SDActDetect_SqDSTART)))
+(<-> (&&  (-P- $OBJmSTATEAct) (-P- OBJmTRIGGERUMLID37) (-P- OBJmGUARDUMLID37)) (-P- OBJmTRANSITIONUMLID37))
+(<-> ([<=] (-V- OBJmATTRmon_c_v) 6) (-P- OBJmGUARDUMLID37))
+(<-> (past (-P- OBJmSTATEActENTER) 1) (-P- OBJmTRIGGERUMLID37))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; STATE DIAGRAM c 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(-> (-P- OBJcSTATEidleENTER) (past (||  (-P- MADESSYSTEMSTART) (-P- OBJcTRANSITIONUMLID27)) 1))
+(-> (-P- MADESSYSTEMSTART) (futr (-P- OBJcSTATEidleENTER) 1))
+(-> (-P- OBJcSTATEidleEXIT) (-P- OBJcTRANSITIONUMLID25))
+(<-> (-P- $OBJcSTATEidle) (||  (-P- OBJcSTATEidleENTER) (since_ei (!! (-P- OBJcSTATEidleEXIT)) (-P- OBJcSTATEidleENTER))))
+(-> (-P- $OBJcSTATEidle) (-P- OBJcidleINVARIANT))
+(-> (-P- OBJcidleINVARIANT) ([=] 0 (-V- OBJcATTRvolt_cmd)))
+(-> (-P- OBJcSTATEreactENTER) (past (-P- OBJcTRANSITIONUMLID26) 1))
+(-> (-P- OBJcSTATEreactEXIT) (-P- OBJcTRANSITIONUMLID27))
+(<-> (-P- $OBJcSTATEreact) (||  (-P- OBJcSTATEreactENTER) (since_ei (!! (-P- OBJcSTATEreactEXIT)) (-P- OBJcSTATEreactENTER))))
+(-> (-P- $OBJcSTATEreact) (-P- OBJcreactINVARIANT))
+(-> (-P- OBJcreactINVARIANT) (&&  ([>=] (-V- OBJcATTRvolt_cmd) 9) ([<=] (-V- OBJcATTRvolt_cmd) 11)))
+(-> (-P- OBJcSTATEwaitENTER) (past (-P- OBJcTRANSITIONUMLID25) 1))
+(-> (-P- OBJcSTATEwaitEXIT) (-P- OBJcTRANSITIONUMLID26))
+(<-> (-P- $OBJcSTATEwait) (||  (-P- OBJcSTATEwaitENTER) (since_ei (!! (-P- OBJcSTATEwaitEXIT)) (-P- OBJcSTATEwaitENTER))))
+(-> (-P- $OBJcSTATEwait) (-P- OBJcwaitINVARIANT))
+(-> (-P- OBJcwaitINVARIANT) ([=] 0 (-V- OBJcATTRvolt_cmd)))
+(-> (&&  (-P- $OBJcSTATEreact) (-P- OBJcTRANSITIONUMLID27)) (&&  (-P- OBJcSTATEreactEXIT) (futr (-P- OBJcSTATEidleENTER) 1)))
+(<-> (&&  (-P- $OBJcSTATEreact) (-P- OBJcTRIGGERUMLID27)) (-P- OBJcTRANSITIONUMLID27))
+(<-> (past (-P- OBJcSTATEreactENTER) 3) (-P- OBJcTRIGGERUMLID27))
+(-> (&&  (-P- $OBJcSTATEidle) (-P- OBJcTRANSITIONUMLID25)) (&&  (-P- OBJcSTATEidleEXIT) (futr (-P- OBJcSTATEwaitENTER) 1)))
+(<-> (&&  (-P- $OBJcSTATEidle) (-P- OBJcTRIGGERUMLID25)) (-P- OBJcTRANSITIONUMLID25))
+(<-> (-P- OBJcOPact_detect) (-P- OBJcTRIGGERUMLID25))
+(-> (&&  (-P- $OBJcSTATEwait) (-P- OBJcTRANSITIONUMLID26)) (&&  (-P- OBJcSTATEwaitEXIT) (futr (-P- OBJcSTATEreactENTER) 1)))
+(<-> (&&  (-P- $OBJcSTATEwait) (-P- OBJcTRIGGERUMLID26)) (-P- OBJcTRANSITIONUMLID26))
+(<-> (past (-P- OBJcSTATEwaitENTER) 2) (-P- OBJcTRIGGERUMLID26))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; IOD 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; INTERRUPTS 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+)) ;;END system-behavior 
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; INIT AXIOM
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defvar initAx (yesterday (&&  (-P- MADESSYSTEMSTART) (alwf_e (!! (-P- MADESSYSTEMSTART))))) )
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; THE SYSTEM
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defvar the-system  (&& (yesterday (alwf system-behavior)) initAx ))
