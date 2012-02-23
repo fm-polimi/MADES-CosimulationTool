@@ -5,6 +5,7 @@ package mades.system.zot;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -150,7 +151,8 @@ public class ZotOutputParser {
 						break;
 					}
 					currentTime = timeFactory.get(step);
-					falseVariablesAtStep = (ArrayList<VariableDefinition>) variables.clone();
+					falseVariablesAtStep = new ArrayList<VariableDefinition>(
+							(ArrayList<VariableDefinition>)variables.clone());
 				} else {
 					// Skip all the variable at first step because it is random.
 					if (step == -1) {
