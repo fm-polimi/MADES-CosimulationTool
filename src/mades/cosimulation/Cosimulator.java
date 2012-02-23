@@ -369,8 +369,10 @@ public class Cosimulator {
 			logger.severe(msg);
 			throw new AssertionError(msg);
 		}
-		systemMementoStack.push(systemMemento);
-		storeSharedVariables(systemMemento);
+        // MR: Commented to make the co-simulator let Zot build its initial state instead of
+        // MR: taking it from the .xml configuration file
+		// systemMementoStack.push(systemMemento);
+		// storeSharedVariables(systemMemento);
 		
 		EnvironmentMemento environmentMemento = environment.initialize(
 				inputParser.getEnvironmentPath(),
@@ -384,7 +386,36 @@ public class Cosimulator {
 		
 		environmentMementoStack.push(environmentMemento);
 		storeSharedVariables(environmentMemento);
-		
+
+		// MR: Added to make the co-simulator let Zot build its initial state instead of
+		// MR: taking it from the .xml configuration file
+		try {
+			logger.info("Simulating system at step: " +
+		  			clock.getCurrentTime().getSimulationStep());
+		 	system.load(systemMemento, environmentMementoStack.peek());
+
+			SystemMemento initial_systemMemento = system.simulateNext();
+
+			if (initial_systemMemento == null) {
+		    	String msg = "Unsatisfiable configuration.";
+		    	logger.severe(msg);
+		    	throw new AssertionError(msg);
+		  	}
+
+		  	// Add memento to the top of the stack
+		  	systemMementoStack.push(initial_systemMemento);
+
+			// Add shared variables to the variable map
+		  	storeSharedVariables(initial_systemMemento);
+
+		  	propertyChangeSupport.firePropertyChange(
+		  			SIMULATION_STEP_DONE, null,
+					sharedVariablesMultimap);
+		} catch (AssertionError err) {
+			// Unsat
+        	logger.severe("The initial simulated step has no solution: aborting...");
+        	throw new RuntimeException("Initial state has no solution.");
+		}
 	}
 	
 	protected void performCosimulationStep() {
@@ -619,7 +650,7 @@ public class Cosimulator {
 		SystemMemento systemMemento = system.simulateNext();
 		
 		if (systemMemento == null) {
-			String msg = "Unsatisfieable configuration.";
+			String msg = "Unsatisfiable configuration.";
 			logger.severe(msg);
 			throw new AssertionError(msg);
 		}
