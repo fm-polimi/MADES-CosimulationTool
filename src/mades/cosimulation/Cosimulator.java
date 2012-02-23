@@ -164,8 +164,6 @@ public class Cosimulator {
 		cosimulator.setEnvironment(environment);
 		cosimulator.setSystem(system);
 		
-		
-		
 		cosimulator.startCosimulation(
 				filename,
 				timeStep,
@@ -369,10 +367,10 @@ public class Cosimulator {
 			logger.severe(msg);
 			throw new AssertionError(msg);
 		}
-        // MR: Commented to make the co-simulator let Zot build its initial state instead of
-        // MR: taking it from the .xml configuration file
-		// systemMementoStack.push(systemMemento);
-		// storeSharedVariables(systemMemento);
+        //// MR: Commented to make the co-simulator let Zot build its initial state instead of
+        //// MR: taking it from the .xml configuration file
+		systemMementoStack.push(systemMemento);
+		storeSharedVariables(systemMemento);
 		
 		EnvironmentMemento environmentMemento = environment.initialize(
 				inputParser.getEnvironmentPath(),
@@ -387,6 +385,7 @@ public class Cosimulator {
 		environmentMementoStack.push(environmentMemento);
 		storeSharedVariables(environmentMemento);
 
+		/*
 		// MR: Added to make the co-simulator let Zot build its initial state instead of
 		// MR: taking it from the .xml configuration file
 		try {
@@ -416,6 +415,7 @@ public class Cosimulator {
         	logger.severe("The initial simulated step has no solution: aborting...");
         	throw new RuntimeException("Initial state has no solution.");
 		}
+		*/
 	}
 	
 	protected void performCosimulationStep() {

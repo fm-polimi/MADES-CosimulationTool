@@ -223,30 +223,32 @@ public class InputParser extends DefaultHandler {
 				systemName, environmentName, scope, type);
 		
 		String value = attributes.getValue(VARIABLE_VALUE);
-
-		if (type == Type.STRING) {
-			value = "\"" + value + "\"";
-		}
-		
-		VariableAssignment var = new VariableAssignment(def, value);
-		switch(scope) {
-			case ENVIRONMENT_INTERNAL: {
-				environmentVariables.add(var);
-				break;
+		if (value != null) {
+			// Skip variables not initialized in the XML file
+			if (type == Type.STRING) {
+				value = "\"" + value + "\"";
 			}
-			case ENVIRONMENT_SHARED: {
-				environmentVariables.add(var);
-				systemVariables.add(var);
-				break;
-			}
-			case SYSTEM_INTERNAL: {
-				systemVariables.add(var);
-				break;
-			}
-			case SYSTEM_SHARED: {
-				environmentVariables.add(var);
-				systemVariables.add(var);
-				break;
+			
+			VariableAssignment var = new VariableAssignment(def, value);
+			switch(scope) {
+				case ENVIRONMENT_INTERNAL: {
+					environmentVariables.add(var);
+					break;
+				}
+				case ENVIRONMENT_SHARED: {
+					environmentVariables.add(var);
+					systemVariables.add(var);
+					break;
+				}
+				case SYSTEM_INTERNAL: {
+					systemVariables.add(var);
+					break;
+				}
+				case SYSTEM_SHARED: {
+					environmentVariables.add(var);
+					systemVariables.add(var);
+					break;
+				}
 			}
 		}
 	}
