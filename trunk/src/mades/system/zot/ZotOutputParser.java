@@ -131,8 +131,10 @@ public class ZotOutputParser {
 					 * For Zot the simulation step 0 is at time step -1, therefore
 					 * when we read the step number we need to subtract 1.  
 					 */
-					step = Integer.parseInt(lineMatcher.group(1)) - 1;
-					
+					//step = Integer.parseInt(lineMatcher.group(1)) - 1;
+				    //MR: modified to make instant 0 also 0 in Zot
+					step = Integer.parseInt(lineMatcher.group(1));
+                    
 					// Start saving from the second step
 					if (step > 0) {
 						// Set all the missing variables to false

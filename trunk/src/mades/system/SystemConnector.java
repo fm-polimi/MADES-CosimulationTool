@@ -50,7 +50,7 @@ public interface SystemConnector {
 	public void load(SystemMemento systemParams, EnvironmentMemento environmentParams);
 	
 	/**
-	 * Performs the next step of the simulation usign the time of the internal clock.
+	 * Performs the next step of the simulation using the time of the internal clock.
 	 * 
 	 * @return The result of the simulation.
 	 * @throws IllegalArgumentException: If time is negative or lesser 

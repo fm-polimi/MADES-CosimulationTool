@@ -163,20 +163,13 @@ public class ZotWrapper {
 			VariableDefinition def = v.getVariableDefinition();
 			if (def.getType() == Type.BOOLEAN) {
 				double value = Double.parseDouble(v.getValue());
-				if (value == 0) {
-					builder.append("(!! (-P- " + def.getSystemName() + "))");
-				} else {
-					builder.append("(-P- " + def.getSystemName() + ")");
-				}	
+			  	if (value == 0) {
+			  		builder.append("(!! (-P- " + def.getSystemName() + "))");
+			 	} else {
+			    	builder.append("(-P- " + def.getSystemName() + ")");
+			  	}	
 			} else {
 				double value = Double.parseDouble(v.getValue());
-				// Z3 has problem with number smaller than 0.001
-				/*if (value > 0 && value < 0.001) {
-					value = 0.001;
-				} else if (value < 0 && value > 0.001) {
-					value = -0.001;
-				}*/
-					
 				builder.append("([=] (-V- " + def.getSystemName() + ") " + value + ")");
 			}
 		}
