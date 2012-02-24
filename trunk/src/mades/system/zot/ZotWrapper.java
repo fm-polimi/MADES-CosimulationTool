@@ -100,16 +100,11 @@ public class ZotWrapper {
 		
 		// The windows lisp interpreter wants "/" as a path separator
 		// instead of File.separator
-		if (File.separator.equals("\\")) {
-			systemFileName.replace("\\", "//");
-			historyFileName.replace("\\", "//");
-			constraintsFileName.replace("\\", "//");
-		}
+		systemFileName.replace(File.separator, "/");
+		historyFileName.replace(File.separator, "/");
+		constraintsFileName.replace(File.separator, "/");
 		
 		checkAndUpdateEngine(this.clock.getFinalStep());
-		
-		definedVariables = new ArrayList<VariableDefinition>(
-				variableFactory.getDefinedVariables());
 	}
 	
 	private void checkAndUpdateEngine(int maxSimulationStep) {
@@ -146,9 +141,12 @@ public class ZotWrapper {
 			
 	}
 	
-	public SystemMemento initialize(SystemMemento systemMemento) {
-		return executeSimulationStep(
-				clock.getCurrentTime(), systemMemento);
+	public void initialize(SystemMemento systemMemento) {
+		Collection<VariableAssignment> variables = systemMemento.get(clock.getCurrentTime());
+		definedVariables = new ArrayList<VariableDefinition>();
+		for (VariableAssignment v: variables) {
+			definedVariables.add(v.getVariableDefinition());
+		}
 	}
 	
 	

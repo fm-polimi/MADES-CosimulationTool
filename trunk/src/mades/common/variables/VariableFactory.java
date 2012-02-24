@@ -121,5 +121,4 @@ public class VariableFactory {
 	public Collection<VariableDefinition> getDefinedVariables() {
 		return systemDefinedVariables.values();
 	}
-	
 }
