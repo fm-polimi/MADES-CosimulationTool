@@ -32,7 +32,7 @@ public class ZotOutputParser {
 	
 	private static final String DOUBLE = "[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?";
 	private static String VARIABLE = "([\\w._-]+)( = (" + DOUBLE + ")?)";
-	private static String VARIABLE_FRACTION = "([\\w._-]+)( = ([0-9]+)/([0-9]+)?)";
+	private static String VARIABLE_FRACTION = "([\\w._-]+)( = ([-+]?[0-9]+)/([0-9]+)?)";
 	
 	private static final String UNSAT = "---UNSAT---";
 	private static final String SAT = "---SAT---";

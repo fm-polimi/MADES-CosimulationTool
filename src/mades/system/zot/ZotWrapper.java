@@ -7,6 +7,7 @@ import static mades.common.utils.Files.*;
 import static mades.common.utils.Runtimes.runCommand;
 
 import java.io.*;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -170,6 +171,9 @@ public class ZotWrapper {
 			  	}	
 			} else {
 				double value = Double.parseDouble(v.getValue());
+				if (Math.abs(value) < 0.001)
+				  value = 0.0;
+                //BigDecimal dec_value = new BigDecimal(value).setScale(6, BigDecimal.ROUND_HALF_UP);				
 				builder.append("([=] (-V- " + def.getSystemName() + ") " + value + ")");
 			}
 		}
