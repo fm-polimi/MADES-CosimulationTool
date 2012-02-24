@@ -43,7 +43,7 @@ public class ZotSystemConnector implements SystemConnector {
 		wrapper = new ZotWrapper(systemPath, systemName,
 				clock, variableFactory, triggerFactory,
 				logger);
-		systemMemento = wrapper.initialize(systemMemento);
+		wrapper.initialize(systemMemento);
 		return systemMemento;
 	}
 
