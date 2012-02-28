@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 //import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.List;
 //import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -246,10 +247,12 @@ public class ModelicaWrapper {
 			String variable = matcher.group(2);
 			String time = matcher.group(3);
 			
-			Trigger t = triggerFactory.get(variable);
-			Transition tr = t.addTransition(Double.parseDouble(time),
-					UP_DOWN.equalsIgnoreCase(upDown));
-			memento.addTransition(tr);
+			List<Trigger> triggers = triggerFactory.get(variable);
+			for (Trigger t: triggers) {
+				Transition tr = t.addTransition(Double.parseDouble(time),
+						UP_DOWN.equalsIgnoreCase(upDown));
+				memento.addTransition(tr);	
+			}
 		}
 	}
 }
