@@ -4,6 +4,7 @@
 package mades.system;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.ArrayList;
 import java.util.Set;
@@ -78,8 +79,10 @@ public class SystemMemento {
 		if (!now.equals(getLatestSimulatedTime())) {
 			throw new AssertionError("Wrong last time");
 		}
-		ArrayList<VariableAssignment> previousVars = new ArrayList(variablesMultimap.get(previous));
-		ArrayList<VariableAssignment> currentVars = new ArrayList(variablesMultimap.get(now));
+		ArrayList<VariableAssignment> previousVars = 
+				new ArrayList<VariableAssignment>(variablesMultimap.get(previous));
+		ArrayList<VariableAssignment> currentVars = 
+				new ArrayList<VariableAssignment>(variablesMultimap.get(now));
 		
 		for (int i = 0; i < previousVars.size(); i++) {
 			VariableAssignment prev = previousVars.get(i);
@@ -92,9 +95,15 @@ public class SystemMemento {
 				continue;
 			}
 			if (curr.getValue() != prev.getValue()) {
-				Trigger t = triggerFactory.get(curr.getVariableDefinition().getSystemName());
-				Transition tr = t.addTransition(now.getSimulationTime(), curr.getValue() == "0");
-				transitions.add(tr);
+				List<Trigger> triggers =
+						triggerFactory.get(
+								curr.getVariableDefinition().getSystemName());
+				for (Trigger t: triggers) {
+					Transition tr =
+							t.addTransition(now.getSimulationTime(),
+									curr.getValue() == "0");
+					transitions.add(tr);
+				}
 			}
 		}
 		

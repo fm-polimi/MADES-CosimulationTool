@@ -141,4 +141,12 @@ public class Trigger {
 	public boolean removeTransition(Transition t) {
 		return transitions.remove(t);
 	}
+
+	public Scope getScope() {
+		return scope;
+	}
+
+	public void setScope(Scope scope) {
+		this.scope = scope;
+	}
 }
