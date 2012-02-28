@@ -7,7 +7,6 @@ import static mades.common.utils.Files.*;
 import static mades.common.utils.Runtimes.runCommand;
 
 import java.io.*;
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -277,6 +276,5 @@ public class ZotWrapper {
 		}
 		return results;
 	}
-	
 	
 }
