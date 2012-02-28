@@ -675,11 +675,8 @@ public class Cosimulator {
 	}
 	
 	boolean isLastEnvironmentSimulationValid() {
-		EnvironmentMemento environmentMemento = environmentMementoStack.firstElement();
-		double oldestTime = environmentMemento.getTime().getSimulationTime();
-		
 		for (TriggerGroup tg: triggerGroups) {
-			if (!tg.validate(clock.getTimeStep(), 0.00000000001, oldestTime)){
+			if (!tg.validate(clock.getTimeStep(), 0.00000000001)){
 				return false;
 			}
 		}
