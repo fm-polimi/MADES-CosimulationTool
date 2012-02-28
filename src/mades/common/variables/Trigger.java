@@ -118,7 +118,7 @@ public class Trigger {
 		return t;
 	}
 	
-	public boolean validate(double minSignalDelta, double oldestTime) {
+	public boolean validate(double minSignalDelta) {
 		for (int i = transitions.size() - 1; i > 1; i--) {
 			Transition end = transitions.get(i);
 			Transition begin = transitions.get(i - 1);
@@ -131,6 +131,10 @@ public class Trigger {
 	}
 	
 	public Transition getLatestTransition() {
+		// If this trigger has no transition, yet, null is returned
+		if (transitions.isEmpty()) {
+			return null;
+		}
 		return transitions.get(transitions.size() - 1);
 	}
 	
