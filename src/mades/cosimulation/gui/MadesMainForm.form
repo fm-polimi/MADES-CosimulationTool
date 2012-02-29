@@ -109,7 +109,7 @@
     </Component>
     <Component class="javax.swing.JTextField" name="projectTextField">
       <Properties>
-        <Property name="text" type="java.lang.String" value="examples/RC/mades.xml"/>
+        <Property name="text" type="java.lang.String" value=""/>
       </Properties>
     </Component>
     <Component class="javax.swing.JButton" name="searchButton">
@@ -294,7 +294,7 @@
     </Container>
     <Component class="javax.swing.JLabel" name="jLabel3">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Select the project. The project must be a &quot;mades.xml&quot; configuration file. "/>
+        <Property name="text" type="java.lang.String" value="Select the project. The project must be a MADES &quot;.xml&quot; configuration file. "/>
       </Properties>
     </Component>
     <Component class="javax.swing.JButton" name="startJButton">

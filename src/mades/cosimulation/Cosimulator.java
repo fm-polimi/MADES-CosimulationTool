@@ -373,7 +373,7 @@ public class Cosimulator {
         // MR: taking it from the .xml configuration file
 		// systemMementoStack.push(systemMemento);
 		// storeSharedVariables(systemMemento);
-		
+
 		EnvironmentMemento environmentMemento = environment.initialize(
 				inputParser.getEnvironmentPath(),
 				inputParser.getEnvironmentFileName(),
@@ -383,7 +383,7 @@ public class Cosimulator {
 				triggerFactory,
 				inputParser.getEnvironmentMemento(),
 				inputParser.getEnvironmentTriggers());
-		
+
 		environmentMementoStack.push(environmentMemento);
 		storeSharedVariables(environmentMemento);
 

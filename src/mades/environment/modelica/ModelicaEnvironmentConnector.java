@@ -45,12 +45,14 @@ public class ModelicaEnvironmentConnector implements EnvironmentConnector {
 			TriggerFactory triggerFactory,
 			EnvironmentMemento environmentMemento,
 			ArrayList<Trigger> triggers) {
-		wrapper = new ModelicaWrapper(
+        wrapper = new ModelicaWrapper(
 				environmentPath, environmentFileName, environmentName, 
 				clock, variableFactory, triggerFactory, 
 				triggers);
+
 		environmentMemento = wrapper.initialize(environmentMemento);
-		return environmentMemento;
+
+        return environmentMemento;
 	}
 
 	/* (non-Javadoc)

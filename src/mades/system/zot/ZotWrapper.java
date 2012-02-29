@@ -101,10 +101,10 @@ public class ZotWrapper {
 		// The windows lisp interpreter wants "//" as a path separator
 		// instead of File.separator
 		if (File.separator.equals("\\")) {
-			String separator = "//";
-			systemFileName.replace(File.separator, separator);
-			historyFileName.replace(File.separator, separator);
-			constraintsFileName.replace(File.separator, separator);
+			String separator = "/";
+			systemFileName = systemFileName.replace(File.separator, separator);
+			historyFileName = historyFileName.replace(File.separator, separator);
+			constraintsFileName = constraintsFileName.replace(File.separator, separator);
 		}
 		
 		checkAndUpdateEngine(this.clock.getFinalStep());
@@ -249,6 +249,8 @@ public class ZotWrapper {
 	
 	protected SystemMemento runZot(Time time) {
 		String engine = systemPath + File.separator + ENGINE;
+		// MR: added for Win debugging reasons
+		System.out.println("Running: " + LISP_INTERPRETER + " " + engine);
 		InputStream inputStream = runCommand(LISP_INTERPRETER + " " + engine);
 		
 		ZotOutputParser parser = new ZotOutputParser(clock, 

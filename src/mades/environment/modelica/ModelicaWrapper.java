@@ -84,11 +84,12 @@ public class ModelicaWrapper {
 		csvFileName = environmentPath + 
 			File.separator + environmentName + CVS_RES_FILE_POSTFIX;
 		signalsFileName = environmentPath + File.separator + SIGNAL_FILE_NAME;
-		
+
 		ModelInstrumentor instrumentor = new ModelInstrumentor(environmentPath,
 				environmentFileName, environmentName);
-		instrumentor.checkAndUpdateModel(triggers);
-		instrumentor.compile();
+
+        instrumentor.checkAndUpdateModel(triggers);
+        instrumentor.compile();
 	}
 	
 	public EnvironmentMemento initialize(
