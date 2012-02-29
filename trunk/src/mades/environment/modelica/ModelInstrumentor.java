@@ -218,7 +218,14 @@ public class ModelInstrumentor {
 			throw new RuntimeException(e);
 		}
 		
-		runCommand(OMC + " " + mosFile.getAbsolutePath());
+        // MR: Similar modification as done in ZotWrapper, to account for Windows conventions
+        String omc_command = OMC + " " + mosFile.getAbsolutePath();
+        if (File.separator.equals("\\"))
+          omc_command = omc_command.replace(File.separator, "/");
+
+        // runCommand(OMC + " " + mosFile.getAbsolutePath());
+        runCommand(omc_command);
+
 		// TODO(rax): check compilation is successful
 		try {
 			File modelicaSh = new File(environmentDir, "modelica.sh");
@@ -238,7 +245,9 @@ public class ModelInstrumentor {
 		 * {% TIME_STEP %}
 		 */
 		HashMap<String, String> substitutions = new HashMap<String, String>();
-		substitutions.put("MODEL_PATH", environmentPath);
+		// MR: another hack
+		//substitutions.put("MODEL_PATH", environmentPath);
+        substitutions.put("MODEL_PATH", environmentPath.replace("\\","/"));
 		substitutions.put("MODEL_FILE", fileName);
 		substitutions.put("MODEL_NAME", modelName);
 		substitutions.put("TIME_STEP", "10");

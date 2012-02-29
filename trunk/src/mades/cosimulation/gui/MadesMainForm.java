@@ -40,6 +40,7 @@ import de.erichseifert.gral.ui.DrawablePanel;
 import de.erichseifert.gral.ui.InteractivePanel;
 import de.erichseifert.gral.util.Insets2D;
 import mades.common.timing.Clock;
+import mades.common.utils.Files;
 import mades.common.variables.VariableDefinition;
 import mades.cosimulation.Cosimulator;
 import mades.cosimulation.OutputWriter;
@@ -106,7 +107,8 @@ public class MadesMainForm extends javax.swing.JFrame
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        projetFileChooser = new javax.swing.JFileChooser();
+        // MR: changed default starting folder for search
+        projetFileChooser = new javax.swing.JFileChooser(Files.getCurrentPath(MadesMainForm.class));
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         projectTextField = new javax.swing.JTextField();
@@ -141,7 +143,9 @@ public class MadesMainForm extends javax.swing.JFrame
 
         jLabel2.setText("Co-simulation tool");
 
-        projectTextField.setText("examples/RC/mades.xml");
+        // projectTextField.setText("examples/RC/mades.xml");
+        // MR: changed default
+        projectTextField.setText("");
 
         searchButton.setText("Search");
         searchButton.addActionListener(new java.awt.event.ActionListener() {
@@ -261,7 +265,7 @@ public class MadesMainForm extends javax.swing.JFrame
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jLabel3.setText("Select the project. The project must be a \"mades.xml\" configuration file. ");
+        jLabel3.setText("Select the project. The project must be a MADES \".xml\" configuration file. ");
 
         startJButton.setText("Start co-simulation");
         startJButton.addActionListener(new java.awt.event.ActionListener() {
