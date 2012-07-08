@@ -10,14 +10,12 @@
  */
 package mades.cosimulation.gui;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.text.DateFormat;
 import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,13 +25,7 @@ import javax.swing.JOptionPane;
 import de.erichseifert.gral.data.DataSource;
 import de.erichseifert.gral.data.DataTable;
 import de.erichseifert.gral.data.comparators.Ascending;
-import de.erichseifert.gral.data.filters.Convolution;
-import de.erichseifert.gral.data.filters.Filter.Mode;
-import de.erichseifert.gral.data.filters.Kernel;
-import de.erichseifert.gral.data.filters.KernelUtils;
 import de.erichseifert.gral.plots.XYPlot;
-import de.erichseifert.gral.plots.axes.Axis;
-import de.erichseifert.gral.plots.axes.AxisRenderer;
 import de.erichseifert.gral.plots.lines.DefaultLineRenderer2D;
 import de.erichseifert.gral.plots.lines.LineRenderer;
 import de.erichseifert.gral.ui.DrawablePanel;
@@ -47,6 +39,7 @@ import mades.cosimulation.OutputWriter;
 import mades.environment.EnvironmentConnector;
 import mades.environment.modelica.ModelicaEnvironmentConnector;
 import mades.system.SystemConnector;
+import mades.system.nuzot.NuZotSystemConnector;
 import mades.system.zot.ZotSystemConnector;
 
 /**
@@ -312,7 +305,7 @@ public class MadesMainForm extends javax.swing.JFrame
         );
 
         stopJButton.setEnabled(false);
-        stopJButton.setLabel("Stop Co-simulation");
+        stopJButton.setText("Stop Co-simulation");
         stopJButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 stopJButtonActionPerformed(evt);
@@ -436,7 +429,7 @@ public class MadesMainForm extends javax.swing.JFrame
 		logger.setLevel(Level.ALL);
 		logger.info("Starting co-simulation");
 		
-            SystemConnector system = new ZotSystemConnector(logger);
+            SystemConnector system = new NuZotSystemConnector(logger);
             EnvironmentConnector environment = 
                         new ModelicaEnvironmentConnector(logger);
             cosimulator = new Cosimulator(logger);

@@ -28,6 +28,7 @@ import mades.environment.EnvironmentMemento;
 import mades.environment.modelica.ModelicaEnvironmentConnector;
 import mades.system.SystemConnector;
 import mades.system.SystemMemento;
+import mades.system.nuzot.NuZotSystemConnector;
 import mades.system.zot.ZotSystemConnector;
 
 import static mades.common.utils.Constants.*;
@@ -157,7 +158,7 @@ public class Cosimulator {
 		logger.setLevel(Level.ALL);
 		logger.info("Starting co-simulation");
 		
-		SystemConnector system = new ZotSystemConnector(logger);
+		SystemConnector system = new NuZotSystemConnector(logger);
 		EnvironmentConnector environment = 
                         new ModelicaEnvironmentConnector(logger);
 		Cosimulator cosimulator = new Cosimulator(logger);
