@@ -60,10 +60,7 @@ object SystemMementoAdapter {
         /*
         for (varDef: VariableDefinition <- factory.getDefinedVariables()) {
             varDef.getScope() match {
-                case VScope.ENVIRONMENT_INTERNAL => {
-                    // skip private environmental variables
-                }
-                case _ => {
+                case VScope.ENVIRONMENT_SHARED => {
                     script = script :+ CommandDeclareTFun(
                             Symbol(varDef.getSystemName()),
                             List(),
@@ -86,6 +83,9 @@ object SystemMementoAdapter {
                             }
                             )
                 }
+                case _ => {
+                    // System variables are already defined
+                }
             }
         }*/
         
@@ -103,7 +103,12 @@ object SystemMementoAdapter {
                         var const: Term = null
 		                definition.getType() match {
 		                    case VType.BOOLEAN => {
-		                        const = Term.const(assignment.getValue().toBoolean)
+		                        val realVal = assignment.getValue().toDouble
+		                        if (realVal == 1.0) {
+		                            const = Term.const(true)
+		                        } else {
+		                            const = Term.const(false)
+		                        }
 		                    }
 		                    case VType.INTEGER => {
 		                        const = Term.const(assignment.getValue().toInt)
