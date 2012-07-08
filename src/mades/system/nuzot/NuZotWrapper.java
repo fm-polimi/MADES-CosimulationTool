@@ -13,13 +13,12 @@ import java.util.logging.Logger;
 import mades.common.timing.Clock;
 import mades.common.timing.Time;
 import mades.common.variables.TriggerFactory;
-import mades.common.variables.Type;
-import mades.common.variables.VariableAssignment;
-import mades.common.variables.VariableDefinition;
 import mades.common.variables.VariableFactory;
 import mades.system.SystemMemento;
 
+
 import it.polimi.nuzot.smt.TypeChecker;
+import it.polimi.nuzot.smt.grammar.Script;
 import it.polimi.nuzot.ltl.LTLInterpreter;
 import it.polimi.nuzot.shell.ShellInterpreter;
 import it.polimi.nuzot.Z3.Z3Interpreter;
@@ -45,12 +44,9 @@ public class NuZotWrapper {
 	private Clock clock;
 	private VariableFactory variableFactory;
 	private TriggerFactory triggerFactory;
-	private ArrayList<VariableDefinition> definedVariables;
 	
-	private Z3Interpreter z3;
-	private TypeChecker typeChecker;
-	private LTLInterpreter ltl;
-	private ShellInterpreter shell;
+	// Sets 
+	private Script initScript;
 	
 	/**
 	 * Initializes this instance with the engine and the given system.
@@ -83,49 +79,38 @@ public class NuZotWrapper {
 		checkFileExistsOrThrow(systemFileName, logger);
 	}
 	
-	
-	
 	public void initialize(SystemMemento systemMemento) {
-		//initialize(this.clock.getFinalStep());
-		// TODO do I still need this??
-		Collection<VariableAssignment> variables = systemMemento.get(clock.getCurrentTime());
-		definedVariables = new ArrayList<VariableDefinition>();
-		for (VariableAssignment v: variables) {
-			definedVariables.add(v.getVariableDefinition());
-		}
-		
-		
+		initScript = SystemMementoAdapter.generateInitScript(clock);
+	}
+	
+	protected SystemMemento runZot(Time time, SystemMemento memento) {
 		// Creates the stack
-		z3 = new Z3Interpreter();
-		typeChecker = new TypeChecker();
+		Z3Interpreter z3 = new Z3Interpreter();
+		TypeChecker typeChecker = new TypeChecker();
         typeChecker.next(z3);
-        ltl = new LTLInterpreter();
+        LTLInterpreter ltl = new LTLInterpreter();
     	ltl.next(typeChecker);
 		ShellInterpreter shell = new ShellInterpreter();
         shell.next(ltl);
         
+        // Add the init script
+        shell.doVisit(initScript);
         // Loads the system
         shell.load(systemFileName);
-	}
-	
-	protected SystemMemento runZot(Time time, SystemMemento memento) {
-        shell.push();
-    	try {	
-	        shell.doVisit(SystemMementoAdapter.mementoToScript(clock, variableFactory, memento));
-			
-	        shell.save(systemPath + File.separator + systemName + "_" 
-	        		+ time.getSimulationStep() + SYSTEM_FILE_EXT);
-	        if (!z3.checkSat()) {
-				return null;
-			}
-			
-			SystemMemento newMemento = SystemMementoAdapter.modelToMemento(
-					time, variableFactory, memento, z3.getModel());
-			newMemento.computeTransitions(triggerFactory);
-			return newMemento;
-    	} finally {
-    		shell.pop();
-    	}	
+    	logger.fine("System visiting step " + time.getSimulationStep());
+        shell.doVisit(SystemMementoAdapter.mementoToScript(
+        		clock, variableFactory, memento));
+		
+        shell.save(systemPath + File.separator + systemName + "_" 
+        		+ time.getSimulationStep() + SYSTEM_FILE_EXT);
+        if (!z3.checkSat()) {
+			return null;
+		}
+		
+		SystemMemento newMemento = SystemMementoAdapter.modelToMemento(
+				time, variableFactory, memento, z3.getModel());
+		newMemento.computeTransitions(triggerFactory);
+		return newMemento;	
 	}
 	
 	public SystemMemento executeSimulationStep(

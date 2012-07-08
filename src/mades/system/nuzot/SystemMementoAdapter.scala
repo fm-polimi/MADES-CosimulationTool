@@ -23,23 +23,41 @@ import mades.common.variables.VariableDefinition
  */
 object SystemMementoAdapter {
 
-    def mementoToScript(
-            clock: Clock,
-            factory: VariableFactory,
-            memento: SystemMemento): Script = {
+    /**
+     * Sets the domain and k values
+     */
+    def generateInitScript(clock: Clock): Script = {
         var script = new Script()
+                
+        
         // Set real domain
         script = script :+ InitCommandSetInfo(
                 AttributeKeyVal(
                         LTLInterpreter.domainKeyword,
-                        AttributeValueSymbol(Symbol.Real)))
+                        AttributeValueSymbol(Symbol.Real)
+                		)
+        		)
         // Set K
         script = script :+ InitCommandSetInfo(
                 AttributeKeyVal(
                         LTLInterpreter.kKeyword,
                         AttributeValueSpecConst(
-                                new SpecDoubleConstant(5))))                                       
+                                SpecDoubleConstant(clock.getFinalStep().toDouble)
+                                )
+                        )
+                 )  
+        
+        return script
+    }
+    
+    def mementoToScript(
+            clock: Clock,
+            factory: VariableFactory,
+            memento: SystemMemento): Script = {
+        var script = new Script()
+                                     
         // Declare tfun
+        /*
         for (varDef: VariableDefinition <- factory.getDefinedVariables()) {
             varDef.getScope() match {
                 case VScope.ENVIRONMENT_INTERNAL => {
@@ -69,7 +87,7 @@ object SystemMementoAdapter {
                             )
                 }
             }
-        }
+        }*/
         
         // Parse all assigments
         for (time: Time <- memento.keySet()) {
@@ -176,27 +194,32 @@ object SystemMementoAdapter {
         val doubleTime = time.getSimulationStep().toDouble
         
         model.getModelFuncInterpretations.foreach(x => {
-            //println(x._1.getName + ": " + x._2)
             val name = x._1.getName
             println("@" + name)
             if (factory.isDefinedInSystem(name.toString())) {
                 val values = x._2
                 values.foreach(v => {
-                    val param = v._1
-                    val assignments = v._2
-                    println("#" + param.getClass())
-                    param match {
+                    val params = v._1
+                    val assignment = v._2
+                    println("#" + params.getClass())
+                    params match {
                         case Seq(k) => {
-                            println(k.getClass())
+                            println(k + " " + k.getClass() + " " + assignment)
+                            if (k.toString().toInt == time.getSimulationStep()) {
+                                memento.put(time,
+                                        new VariableAssignment(
+                                                factory.getSystemVar(name.toString()),
+                                                assignment.toString()))
+                            }
                         }
                         case _ => {
                             // Pass
                         }
                     }
                 })
+            } else {
+                println("skipping " + name)
             }
-            
-            
         })
         return memento
     }
