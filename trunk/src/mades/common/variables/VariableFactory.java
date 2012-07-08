@@ -99,7 +99,9 @@ public class VariableFactory {
 	 *        exists <code>false</code> otherwise.
 	 */
 	public boolean isDefinedInSystem(String name) {
-		return systemDefinedVariables.containsKey(name.toUpperCase());
+		return systemDefinedVariables.containsKey(name);
+		// Lisp zot wants upper case variables
+		//return systemDefinedVariables.containsKey(name.toUpperCase());
 	}
 	
 	/**
@@ -110,7 +112,9 @@ public class VariableFactory {
 	 *        exists <code>false</code> otherwise.
 	 */
 	public boolean isDefinedInEnvironment(String name) {
-		return environmentDefinedVariables.containsKey(name.toUpperCase());
+		return environmentDefinedVariables.containsKey(name);
+		// Lisp zot wants upper case variables...
+		//return environmentDefinedVariables.containsKey(name.toUpperCase());
 	}
 	
 	/**
