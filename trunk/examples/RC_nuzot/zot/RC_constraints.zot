@@ -1,7 +1,0 @@
-(defvar constraints
-  (&&
-;;    cond1_holds
-;;    cond1_ev_stops
-    history
-    (somf ([>] (-V- react1) LB))
-  ))

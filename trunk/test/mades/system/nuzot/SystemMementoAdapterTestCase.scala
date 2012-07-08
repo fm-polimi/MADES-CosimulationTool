@@ -58,10 +58,10 @@ class SystemMementoAdapterTestCase {
     	        new VariableAssignment(envPrivateVar, "0"))*/
     	memento.put(
     	        clock.getCurrentTime(),
-    	        new VariableAssignment(sysSharedVar, "true"))
+    	        new VariableAssignment(sysSharedVar, "1.0"))
     	memento.put(
     	        clock.getCurrentTime(),
-    	        new VariableAssignment(sysPrivateVar, "false"))
+    	        new VariableAssignment(sysPrivateVar, "0.0"))
     }
     
     @Test
