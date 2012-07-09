@@ -1,17 +1,17 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; THE SYSTEM
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(declare-fun C1 Real)
-(assert (= C1 1.0))
+;; (declare-fun C1 Real)
+;; (assert (= C1 1.0))
 
-(declare-fun C2 Real)
-(assert (= C2 2.0))
+;; (declare-fun C2 Real)
+;; (assert (= C2 2.0))
 
-(declare-fun C3 Real)
-(assert (= C3 3.0))
+;; (declare-fun C3 Real)
+;; (assert (= C3 3.0))
 
-(declare-fun C4 Real)
-(assert (= C4 5.0))
+;; (declare-fun C4 Real)
+;; (assert (= C4 5.0))
 
 (declare-fun LB Real)
 (assert (= LB 9.0))
@@ -23,34 +23,62 @@
 (declare-tfun react1 Real)
 (declare-tfun cond1 Real)
 
+(declare-tfun act1 Bool)
+(declare-tfun sigreact1 Bool)
+(declare-tfun s Bool)
+
 
 ;; s is some condition that, when it holds for C1 instants, triggers some action act1 within C2 instants.
 ;; formula monitor:
 ;; Lasted(s, C1) -> Futr(WithinF(act1, C2), 1)
 
-(defvar monitor  
-  (-> (lasted (!! (-P- s)) C1)
-      (futr (withinf (-P- act1) C2) 1)))
+;; (defvar monitor  
+;;   (-> (lasted (!! (-P- s)) C1)
+;;       (futr (withinf (-P- act1) C2) 1)))
+;; monitor
+(assert (release false
+		 (-> (yesterday (! s))
+		     (next (next (next (or act1 (next act1))))))))
 
 ;; action act1, in turn, triggers a reaction sigreact1 in an interval [C3,C4]
 ;; formula reaction:
 ;; act1 -> Futr(Lasts(sigreact1, C4-C3), C3)
 
-(defvar reaction
-  (-> (-P- act1)
-      (futr (lasts (-P- sigreact1) (- C4 C3)) C3)))
-
-(defvar numerical_reaction1
-  (-> (-P- sigreact1)
-      (&& ([>=] (-V- react1) LB) ([<=] (-V- react1) UB))))
-
-(defvar numerical_reaction2
-  (-> (!! (-P- sigreact1))
-      ([=] (-V- react1) 0)))
+;; (defvar reaction
+;;   (-> (-P- act1)
+;;       (futr (lasts (-P- sigreact1) (- C4 C3)) C3)))
+;; reaction
+(assert (release false
+		 (-> act1
+		     (next (next (next (next (and sigreact1 (next sigreact1))))))))) 
 
 
-(defvar monitor2  
-  (-> (-P- sigreact1)
-	(lasted (!! (-P- s)) 3)))
+;; (defvar numerical_reaction1
+;;   (-> (-P- sigreact1)
+;;       (&& ([>=] (-V- react1) LB) ([<=] (-V- react1) UB))))
+;; numerical_reaction1
+(assert (release false
+		 (-> sigreact1
+		     (and (>= react1 LB)
+			  (<= react1 UB)))))
 
-(defvar the-system (Alw (&& monitor reaction numerical_reaction1 numerical_reaction2)))
+
+;; (defvar numerical_reaction2
+;;   (-> (!! (-P- sigreact1))
+;;       ([=] (-V- react1) 0)))
+;; numerical_reaction2
+(assert (release false
+		 (-> (! sigreact1)
+		     (= react1 0.0))))
+
+
+;; (defvar monitor2  
+;;   (-> (-P- sigreact1)
+;; 	(lasted (!! (-P- s)) 3)))
+;; monitor2
+(assert (release false
+		(-> sigreact1
+		    (yesterday (and (! s) (yesterday (and (! s) (yesterday (! s)))))))))
+
+
+;; (defvar the-system (Alw (&& monitor reaction numerical_reaction1 numerical_reaction2)))
