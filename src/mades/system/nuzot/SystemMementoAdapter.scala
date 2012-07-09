@@ -191,6 +191,108 @@ object SystemMementoAdapter {
         return script
     }
     
+    def mementoToScript(
+            time: Time,
+            factory: VariableFactory,
+            memento: SystemMemento): Script = {
+        var script = new Script()                           
+        
+        // Parse assigments at time
+        // XXX(rax): duplicated code
+        var terms: List[Term] = List()
+        for (assignment: VariableAssignment <- memento.get(time)) {
+            var definition = assignment.getVariableDefinition()
+            definition.getScope() match {
+                case VScope.ENVIRONMENT_INTERNAL => {
+                    // skip private environmental variables
+                }
+                case _ => {
+                    var const: Term = null
+	                definition.getType() match {
+	                    case VType.BOOLEAN => {
+	                        val realVal = assignment.getValue().toDouble
+	                        if (realVal == 1.0) {
+	                            const = Term.const(true)
+	                        } else {
+	                            const = Term.const(false)
+	                        }
+	                    }
+	                    case VType.INTEGER => {
+	                        const = Term.const(assignment.getValue().toInt)
+	                    }
+	                    case VType.DOUBLE => {
+	                        const = Term.const(assignment.getValue().toDouble)
+	                    }
+	                    case _ => {
+	                        // pass
+	                    }
+	
+	        		}
+	        		terms = terms :+ EQ(
+	        		        Term.call(assignment.getVariableDefinition().getSystemName()),
+	        		        const)
+	           }
+	       } 
+        }
+            	
+        val assert = new CommandTemporalAssert(
+        		// And of all the 
+                And(
+                	terms: _*	
+                ),
+                // The time
+                SpecIntConstant(time.getSimulationStep())
+        )
+        script = script :+ assert
+        
+       // Parse all rolled back values
+       // XXX(rax): duplicated code
+       terms = List()     
+       for (collection: java.util.Collection[VariableAssignment] 
+                  <- memento.getUnsatConfiguration(time)) {
+            for (assignment: VariableAssignment <- collection) {
+                var definition = assignment.getVariableDefinition()
+                definition.getScope() match {
+                    case VScope.ENVIRONMENT_INTERNAL => {
+                        // skip private environmental variables
+                    }
+                    case _ => {
+                        var const: Term = null
+		                definition.getType() match {
+		                    case VType.BOOLEAN => {
+		                        const = Term.const(assignment.getValue().toBoolean)
+		                    }
+		                    case VType.INTEGER => {
+		                        const = Term.const(assignment.getValue().toInt)
+		                    }
+		                    case VType.DOUBLE => {
+		                        const = Term.const(assignment.getValue().toDouble)
+		                    }
+		                    case _ => {
+		                        // pass
+		                    }
+		
+		        		}
+		        		terms = terms :+ EQ(
+		        		        Term.call(assignment.getVariableDefinition().getSystemName()),
+		        		        const)
+		           }
+		       } 
+            }
+                	
+            val assert = new CommandTemporalAssert(
+            		// And of all the 
+                    Not(And(
+                    	terms: _*	
+                    )),
+                    // The time
+                    SpecIntConstant(time.getSimulationStep())
+            )
+            script = script :+ assert
+        }
+        
+        return script
+    }
     
     def modelToMemento(
             time: Time, factory: VariableFactory,

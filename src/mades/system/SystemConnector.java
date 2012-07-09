@@ -49,6 +49,18 @@ public interface SystemConnector {
 	 */
 	public void load(SystemMemento systemParams, EnvironmentMemento environmentParams);
 	
+	
+	/**
+	 * Save the current state in a stack.
+	 */
+	public void push();
+	
+	
+	/**
+	 * Remove the current state from the top of the stack.
+	 */
+	public void pop();
+	
 	/**
 	 * Performs the next step of the simulation using the time of the internal clock.
 	 * 

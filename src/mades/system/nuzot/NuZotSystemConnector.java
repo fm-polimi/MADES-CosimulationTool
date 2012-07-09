@@ -74,6 +74,18 @@ public class NuZotSystemConnector implements SystemConnector {
 		return systemMemento;
 	}
 
-	
+	@Override
+	public void push() {
+		// Nothing to be done
+		// This version of zot does not support
+		// push and pop interface
+	}
+
+	@Override
+	public void pop() {
+		// Nothing to be done
+		// This version of zot does not support
+		// push and pop interface
+	}
 
 }

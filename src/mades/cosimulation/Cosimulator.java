@@ -6,6 +6,7 @@ package mades.cosimulation;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Stack;
@@ -28,8 +29,7 @@ import mades.environment.EnvironmentMemento;
 import mades.environment.modelica.ModelicaEnvironmentConnector;
 import mades.system.SystemConnector;
 import mades.system.SystemMemento;
-import mades.system.nuzot.NuZotSystemConnector;
-import mades.system.zot.ZotSystemConnector;
+import mades.system.nuzot.NuZotPushAndPopSystemConnector;
 
 import static mades.common.utils.Constants.*;
 
@@ -105,7 +105,8 @@ public class Cosimulator {
 			"[-timeStep=1] " + 
 			"[-stopTime=20] " +
 			"[-attemptsInStep=3] " +
-			"[-backtrakingDepth=3].";
+			"[-backtrakingDepth=3] " +
+			"[-satSolver=org.foo.BarSystemConnector].";
 		
 		if (args.length < 0) {
 			System.out.println(usage);
@@ -117,10 +118,14 @@ public class Cosimulator {
 		double maxCosimulationTime = 20;
 		int maxCosimulationAttemptsForStep = 3;
 		int maxCosimulationBacktraking = 3;
+		
+		String systemClazz = null;
+		
 		Pattern timeStepPattern = Pattern.compile("-timeStep[ ]*=[ ]*(" + DOUBLE + ")");
 		Pattern stopTimePattern = Pattern.compile("-stopTime[ ]*=[ ]*(" + DOUBLE + ")");
 		Pattern attemptsInStepPattern = Pattern.compile("-attemptsInStep[ ]*=[ ]*([\\d]*)");
 		Pattern backtrakingDepthPattern = Pattern.compile("-timeStep[ ]*=[ ]*([\\d]*)");
+		Pattern satSolverPattern = Pattern.compile("-satSolver[ ]*=[ ]*([\\w.]*)");
 		
 		try {
 			for (String s: args) {
@@ -143,6 +148,10 @@ public class Cosimulator {
 					if (matcher.matches()) {
 						maxCosimulationBacktraking = Integer.parseInt(matcher.group(1));
 					}
+					matcher = satSolverPattern.matcher(s);
+					if (matcher.matches()) {
+						systemClazz = matcher.group(1);
+					}
 				}
 			}
 			if (filename == null) {
@@ -158,14 +167,24 @@ public class Cosimulator {
 		logger.setLevel(Level.ALL);
 		logger.info("Starting co-simulation");
 		
-		SystemConnector system = new NuZotSystemConnector(logger);
+		SystemConnector system = null;
+		if (systemClazz == null) {
+			system = new NuZotPushAndPopSystemConnector(logger);
+		} else {
+			try {
+				Class clazz = Class.forName(systemClazz);
+				Constructor constructor = clazz.getConstructor(Logger.class);
+				system = (SystemConnector) constructor.newInstance(logger);
+			} catch (Exception ex) {
+				logger.severe("Could not instantiate system connector: " +
+						systemClazz + ". " + ex.getMessage());
+			}
+		}
 		EnvironmentConnector environment = 
                         new ModelicaEnvironmentConnector(logger);
 		Cosimulator cosimulator = new Cosimulator(logger);
 		cosimulator.setEnvironment(environment);
 		cosimulator.setSystem(system);
-		
-		
 		
 		cosimulator.startCosimulation(
 				filename,
@@ -343,6 +362,7 @@ public class Cosimulator {
 			while (!systemMementoStack.isEmpty()) {
 				SystemMemento memento = systemMementoStack.pop();
 				memento.deleteRelatedFiles();
+				system.pop();
 			}
 			assert(systemMementoStack.isEmpty());
 		} else {
@@ -405,6 +425,7 @@ public class Cosimulator {
 
 		  	// Add memento to the top of the stack
 		  	systemMementoStack.push(initial_systemMemento);
+		  	system.push();
 
 			// Add shared variables to the variable map
 		  	storeSharedVariables(initial_systemMemento);
@@ -596,6 +617,7 @@ public class Cosimulator {
 		}
 		SystemMemento discardedMemento = systemMementoStack.pop();
 		// TODO(rax): assert is the right memento
+		system.pop();
 		
 		// Remove shared variables
 		Time t = discardedMemento.getLatestSimulatedTime();
@@ -610,6 +632,9 @@ public class Cosimulator {
 		// Add the unsat configuration to the current memento
 		SystemMemento currentMemento = systemMementoStack.peek();
 		currentMemento.addUnsatConfiguration(t, variables);
+		
+		// Remove discarded transition from the shared trigger
+		// XXX(rax): this would be more readable: trigger.discard(discardedMemento);
 		discardedMemento.deleteTransitions();
 	}
 	
@@ -658,6 +683,7 @@ public class Cosimulator {
 		
 		// Add memento to the top of the stack
 		systemMementoStack.push(systemMemento);
+		system.push();
 		
 		// Add shared variables to the variable map
 		storeSharedVariables(systemMemento);
