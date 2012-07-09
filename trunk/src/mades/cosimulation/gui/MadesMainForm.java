@@ -39,8 +39,7 @@ import mades.cosimulation.OutputWriter;
 import mades.environment.EnvironmentConnector;
 import mades.environment.modelica.ModelicaEnvironmentConnector;
 import mades.system.SystemConnector;
-import mades.system.nuzot.NuZotSystemConnector;
-import mades.system.zot.ZotSystemConnector;
+import mades.system.nuzot.NuZotPushAndPopSystemConnector;
 
 /**
  *
@@ -429,7 +428,7 @@ public class MadesMainForm extends javax.swing.JFrame
 		logger.setLevel(Level.ALL);
 		logger.info("Starting co-simulation");
 		
-            SystemConnector system = new NuZotSystemConnector(logger);
+            SystemConnector system = new NuZotPushAndPopSystemConnector(logger);
             EnvironmentConnector environment = 
                         new ModelicaEnvironmentConnector(logger);
             cosimulator = new Cosimulator(logger);
