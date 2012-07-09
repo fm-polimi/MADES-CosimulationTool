@@ -190,7 +190,6 @@ public class ZotOutputParser {
 							variablesMultimap.put(currentTime, new VariableAssignment(def, "1"));
 						}
 					}
-
 				}
 				break;
 			}
