@@ -75,8 +75,9 @@ public class EnvironmentMemento {
 	 * @param memento
 	 */
 	public void update(SystemMemento memento) {
-		if (time!=memento.getLatestSimulatedTime()) {
-			throw new RuntimeException("Updating an environment memento at time: " + 
+		if (time != memento.getLatestSimulatedTime()) {
+			throw new RuntimeException(
+					"Updating an environment memento at time: " + 
 					time + 
 					"  with a system memento at time: " +
 					memento.getLatestSimulatedTime());
@@ -89,7 +90,9 @@ public class EnvironmentMemento {
 			if (def.getScope() == Scope.SYSTEM_SHARED) {
 				VariableAssignment var = memento.getVariable(def, getTime());
 				if (var == null) {
-					throw new AssertionError("Missing variable from memento: " + def.getSystemName());
+					throw new AssertionError(
+							"Missing variable from memento: " + 
+							def.getSystemName());
 				}
 				params.set(i, var.clone());
 			}

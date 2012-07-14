@@ -29,7 +29,6 @@ object SystemMementoAdapter {
     def generateInitScript(clock: Clock): Script = {
         var script = new Script()
                 
-        
         // Set real domain
         script = script :+ InitCommandSetInfo(
                 AttributeKeyVal(
@@ -46,7 +45,6 @@ object SystemMementoAdapter {
                                 )
                         )
                  )  
-        
         return script
     }
     
@@ -55,39 +53,6 @@ object SystemMementoAdapter {
             factory: VariableFactory,
             memento: SystemMemento): Script = {
         var script = new Script()
-                                     
-        // Declare tfun
-        /*
-        for (varDef: VariableDefinition <- factory.getDefinedVariables()) {
-            varDef.getScope() match {
-                case VScope.ENVIRONMENT_SHARED => {
-                    script = script :+ CommandDeclareTFun(
-                            Symbol(varDef.getSystemName()),
-                            List(),
-                            varDef.getType() match {
-	                            case VType.BOOLEAN => {
-			                        Sort.Bool
-			                    }
-			                    case VType.INTEGER => {
-			                        // Z3 cannot mix real and doubles
-			                        Sort.Real
-			                    }
-			                    case VType.DOUBLE => {
-			                        Sort.Real
-			                    }
-			                    case _ => {
-			                    	throw new IllegalArgumentException(
-			                    	        "Unexpected variable type: " +
-			                    	        varDef.getType())
-			                    }
-                            }
-                            )
-                }
-                case _ => {
-                    // System variables are already defined
-                }
-            }
-        }*/
         
         // Parse all assigments
         for (time: Time <- memento.keySet()) {
@@ -271,7 +236,6 @@ object SystemMementoAdapter {
 		                    case _ => {
 		                        // pass
 		                    }
-		
 		        		}
 		        		terms = terms :+ EQ(
 		        		        Term.call(assignment.getVariableDefinition().getSystemName()),
@@ -302,13 +266,11 @@ object SystemMementoAdapter {
         
         model.getModelFuncInterpretations.foreach(x => {
             val name = x._1.getName
-            println("@" + name)
             if (factory.isDefinedInSystem(name.toString())) {
                 val values = x._2
                 values.foreach(v => {
                     val params = v._1
                     val assignment = v._2
-                    println("#" + params.getClass())
                     params match {
                         case Seq(k) => {
                             println(k + " " + k.getClass() + " " + assignment)

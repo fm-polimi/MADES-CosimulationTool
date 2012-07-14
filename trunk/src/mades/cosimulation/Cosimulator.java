@@ -441,7 +441,6 @@ public class Cosimulator {
 	}
 	
 	protected void performCosimulationStep() {
-		/******************/
 		int backtrakingAttempts = maxCosimulationBacktraking;
 		boolean stepApproved = false;
 		
@@ -471,13 +470,16 @@ public class Cosimulator {
 					try {
 						simulateSystem();
 						propertyChangeSupport.firePropertyChange(
-								SIMULATION_STEP_DONE, null, sharedVariablesMultimap);
+								SIMULATION_STEP_DONE,
+								null,
+								sharedVariablesMultimap);
 						stepApproved = true;
 					} catch(AssertionError err) {
 						// Unsat
 						attemptsInStep -= 1;
-						logger.severe("The simulated step has no solution: retrying (" + 
-								attemptsInStep +" attempts left).");
+						logger.severe(
+								"The simulated step has no solution: retrying (" + 
+								attemptsInStep + " attempts left).");
 						
 						rollbackEnvironment();
 						clock.tickBackward();
@@ -485,7 +487,9 @@ public class Cosimulator {
 						// no need to resimulate modelica because it is deterministic
 						skipEnv = true;
 						propertyChangeSupport.firePropertyChange(
-								SIMULATION_STEP_DONE, null, sharedVariablesMultimap);
+								SIMULATION_STEP_DONE,
+								null,
+								sharedVariablesMultimap);
 					}
 				} else {
 					// If the environment is not valid then we need to
