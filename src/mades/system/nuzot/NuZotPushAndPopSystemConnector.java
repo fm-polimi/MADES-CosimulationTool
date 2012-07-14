@@ -93,6 +93,11 @@ public class NuZotPushAndPopSystemConnector implements SystemConnector {
         shell.next(ltl);
 		
 		initScript = SystemMementoAdapter.generateInitScript(clock);
+        // Add the init script
+        shell.doVisit(initScript);
+        // Loads the system
+        shell.load(systemFileName);
+    	
 		return systemMemento;
 	}
 
@@ -107,11 +112,7 @@ public class NuZotPushAndPopSystemConnector implements SystemConnector {
 	}
 
 	protected SystemMemento runZot(Time time, SystemMemento memento) {
-        // Add the init script
-        shell.doVisit(initScript);
-        // Loads the system
-        shell.load(systemFileName);
-    	logger.fine("System visiting step " + time.getSimulationStep());
+		logger.fine("System visiting step " + time.getSimulationStep());
         shell.doVisit(SystemMementoAdapter.mementoToScript(
         		time, variableFactory, memento));
 		
