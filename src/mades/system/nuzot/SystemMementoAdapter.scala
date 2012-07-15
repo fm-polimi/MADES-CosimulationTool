@@ -329,6 +329,9 @@ object SystemMementoAdapter {
     def modelToMemento(
             time: Time, factory: VariableFactory,
             previous: SystemMemento, model: Z3Model): SystemMemento = {
+        
+        print(model)
+        
         val memento = new SystemMemento(previous)
         val doubleTime = time.getSimulationStep().toDouble
         
@@ -367,7 +370,7 @@ object SystemMementoAdapter {
                     }
                 })
             } else {
-                println("skipping " + name)
+                //println("skipping " + name)
             }
         })
         return memento
