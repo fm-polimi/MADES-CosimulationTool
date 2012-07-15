@@ -253,9 +253,9 @@ public class SystemMemento {
 	
 	public void update(EnvironmentMemento memento) {
 		Time time = memento.getTime();
-		//MR: added condition to include special case of initial simulation step
-		//if (time.getSimulationStep() != getLatestSimulatedTime().getSimulationStep() + 1) {
-        if (time.getSimulationStep() != 0 &&
+		// MR: added condition to include special
+		// case of initial simulation step
+		if (time.getSimulationStep() != 0 &&
         		time.getSimulationStep() != getLatestSimulatedTime().getSimulationStep() + 1) {
 			throw new RuntimeException("Updating a system memento at time: " + 
 					getLatestSimulatedTime() + 
@@ -263,14 +263,19 @@ public class SystemMemento {
 					time);
 		}
 		
-        //MR: if we are at instant 0 we need to clean variablesMultimap, which in this case contains
-        //MR: just the set of uninitialized variables
-        if (time.getSimulationStep() == 0)
-          variablesMultimap.removeAll(time);
+        // MR: if we are at instant 0 we need to clean
+		// variablesMultimap, which in this case contains
+        // just the set of uninitialized variables
+        if (time.getSimulationStep() == 0) {
+        	variablesMultimap.removeAll(time);
+        }
         
-		SortedSet<VariableAssignment> variables = variablesMultimap.get(time);
+		SortedSet<VariableAssignment> variables =
+				variablesMultimap.get(time);
 		if (variables.size() != 0) {
-			throw new RuntimeException("Uncompatible mementos: system mento should be empty at this time.");
+			throw new RuntimeException(
+					"Uncompatible mementos: " +
+					"system mento should be empty at this time.");
 		}
 		
 		for (VariableAssignment envVar: memento.getParams()) {

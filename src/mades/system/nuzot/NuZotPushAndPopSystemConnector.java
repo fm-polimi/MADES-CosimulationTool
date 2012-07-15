@@ -111,22 +111,6 @@ public class NuZotPushAndPopSystemConnector implements SystemConnector {
 		this.systemMemento.update(environmentParams);
 	}
 
-	protected SystemMemento runZot(Time time, SystemMemento memento) {
-		logger.fine("System visiting step " + time.getSimulationStep());
-        shell.doVisit(SystemMementoAdapter.mementoToScript(
-        		time, variableFactory, memento));
-		
-        shell.save(systemPath + File.separator + systemName + "_" 
-        		+ time.getSimulationStep() + SYSTEM_FILE_EXT);
-        if (!z3.checkSat()) {
-			return null;
-		}
-		
-		SystemMemento newMemento = SystemMementoAdapter.modelToMemento(
-				time, variableFactory, memento, z3.getModel());
-		newMemento.computeTransitions(triggerFactory);
-		return newMemento;	
-	}
 	
 	/* (non-Javadoc)
 	 * @see mades.system.SystemConnector#simulateNext(int)
@@ -138,14 +122,32 @@ public class NuZotPushAndPopSystemConnector implements SystemConnector {
 					"Memento cannot be null.");
 		}
 		
-		SystemMemento results = runZot(
-				clock.getCurrentTime(), systemMemento);
+		Time time = clock.getCurrentTime();
+		logger.fine(
+				"System visiting step " +
+				time.getSimulationStep());
+        shell.doVisit(
+        		SystemMementoAdapter.mementoToScript(
+        				time, clock, variableFactory, systemMemento));
+		
+        shell.save(
+        		systemPath + File.separator + systemName + "_" 
+        		+ time.getSimulationStep() + SYSTEM_FILE_EXT);
+        
+        if (!z3.checkSat()) {
+			return null;
+		}
+		
+		SystemMemento newMemento = SystemMementoAdapter.modelToMemento(
+				time, variableFactory, systemMemento, z3.getModel());
+		newMemento.computeTransitions(triggerFactory);
+		
 		// Add rolled back states
-		if (results != null) {
-			results.setRolledBackVariablesMultimap(
+		if (newMemento != null) {
+			newMemento.setRolledBackVariablesMultimap(
 					systemMemento.getRolledBackVariablesMultimap());
 		}
-		return results;
+		return newMemento;
 	}
 
 	/* (non-Javadoc)
