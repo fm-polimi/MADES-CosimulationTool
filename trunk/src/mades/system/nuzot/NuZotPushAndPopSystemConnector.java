@@ -130,6 +130,7 @@ public class NuZotPushAndPopSystemConnector implements SystemConnector {
         		SystemMementoAdapter.mementoToScript(
         				time, clock, variableFactory, systemMemento));
 		
+        
         shell.save(
         		systemPath + File.separator + systemName + "_" 
         		+ time.getSimulationStep() + SYSTEM_FILE_EXT);
