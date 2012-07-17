@@ -330,7 +330,7 @@ object SystemMementoAdapter {
             time: Time, factory: VariableFactory,
             previous: SystemMemento, model: Z3Model): SystemMemento = {
         
-        print(model)
+        //print(model)
         
         val memento = new SystemMemento(previous)
         val doubleTime = time.getSimulationStep().toDouble
