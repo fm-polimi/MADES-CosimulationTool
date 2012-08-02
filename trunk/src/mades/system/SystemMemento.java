@@ -94,7 +94,7 @@ public class SystemMemento {
 			if (curr.getVariableDefinition().getType() != Type.BOOLEAN) {
 				continue;
 			}
-			if (curr.getValue() != prev.getValue()) {
+			if (!curr.getValue().equals(prev.getValue())) {
 				List<Trigger> triggers =
 						triggerFactory.get(
 								curr.getVariableDefinition().getSystemName());
