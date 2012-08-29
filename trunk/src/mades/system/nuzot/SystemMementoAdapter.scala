@@ -242,7 +242,13 @@ object SystemMementoAdapter {
 		                        const = Term.const(assignment.getValue().toInt)
 		                    }
 		                    case VType.DOUBLE => {
-		                        const = Term.const(assignment.getValue().toDouble)
+		                        val assignmentValue = assignment.getValue()
+		                        if (assignmentValue.contains("/")) {
+		                        	val split = assignmentValue.split("/", 2);
+		                        	const = Term.const(split(0).toDouble / split(1).toDouble)
+		                        } else {
+		                        	const = Term.const(assignmentValue.toDouble)
+		                        }
 		                    }
 		                    case _ => {
 		                        throw new IllegalArgumentException(
@@ -297,7 +303,13 @@ object SystemMementoAdapter {
 		                        const = Term.const(assignment.getValue().toInt)
 		                    }
 		                    case VType.DOUBLE => {
-		                        const = Term.const(assignment.getValue().toDouble)
+		                        val assignmentValue = assignment.getValue()
+		                        if (assignmentValue.contains("/")) {
+		                        	val split = assignmentValue.split("/", 2);
+		                        	const = Term.const(split(0).toDouble / split(1).toDouble)
+		                        } else {
+		                        	const = Term.const(assignmentValue.toDouble)
+		                        }
 		                    }
 		                    case _ => {
 		                        throw new IllegalArgumentException(
