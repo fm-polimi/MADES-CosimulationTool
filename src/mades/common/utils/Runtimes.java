@@ -15,19 +15,29 @@ public class Runtimes {
 
 	private Runtimes() {}
 	
-	public static InputStream runCommand(String command) {
+	//MR
+	//Added a parameter to allow caller to control whether the runtime should wait
+	//for the command to terminate or not; waiting for the command to terminate is
+	//needless for zot, since the output parser can determine when the execution has
+	//ended by itself
+	public static InputStream runCommand(String command, Boolean wait) {
 		Runtime run = Runtime.getRuntime();
-		Process process = null;
+
+        Process process = null;
 		try {
 			process = run.exec(command);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		//MR
+		//wait for process to terminate if this parameter "wait" is true
+		if (wait)
 		try {
 			process.waitFor();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+
 		return process.getInputStream();
 	}
 }
