@@ -251,7 +251,7 @@ public class ZotWrapper {
 		String engine = systemPath + File.separator + ENGINE;
 		// MR: added for Win debugging reasons
 		System.out.println("Running: " + LISP_INTERPRETER + " " + engine);
-		InputStream inputStream = runCommand(LISP_INTERPRETER + " " + engine);
+		InputStream inputStream = runCommand(LISP_INTERPRETER + " " + engine, false);
 		
 		ZotOutputParser parser = new ZotOutputParser(clock, 
 				variableFactory, definedVariables, time.getSimulationStep(), 
@@ -270,6 +270,7 @@ public class ZotWrapper {
 			throw new IllegalArgumentException(
 					"Memento cannot be null.");
 		}
+
 		overrideVariables(memento);
 		SystemMemento results = runZot(time);
 		if (results != null) {

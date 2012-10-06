@@ -224,7 +224,7 @@ public class ModelInstrumentor {
           omc_command = omc_command.replace(File.separator, "/");
 
         // runCommand(OMC + " " + mosFile.getAbsolutePath());
-        runCommand(omc_command);
+        runCommand(omc_command, true);
 
 		// TODO(rax): check compilation is successful
 		try {

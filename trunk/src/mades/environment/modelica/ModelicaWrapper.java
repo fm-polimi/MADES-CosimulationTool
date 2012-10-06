@@ -191,7 +191,7 @@ public class ModelicaWrapper {
 		BufferedReader buf = new BufferedReader(
 				new InputStreamReader(
 						runCommand(environmentPath + File.separator + RUN_FILE + " " +
-								environmentPath + " " + environmentName)));
+								environmentPath + " " + environmentName, true)));
 		
 		String line = "";
 		try {
