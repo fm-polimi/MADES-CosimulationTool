@@ -41,7 +41,8 @@ object SystemMementoAdapter {
                 AttributeKeyVal(
                         LTLInterpreter.kKeyword,
                         AttributeValueSpecConst(
-                                SpecDoubleConstant(clock.getFinalStep().toDouble)
+                            //MR: make this 1.5 times the bound, similar to zot
+                                SpecDoubleConstant(((clock.getFinalStep()*3)/2).toDouble)
                                 )
                         )
                  )  
@@ -94,7 +95,9 @@ object SystemMementoAdapter {
 		       } 
             }
                 	
+            // MR: I try to use the new assert-t-term primitive
             val assert = new CommandTemporalAssert(
+//            val assert = new CommandTemporalTermAssert(
             		// And of all the 
                     And(
                     	terms: _*	
@@ -145,7 +148,10 @@ object SystemMementoAdapter {
 			           }
 			       } 
 	            }
-	                	
+
+                
+                // MR: I try to use the new assert-t-term primitive
+//                val assert = new CommandTemporalTermAssert(
 	            val assert = new CommandTemporalAssert(
 	            		// And of all the 
 	                    Not(And(
@@ -208,8 +214,10 @@ object SystemMementoAdapter {
                case _ => {}
 	       } 
         }
-            	
+        
+        // MR: I try to use the new assert-t-term primitive
         val assert = new CommandTemporalAssert(
+//        val assert = new CommandTemporalTermAssert(
         		// And of all the 
                 And(
                 	terms: _*	
@@ -265,7 +273,9 @@ object SystemMementoAdapter {
 		       } 
 	        }
 	            	
+            // MR: I try to use the new assert-t-term primitive
 	        val assert = new CommandTemporalAssert(
+//            val assert = new CommandTemporalTermAssert(
 	        		// And of all the 
 	                And(
 	                	terms: _*	
@@ -324,7 +334,9 @@ object SystemMementoAdapter {
 		       } 
             }
                 	
+            // MR: I try to use the new assert-t-term primitive
             val assert = new CommandTemporalAssert(
+//            val assert = new CommandTemporalTermAssert(
             		// And of all the 
                     Not(And(
                     	terms: _*	
