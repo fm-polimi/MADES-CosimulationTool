@@ -28,14 +28,19 @@ public class Runtimes {
 			process = run.exec(command);
 		} catch (IOException e) {
 			e.printStackTrace();
+			throw new RuntimeException(
+					"Could not execute command: " + command + ".",
+					e);
 		}
+		
 		//MR
 		//wait for process to terminate if this parameter "wait" is true
-		if (wait)
-		try {
-			process.waitFor();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+		if (wait) {
+			try {
+				process.waitFor();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 
 		return process.getInputStream();
