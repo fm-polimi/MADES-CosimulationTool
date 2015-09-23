@@ -1,0 +1,1 @@
+MADES is a co-simulation tool for physical models. A discrete deterministic model is simulated inside a real casual environment.
